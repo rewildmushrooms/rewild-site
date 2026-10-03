@@ -3,6 +3,7 @@
 //   GET  /api/hq?action=me
 //   GET  /api/hq?action=summary&days=30                     (owner)
 //   GET  /api/hq?action=coupons                             (owner)
+//   GET  /api/hq?action=traffic&days=30                     (owner, Google Analytics)
 //   GET  /api/hq?action=inventory                           (everyone)
 //   GET  /api/hq?action=commissions&month=2026-10           (owner: all partners; partner: themselves)
 //   POST /api/hq  { action:'setStock', id, quantity }       (everyone)
@@ -18,6 +19,7 @@ import { isPaid, orderRef, buyerName } from './_shared/orders.mjs';
 import { TEAM, PARTNERS, COMMISSION_RATE, memberById, partnerForOrder, commissionBase, commissionFor } from './_shared/team.mjs';
 import { inventory, setStock } from './_shared/inventory.mjs';
 import { checkPassword } from './_shared/auth.mjs';
+import { traffic } from './_shared/ga.mjs';
 
 // Returns the signed-in team member, or null.
 export async function authorized(req) {
@@ -262,6 +264,10 @@ export default async (req) => {
         return json(200, await summary(days));
       }
       if (action === 'coupons') return json(200, { coupons: await coupons() });
+      if (action === 'traffic') {
+        const days = Math.min(365, Math.max(1, Number(url.searchParams.get('days')) || 30));
+        try { return json(200, await traffic(days)); } catch (e) { return json(200, { configured: true, error: e.message }); }
+      }
       return json(400, { error: 'Unknown action' });
     }
     if (req.method === 'POST') {
