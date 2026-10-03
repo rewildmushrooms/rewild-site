@@ -1,4 +1,4 @@
-// REWILD cart: localStorage cart, drawer UI, destination-aware shipping, Stripe Checkout handoff.
+// REWILD cart: localStorage cart, drawer UI, destination-aware shipping, promo codes, Square checkout handoff.
 // Product + shipping data comes from /js/catalog.js (generated at build from catalog.mjs).
 (function () {
   const C = window.REWILD_CATALOG;
@@ -22,7 +22,10 @@
     for (const i of state.items) subtotal += byId[i.id].price * i.qty;
     const free = ship.freeOver != null && subtotal >= ship.freeOver;
     const shipping = state.items.length === 0 ? 0 : free ? 0 : ship.flatRate;
-    return { subtotal, shipping, free, total: subtotal + shipping, ship };
+    const p = state.promo && !state.promo.pending ? state.promo : null;
+    const discount = !p || (p.minimumAmount && subtotal < p.minimumAmount) ? 0
+      : p.percentOff ? Math.round(subtotal * p.percentOff / 100) : Math.min(subtotal, p.amountOff || 0);
+    return { subtotal, shipping, free, discount, total: subtotal - discount + shipping, ship };
   }
 
   function save() { store.write(state); render(); }
@@ -83,10 +86,22 @@
         prog.querySelector('.progress span').style.width = pct + '%';
       } else prog.hidden = true;
     }
-    $('#cart-subtotal').textContent = money(q.subtotal);
-    $('#cart-shipping').textContent = !state.items.length ? 'n/a' : q.ship.quoted ? 'Quoted by email' : (q.free ? 'Free' : money(q.shipping));
-    $('#cart-total').textContent = money(q.total) + (q.ship.quoted && state.items.length ? ' + shipping' : '');
-    $('#cart-ship-note').textContent = state.country === 'US' ? 'US shipping and duties vary by parcel. After you order, we email a quote you can pay online before we ship.' : 'Promo codes are added at checkout.';
+    const shipTxt = !state.items.length ? 'n/a' : q.ship.quoted ? 'Quoted by email' : (q.free ? 'Free' : money(q.shipping));
+    const p = state.promo;
+    $('#cart-totals').innerHTML = `<span>Subtotal</span><span>${money(q.subtotal)}</span>` +
+      (p && !p.pending && q.discount ? `<span class="disc">${esc(p.code)}</span><span class="disc">&minus;${money(q.discount)}</span>` : '') +
+      `<span>Shipping</span><span>${shipTxt}</span>` +
+      `<span class="grand">Total</span><span class="grand">${money(q.total)}${q.ship.quoted && state.items.length ? ' + shipping' : ''}</span>`;
+    const pm = $('#promo-msg');
+    if (pm) {
+      pm.className = 'small';
+      if (!p) pm.innerHTML = '';
+      else if (p.pending) pm.innerHTML = `${esc(p.code)} will be checked at checkout. <button type="button" class="link-btn" data-promo-remove>Remove</button>`;
+      else if (p.minimumAmount && q.subtotal < p.minimumAmount) { pm.className = 'small err'; pm.innerHTML = `${esc(p.code)} needs an order of ${money(p.minimumAmount)} or more. <button type="button" class="link-btn" data-promo-remove>Remove</button>`; }
+      else pm.innerHTML = `${esc(p.code)} applied: ${p.percentOff ? p.percentOff + '% off' : money(p.amountOff) + ' off'}. <button type="button" class="link-btn" data-promo-remove>Remove</button>`;
+    }
+    const news = $('#cart-news'); if (news) news.checked = !!state.newsletter;
+    $('#cart-ship-note').textContent = state.country === 'US' ? 'US shipping and duties vary by parcel. After you order, we email a quote you can pay online before we ship.' : '';
     $('#checkout-btn').disabled = state.items.length === 0;
   }
 
@@ -94,13 +109,34 @@
     const err = $('#cart-error'); err.textContent = '';
     btn.disabled = true; const label = btn.textContent; btn.textContent = 'Opening secure checkout…';
     try {
-      const res = await fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: state.items, country: state.country }) });
+      const res = await fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: state.items, country: state.country, code: state.promo ? state.promo.code : undefined, newsletter: !!state.newsletter }) });
       let data = {};
       try { data = await res.json(); } catch (x) {}
       if (!res.ok || !data.url) throw new Error(data.error || 'Checkout is unavailable right now. Please try again in a minute.');
+      try { localStorage.setItem('rewild_last_order', data.orderId || ''); } catch (x) {}
       window.location.href = data.url;
     } catch (e) {
       err.textContent = e.message; btn.disabled = false; btn.textContent = label;
+    }
+  }
+
+  async function applyCode(code, quiet) {
+    code = String(code || '').trim().toUpperCase();
+    if (!code) return;
+    const pm = $('#promo-msg');
+    if (!state.items.length) { state.promo = { code, pending: true }; save(); return; }
+    if (pm && !quiet) { pm.className = 'small'; pm.textContent = 'Checking…'; }
+    try {
+      const res = await fetch('/api/promo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code, items: state.items, country: state.country }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Could not check that code.');
+      state.promo = { code: data.code, percentOff: data.percentOff, amountOff: data.amountOff, minimumAmount: data.minimumAmount };
+      const inp = $('#promo-code'); if (inp) inp.value = '';
+      save();
+    } catch (e) {
+      if (state.promo && state.promo.code === code) state.promo = null;
+      save();
+      if (pm) { pm.className = 'small err'; pm.textContent = e.message; }
     }
   }
 
@@ -127,11 +163,13 @@
     else if (t.dataset.dec) setQty(t.dataset.dec, (state.items.find((i) => i.id === t.dataset.dec)?.qty || 0) - 1);
     else if (t.dataset.remove) setQty(t.dataset.remove, 0);
     else if (t.id === 'checkout-btn') checkout(t);
+    else if (t.matches('[data-promo-remove]')) { state.promo = null; save(); }
   });
   document.addEventListener('click', (e) => { if (e.target.classList && e.target.classList.contains('drawer-backdrop')) close(); });
   document.addEventListener('change', (e) => {
     if (e.target.dataset && e.target.dataset.qty) setQty(e.target.dataset.qty, e.target.value);
     if (e.target.name === 'dest') { state.country = e.target.value === 'US' ? 'US' : 'CA'; save(); }
+    if (e.target.id === 'cart-news') { state.newsletter = e.target.checked; save(); }
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drawer().classList.contains('drawer-open')) close(); });
 
@@ -167,6 +205,15 @@
     main.classList.toggle('contain', b.dataset.thumb.includes('/label-'));
     document.querySelectorAll('[data-thumb]').forEach((x) => x.setAttribute('aria-pressed', x === b));
   }));
+
+  const pf = $('#promo-form');
+  if (pf) pf.addEventListener('submit', (e) => { e.preventDefault(); applyCode($('#promo-code').value); });
+  // Shareable links like /shop/?code=SEAN20 apply the code automatically.
+  const urlCode = new URLSearchParams(location.search).get('code');
+  if (urlCode) setTimeout(() => { applyCode(urlCode, true); toast(urlCode.toUpperCase() + ' will be applied in your cart.'); }, 200);
+  // A code saved before items were added gets checked once there is something in the cart.
+  const recheck = () => { if (state.promo && state.promo.pending && state.items.length) applyCode(state.promo.code, true); };
+  document.addEventListener('click', (e) => { if (e.target.closest('[data-add],[data-add-many],[data-open-cart]')) setTimeout(recheck, 50); });
 
   if (new URLSearchParams(location.search).get('checkout') === 'cancelled') setTimeout(() => toast('Checkout cancelled. Your cart is saved.'), 300);
 
