@@ -27,7 +27,7 @@ export const cordyfuelPage = {
   description: 'CordyFuel™ is high-potency, full-spectrum Cordyceps militaris grown in BC. 2025 Cordy Cup winner, third-party tested, no fillers. Powering Rewild Energy.',
   ogTitle: 'What is CordyFuel™? Energy. Movement. Recovery.',
   image: '/img/cordyfuel-duo-square.webp',
-  preload: '/img/learn-cordyceps.webp',
+  preload: '/img/hero-snowboard-cordyfuel.webp',
   jsonld: [
     {
       '@context': 'https://schema.org',
@@ -228,6 +228,6 @@ export const cordyfuelPage = {
 
 <section class="section tight lp"><div class="lp-col">
   <h2 class="h3" style="font-size:22px;margin-bottom:12px">CordyFuel™ questions</h2>
-  ${FAQ.map(([q, a]) => `<details class="faq"><summary>${q}</summary><div class="answer">${a}</div></details>`).join('')}
+  <div>${FAQ.map(([q, a]) => `<details class="faq"><summary>${q}</summary><div class="answer">${a}</div></details>`).join('')}</div>
 </div></section>`,
 };
