@@ -110,3 +110,11 @@ Then **Deploys → Trigger deploy**.
 
 ## Publishing updates
 Netlify only builds when a commit message contains [deploy] (see netlify.toml). Batch edits and add [deploy] to the last commit of the batch to save build credits.
+
+## REWILD HQ logins (added Oct 2026)
+
+- Sign in at /hq/ (or /awesomesauce): pick your name, enter your password.
+- First passwords live in Netlify: HQ_PASSWORD (Jade), HQ_PASSWORD_SEAN, HQ_PASSWORD_PETE. Delete one to remove that person's access.
+- Forgot password? Click it on the sign-in page. A one-time link (30 minutes) goes to jade@ / sean@ / petemoss@rewildmushrooms.com. New passwords need 14+ characters with upper and lower case, a number and a symbol (the Generate button makes one).
+- Reset emails are sent from noreply@rewildmushrooms.com (SiteGround). Netlify needs SMTP_USER, SMTP_HOST and SMTP_PASSWORD.
+- Check setup any time: /api/hq-auth?action=status
