@@ -2,6 +2,8 @@
   command = "node build.mjs"
   publish = "dist"
   functions = "netlify/functions"
+  # Always build. Netlify's "no content change" check misreads the "rewild-site 3" folder name.
+  ignore = "exit 1"
 
 [build.environment]
   NODE_VERSION = "22"
