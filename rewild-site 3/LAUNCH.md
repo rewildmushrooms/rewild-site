@@ -107,3 +107,6 @@ Then **Deploys → Trigger deploy**.
 - **Metrics, promo codes and US shipping quotes:** `rewildmushrooms.com/hq/`
 - **Refunds:** Square → Transactions → the payment → Issue refund.
 - **Changes to the site:** ask Claude. Edits go to GitHub and Netlify redeploys in about a minute.
+
+## Publishing updates
+Netlify only builds when a commit message contains [deploy] (see netlify.toml). Batch edits and add [deploy] to the last commit of the batch to save build credits.
