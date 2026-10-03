@@ -7,6 +7,7 @@ import { memberById } from './_shared/team.mjs';
 import { startReset, finishReset, PASSWORD_RULES } from './_shared/auth.mjs';
 import { getJSON, setJSON, blobsContext } from './_shared/store.mjs';
 import { mailConfigured } from './_shared/mailer.mjs';
+import { gaConfigured, traffic } from './_shared/ga.mjs';
 
 const SENT = 'If that name has HQ access, a reset link is on its way to their @rewildmushrooms.com inbox. It works for 30 minutes.';
 
@@ -19,7 +20,9 @@ export default async (req) => {
       if (blobsContext()) {
         try { await setJSON('hq-auth', 'status-check', { at: Date.now() }); storage = (await getJSON('hq-auth', 'status-check')) ? 'ok' : 'read failed'; } catch (e) { storage = e.message; }
       }
-      return json(200, { storage, email: mailConfigured() ? 'configured' : 'missing', rules: PASSWORD_RULES });
+      let analytics = gaConfigured() ? 'configured' : 'missing';
+      if (analytics === 'configured') { try { await traffic(1); analytics = 'ok'; } catch (e) { analytics = e.message; } }
+      return json(200, { storage, email: mailConfigured() ? 'configured' : 'missing', analytics, rules: PASSWORD_RULES });
     }
     if (req.method !== 'POST') return json(405, { error: 'Method not allowed' });
     const b = await req.json().catch(() => ({}));
