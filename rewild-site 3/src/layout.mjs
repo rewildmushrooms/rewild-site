@@ -99,6 +99,8 @@ ${page.noindex ? '<meta name="robots" content="noindex, nofollow">' : '<meta nam
 ${page.preload ? `<link rel="preload" as="image" href="${page.preload}" fetchpriority="high">` : ''}
 ${ld.map((j) => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n')}
 ${page.head || ''}
+${SITE.ga ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${SITE.ga}"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${SITE.ga}');</script>` : ''}
 </head>
 <body>
 <a href="#main" class="sr-only">Skip to content</a>
