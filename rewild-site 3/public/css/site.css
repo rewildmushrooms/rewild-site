@@ -262,7 +262,7 @@ p{text-wrap:pretty}
 .hero-signup{background:linear-gradient(90deg,rgba(10,12,9,.94) 0%,rgba(10,12,9,.8) 35%,rgba(10,12,9,.35) 60%,rgba(10,12,9,.05) 80%),url(/img/banner-tincture-forest.webp) 75% center/cover no-repeat,#121310}
 .hero-signup .wrap{min-height:700px;display:flex;align-items:center}
 .hero-signup .wrap{padding-top:60px;padding-bottom:60px}
-@media (max-width:700px){.hero-signup{background:linear-gradient(180deg,rgba(10,12,9,.55),rgba(10,12,9,.88)),url(/img/banner-tincture-forest.webp) 72% center/cover no-repeat}.hero-signup .wrap{min-height:0;padding-top:90px;padding-bottom:90px}}
+@media (max-width:700px){.hero-signup{background:linear-gradient(180deg,rgba(10,12,9,.55),rgba(10,12,9,.88)),url(/img/banner-tincture-forest-640.webp) 72% center/cover no-repeat}.hero-signup .wrap{min-height:0;padding-top:90px;padding-bottom:90px}}
 
 .offer{display:flex;flex-direction:column;gap:10px}
 .offer-row{display:grid;grid-template-columns:1fr auto auto;gap:16px;align-items:center;background:#fff;border:1.5px solid transparent;border-radius:var(--radius);padding:14px 14px 14px 20px}
