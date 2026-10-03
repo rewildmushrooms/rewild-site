@@ -530,7 +530,7 @@ const story = {
   <div class="founder-photo"><img class="cover portrait" src="/img/pete-moss-snowboarding.webp" alt="Pete Moss, co-founder of REWILD Mushrooms, snowboarding mid-air above a mountain event" width="684" height="856" loading="lazy"><p class="small muted" style="margin-top:10px">Pete Moss, co-founder</p></div>
 </div></section>
 <section class="section"><div class="wrap split" style="align-items:flex-start">
-  <div class="founder-photo"><img class="cover portrait" src="/img/sean-turner-fire-performer.webp" alt="Sean Turner, co-founder of REWILD Mushrooms, performing with fire on stage" width="800" height="1000" loading="lazy"><p class="small muted" style="margin-top:10px">Sean Turner, co-founder</p></div>
+  <div class="founder-photo"><img class="cover portrait" src="/img/sean-turner-fire-performer-hood.webp" alt="Sean Turner, co-founder of REWILD Mushrooms, in a hooded jacket surrounded by fire" width="800" height="1000" loading="lazy"><p class="small muted" style="margin-top:10px">Sean Turner, co-founder</p></div>
   <div class="prose" style="max-width:640px">
     <p class="eyebrow" style="margin-bottom:12px">Co-founder</p>
     <h2 style="margin-top:0">Sean Turner</h2>
