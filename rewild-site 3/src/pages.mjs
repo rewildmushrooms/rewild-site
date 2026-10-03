@@ -39,7 +39,7 @@ function productCard(p, { headingLevel = 3 } = {}) {
   return `<article class="card">
     <a class="img-link" href="/shop/${p.slug}/"><img src="${p.image}" alt="${esc(p.alt)}" width="600" height="600" loading="lazy"></a>
     <div class="meta">
-      <div class="dot-label"><span class="dot" style="background:${p.color}"></span>${esc(p.mushroom)}</div>
+      <div class="dot-label"><span class="dot" style="background:${p.color}"></span><span>${esc(p.mushroom)}</span></div>
       <${h}><a href="/shop/${p.slug}/">${esc(p.name)}</a></${h}>
       <div class="latin">${esc(p.latin)}</div>
       <div class="price-line">${esc(p.format)} · <span class="price">${money(p.price)}</span></div>
@@ -328,7 +328,7 @@ function productPage(p) {
       <div class="thumbs">${p.gallery.map((g, i) => `<button type="button" data-thumb="${g}" data-alt="${esc(g.includes('label') ? `${p.name} label` : p.alt)}" aria-pressed="${i === 0}" aria-label="Show image ${i + 1}"><img src="${g}" alt="" loading="lazy" width="84" height="84"></button>`).join('')}</div>
     </div>
     <div class="buybox">
-      <div class="dot-label"><span class="dot" style="background:${p.color}"></span>${esc(p.mushroom)}</div>
+      <div class="dot-label"><span class="dot" style="background:${p.color}"></span><span>${esc(p.mushroom)}</span></div>
       <h1 class="h1" style="font-size:clamp(38px,4.4vw,58px)">${esc(p.name)}<span class="h1-sub">${esc(p.isTincture ? 'Alcohol-free Cordyceps militaris tincture' : `Organic ${p.commonName} mushroom powder`)}</span></h1>
       <p class="latin" style="font-size:17px">${esc(p.latin)} · ${esc(p.format)}</p>
       <p class="lead">${esc(p.tagline)}</p>
@@ -438,7 +438,7 @@ const lab = {
     return `<article class="lab-card">
       <img src="${p.image}" alt="" width="600" height="600" loading="lazy">
       <div class="stack-sm" style="gap:8px;padding:22px">
-        <div class="dot-label"><span class="dot" style="background:${p.color}"></span>${esc(p.mushroom)}</div>
+        <div class="dot-label"><span class="dot" style="background:${p.color}"></span><span>${esc(p.mushroom)}</span></div>
         <h3 style="font-size:22px"><a href="/shop/${p.slug}/" style="text-decoration:none">${esc(p.name)}</a></h3>
         <table class="lab-table"><thead><tr><th>Test</th><th>Standard</th><th>Result</th></tr></thead><tbody>
           <tr><td>Species identity</td><td>Positive</td><td><b>Positive</b></td></tr>
@@ -505,7 +505,7 @@ const story = {
     <h1 class="h1" style="font-size:clamp(40px,5vw,64px)">Rewild isn't really about mushrooms.</h1>
     <p class="lead">It's about returning to your natural state. The version of you beneath the noise. The mushrooms are simply good tools for the journey.</p>
   </div>
-  <div><img class="cover sq" src="/img/rewild-team-forest.webp" alt="Pete, Jade and Sean in the forest holding Lion's Mane and Reishi" width="1100" height="1100"></div>
+  <div><img class="cover sq" src="/img/rewild-team-2026.webp" alt="REWILD founders Pete, Jade and Sean in the forest with mushrooms and an orange cat" width="1100" height="1100"></div>
 </div></section>
 <section class="section"><div class="wrap split" style="align-items:flex-start">
   <div class="founder-photo"><img class="cover portrait" src="/img/jade-stevens-founder-mountains.webp" alt="Jade Stevens, founder of REWILD Mushrooms, hiking in the snowy Rockies with her black and white cat" width="800" height="1000" loading="lazy"><p class="small muted" style="margin-top:10px">Jade Stevens, founder</p></div>
@@ -547,7 +547,7 @@ const story = {
   <ul><li>Mushrooms are tools. Not miracles. Not shortcuts.</li><li>You should know exactly what's inside. One mushroom per product, clearly labelled.</li><li>Trust comes from transparency, not hype. That's why every lot is lab tested and <a href="/lab-results/">the numbers are public</a>.</li><li>Small daily choices compound.</li></ul>
 </div></section>
 <section class="section"><div class="wrap split">
-  <div><img class="cover sq" src="/img/rewild-team-2026.webp" alt="REWILD founders Pete, Jade and Sean in the forest with mushrooms and an orange cat" width="1100" height="1100" loading="lazy"></div>
+  <div><img class="cover portrait" src="/img/rewild-bear-cordyfuel-tincture.webp" alt="A bear at a summer festival with a bottle of Rewild Energy tincture in its teeth" width="960" height="1280" loading="lazy"></div>
   <div class="stack">
     <p class="eyebrow">The team</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Built on trust, integrity and a solid passion for 'shrooms.</h2>
