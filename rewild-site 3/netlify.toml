@@ -2,8 +2,10 @@
   command = "node build.mjs"
   publish = "dist"
   functions = "netlify/functions"
-  # Always build. Netlify's "no content change" check misreads the "rewild-site 3" folder name.
-  ignore = "exit 1"
+  # Only build when the commit message contains [deploy]. Saves Netlify build credits:
+  # Claude batches edits and adds [deploy] to the last commit of a batch.
+  # (exit 0 = skip this build, exit 1 = build.)
+  ignore = "git log -1 --pretty=%B | grep -qF '[deploy]' && exit 1 || exit 0"
 
 [build.environment]
   NODE_VERSION = "22"
@@ -30,10 +32,6 @@
   status = 301
 [[redirects]]
   from = "/shop/cordyceps/"
-  to = "/shop/cordyceps-militaris-powder/"
-  status = 301
-[[redirects]]
-  from = "/cordyfuel/"
   to = "/shop/cordyceps-militaris-powder/"
   status = 301
 [[redirects]]
