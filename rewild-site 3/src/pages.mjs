@@ -376,7 +376,7 @@ const quiz = {
   description: 'Eight quick questions to match Cordyceps, Lion\u2019s Mane, Chaga and Reishi to how you actually live. Get your stack and how to take it in about a minute.',
   jsonld: [crumbs([['Home', '/'], ['Build Your Stack', '/build-your-stack/']])],
   body: `
-<section class="page-hero dark"><div class="wrap stack-sm" style="gap:16px">
+<section class="page-hero dark hero-photo hero-larches"><div class="wrap stack-sm" style="gap:16px">
   <p class="eyebrow">Build your stack</p>
   <h1 class="h1" style="font-size:clamp(40px,5vw,64px);color:#fff">Find the mushrooms that fit your life.</h1>
   <p class="lead" style="color:var(--on-dark);max-width:620px">Eight quick questions about how you actually live. About a minute. You'll get your stack, when to take it and how.</p>
@@ -404,7 +404,7 @@ const lab = {
   description: 'Every lot of REWILD mushroom powder is tested for identity, potency and purity. CordyFuel™ is standardized to 3+ mg/g cordycepin. Full COAs on request.',
   jsonld: [crumbs([['Home', '/'], ['Lab Results', '/lab-results/']]), faqLd(LAB_FAQS)],
   body: `
-<section class="page-hero dark"><div class="wrap split" style="align-items:center">
+<section class="page-hero dark hero-photo hero-snowpeaks"><div class="wrap split" style="align-items:center">
   <div class="stack">
     <p class="eyebrow">Third-party lab results</p>
     <h1 class="h1" style="font-size:clamp(40px,5vw,64px);color:#fff">What's on the label is what's inside.</h1>
@@ -571,7 +571,7 @@ const manifesto = {
   description: 'Somewhere along the way, we forgot that we are part of nature. The Rewild Manifesto: simple, intentional choices and mushrooms as tools, not miracles.',
   jsonld: [crumbs([['Home', '/'], ['The Manifesto', '/manifesto/']])],
   body: `
-<section class="page-hero dark"><div class="narrow stack-sm" style="gap:16px">
+<section class="page-hero dark hero-photo hero-valley"><div class="narrow stack-sm" style="gap:16px">
   <p class="eyebrow">The Rewild Manifesto</p>
   <h1 class="h1" style="font-size:clamp(36px,5vw,60px);color:#fff;line-height:1.05">Somewhere along the way, we forgot that we are part of nature.</h1>
 </div></section>
@@ -666,7 +666,7 @@ const simple = (path, title, description, h1, html, extra = {}) => ({
 
 const shipping = simple('/shipping/', 'Shipping & Returns | Free Shipping in Canada Over $175 | REWILD', 'REWILD ships across Canada ($20 flat rate, free over $175) and to the US with duties quoted per order. Every order has a 14-day, 100% risk-free guarantee.', 'Shipping & Returns', `
 <h2>Canada</h2>
-<ul><li><strong>$20 flat rate</strong> on orders under $175.</li><li><strong>Free shipping</strong> on orders of $175 or more (before discounts).</li><li>Orders ship within 1 to 3 business days with tracking. Most arrive in 2 to 7 business days.</li><li><strong>Nelson, BC hand delivery</strong> is available at checkout. Local deliveries happen Monday and Tuesday.</li></ul>
+<ul><li><strong>$20 flat rate</strong> on orders under $175.</li><li><strong>Free shipping</strong> on orders of $175 or more (before discounts).</li><li>Orders ship within 1 to 3 business days with tracking. Most arrive in 2 to 7 business days.</li></ul>
 <h2>United States</h2>
 <p>Yes, we ship to the US. Every US parcel now goes through customs, so shipping and duties depend on what's in your order. Here's how it works:</p>
 <ol><li>Place your order. You pay for the products only.</li><li>We declare your parcel with customs and work out the exact shipping and duties.</li><li>We email you a quote with a secure link to pay it online, usually within 1 business day.</li><li>As soon as it's paid, your order ships. Most US orders arrive in 5 to 12 business days.</li></ol>
@@ -850,7 +850,7 @@ const confirmed = {
   <p class="eyebrow">Order confirmed</p>
   <h1 class="h1" style="font-size:clamp(36px,5vw,60px)" id="oc-title">Welcome, Rewilder.</h1>
   <div id="oc-details" class="lead">Your order is in. A receipt is on its way to your inbox.</div>
-  <p class="muted">Canadian orders ship within 1 to 3 business days. Nelson hand deliveries happen Monday and Tuesday.</p>
+  <p class="muted">Canadian orders ship within 1 to 3 business days.</p>
   <div class="row" style="justify-content:center"><a class="btn btn-dark" href="/journal/">Read the journal</a><a class="btn btn-outline" href="/shop/">Back to the shop</a></div>
 </div></section>`,
   scripts: `<script>
