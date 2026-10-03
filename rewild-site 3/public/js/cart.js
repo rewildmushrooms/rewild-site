@@ -180,6 +180,12 @@
     input.value = Math.max(1, Math.min(20, (parseInt(input.value, 10) || 1) + Number(b.dataset.qtyStep)));
   });
 
+  // Learn dropdown
+  document.querySelectorAll('.nav-toggle').forEach((b) => b.addEventListener('click', (e) => {
+    e.stopPropagation(); const g = b.closest('.nav-group'); const o = g.classList.toggle('open'); b.setAttribute('aria-expanded', o);
+  }));
+  document.addEventListener('click', (e) => { if (!e.target.closest('.nav-group')) document.querySelectorAll('.nav-group.open').forEach((g) => { g.classList.remove('open'); g.querySelector('.nav-toggle').setAttribute('aria-expanded', 'false'); }); });
+
   // Mobile menu
   const mb = $('#menu-btn');
   if (mb) mb.addEventListener('click', () => { const n = $('#site-nav'); const o = n.classList.toggle('open'); mb.setAttribute('aria-expanded', o); });
