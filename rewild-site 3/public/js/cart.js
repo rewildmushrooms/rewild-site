@@ -221,6 +221,9 @@
   // Shareable links like /shop/?code=SEAN20 apply the code automatically.
   const urlCode = new URLSearchParams(location.search).get('code');
   if (urlCode) setTimeout(() => { applyCode(urlCode, true); toast(urlCode.toUpperCase() + ' will be applied in your cart.'); }, 200);
+  // Email links like /shop/?cart=energy,tincture put that stack in the cart (if not there already) and open it.
+  const urlCart = new URLSearchParams(location.search).get('cart');
+  if (urlCart) setTimeout(() => { urlCart.split(',').map((x) => x.trim()).forEach((id) => { if (byId[id] && !state.items.some((i) => i.id === id)) add(id, 1); }); open(); }, 150);
   // A code saved before items were added gets checked once there is something in the cart.
   const recheck = () => { if (state.promo && state.promo.pending && state.items.length) applyCode(state.promo.code, true); };
   document.addEventListener('click', (e) => { if (e.target.closest('[data-add],[data-add-many],[data-open-cart]')) setTimeout(recheck, 50); });
