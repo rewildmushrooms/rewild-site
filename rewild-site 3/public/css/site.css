@@ -406,3 +406,30 @@ p{text-wrap:pretty}
 .nav{align-items:center}
 @media (min-width:901px) and (max-width:1240px){.nav{gap:16px;font-size:12.5px;letter-spacing:.04em}.brand span{font-size:20px;letter-spacing:.24em}.nav a.nav-hot{padding:7px 10px}}
 @media (min-width:901px) and (max-width:1040px){.brand span{display:none}}
+
+/* 100% Risk-Free Guarantee */
+.guarantee{display:flex;gap:14px;align-items:flex-start;background:#fff;border:1.5px solid var(--ink);border-radius:var(--radius);padding:16px 18px;color:var(--ink)}
+.guarantee svg{flex-shrink:0;margin-top:2px}
+.guarantee b{display:block;font-family:var(--display);font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:15px}
+.guarantee span{display:block;font-size:15px;color:var(--text);margin-top:2px}
+.guarantee.compact{padding:12px 14px}
+.guarantee.on-dark{background:transparent;border-color:var(--accent);color:#fff}
+.guarantee.on-dark svg{color:var(--accent)}
+.guarantee.on-dark span{color:var(--on-dark)}
+.guarantee.wide{justify-content:center;align-items:center;padding:22px 24px;background:var(--stone);border:0}
+.guarantee.wide b{font-size:18px}
+.cart-guarantee{text-align:center;color:var(--muted);margin:0}
+.cart-guarantee b{color:var(--ink)}
+.portrait{aspect-ratio:4/5}
+/* Shop: tincture feature */
+.tincture-feature .tf-media{position:relative}
+.tincture-feature .tf-media img{aspect-ratio:4/3}
+.tf-badge{position:absolute;top:18px;left:18px;background:var(--accent);color:var(--ink);font-weight:800;font-size:13px;letter-spacing:.16em;text-transform:uppercase;padding:8px 14px;border-radius:2px}
+.tf-buy{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:6px}
+.tf-price{font-family:var(--display);font-weight:800;font-size:44px;line-height:1;color:var(--accent);display:flex;align-items:baseline;gap:8px;margin-right:6px}
+.tf-price span{font-family:var(--body);font-weight:600;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--on-dark)}
+.tf-duo{color:#fff;font-size:inherit;font-weight:700}
+.quiz-email-top{background:var(--ink);color:#fff;border-radius:var(--radius);padding:24px;gap:12px}
+.quiz-email-top h3{color:#fff}
+.quiz-email-top p{color:var(--on-dark)}
+.quiz-email-top [data-qmsg]{color:var(--accent)}
