@@ -148,7 +148,7 @@ ${page.body}
         <a href="/terms/">Terms</a>
       </nav>
     </div>
-    <p class="disclaimer">The information on this site is for educational purposes only and is not medical advice. Our products are not intended to diagnose, treat, cure or prevent any disease. Speak with a healthcare practitioner before use if you are pregnant, nursing or taking medication. CordyFuel™ is a trademark of our grower, used with permission.</p>
+    <p class="disclaimer">The information on this site is for educational purposes only and is not medical advice. Our products are not intended to diagnose, treat, cure or prevent any disease. Speak with a healthcare practitioner before use if you are pregnant, nursing or taking medication. CordyFuel™ is a trademark of NuCelium, our grower, used with permission.</p>
     <div class="footer-bottom"><span>© ${new Date().getFullYear()} REWILD Mushrooms · Slocan Valley, British Columbia</span><span><a href="https://instagram.com/rewildmushrooms" rel="me noopener">@rewildmushrooms</a></span></div>
   </div>
 </footer>

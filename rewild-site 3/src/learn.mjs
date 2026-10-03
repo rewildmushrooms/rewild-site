@@ -32,7 +32,7 @@ export const GUIDES = [
       ]],
       ['A little history', [
         'Cordyceps has a long record in traditional Chinese and Tibetan practice, mostly through the wild Himalayan species. Herders noticed it on high mountain pastures centuries ago, and it became one of the most prized ingredients of the region.',
-        'Cordyceps militaris made its own mark in the lab. In 1950, researchers isolated a compound from it and named it cordycepin after the mushroom. Today cordycepin is one of the most studied compounds in the fungal world, and it is the main thing we test CordyFuel™ for.',
+        'Cordyceps militaris made its own mark in the lab. In 1950, researchers isolated a compound from it and named it cordycepin after the mushroom. Today cordycepin is one of the most studied compounds in the fungal world, and it is the main compound every lot of CordyFuel™ is tested for.',
       ]],
     ],
     compounds: [['Cordycepin (UPLC)', '3 mg/g or more']],
@@ -102,7 +102,7 @@ export const GUIDES = [
     image: null,
     alt: 'Chaga growing on a birch tree',
     seoTitle: 'Chaga (Inonotus obliquus): A Guide to the Birch Fungus | REWILD',
-    description: 'What Chaga is, why it looks like burnt charcoal on birch trees, its long history in northern cultures, and why REWILD grows its Chaga instead of wild harvesting.',
+    description: 'What Chaga is, why it looks like charcoal on birch trees, its history in northern cultures, and why REWILD\'s Chaga is cultivated, not wild harvested.',
     intro: 'It looks like a lump of burnt charcoal on the side of a birch tree. Break it open and it is rusty gold inside.',
     sections: [
       ['Meet the mushroom', [
@@ -124,7 +124,7 @@ export const GUIDES = [
 export const GUIDE_BY_PRODUCT = Object.fromEntries(GUIDES.map((g) => [g.productId, g]));
 
 export const GROWN = [
-  ['Grown in BC', 'Cultivated indoors in British Columbia using solid-state fermentation on certified organic grain.'],
+  ['Grown in BC', 'Cultivated indoors by our partner grower in British Columbia, using solid-state fermentation on certified organic grain.'],
   ['The whole organism', 'Each powder contains the fruiting body, mycelium, stroma, natural prebiotic fibre and the compounds the mycelium releases as it grows, together with the organic grain it grew on.'],
   ['DNA verified', 'Every lot is identified by DNA (qPCR) and must match an authenticated reference sample of the species on the label.'],
   ['Made to last', 'Water activity is kept under 0.6 so the powder stays dry and stable for three years from production.'],

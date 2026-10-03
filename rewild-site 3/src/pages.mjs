@@ -229,7 +229,7 @@ const PRODUCT_DETAILS = {
   strength: {
     intro: `<p>Chaga (<em>Inonotus obliquus</em>) has quietly grown in northern forests for thousands of years, taking its character from its host and the forest around it.</p><p>Ours is grown in British Columbia as a full-spectrum powder. Earthy, rich and a little vanilla-like. Perfect in coffee, tea or broth.</p>`,
     ticks: ['100% Chaga, nothing else in the bag', 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · No fillers · Non-GMO'],
-    faqs: [['Is your Chaga wild harvested?', 'No. Our Chaga is cultivated in British Columbia, so we never strip wild birch forests and every batch can be tested and traced.']],
+    faqs: [['Is your Chaga wild harvested?', 'No. It is cultivated indoors by our partner grower in British Columbia, so no wild birch forests are stripped and every batch can be tested and traced.']],
   },
   peace: {
     intro: `<p>Reishi (<em>Ganoderma lucidum</em>) has been revered for centuries as the mushroom of stillness. Glossy, woody and deeply rooted in tradition.</p><p>Ours is grown in British Columbia as a full-spectrum powder. Bitter and grounding. Many people enjoy it in an evening tea or cacao.</p>`,
@@ -244,7 +244,7 @@ const PRODUCT_DETAILS = {
 };
 const COMMON_FAQS = [
   ['How much should I take?', 'Our labels suggest ½ teaspoon of powder a day, added to food or drink. Start there and see what works for you.'],
-  ['What does full spectrum mean?', 'It means the powder includes both the fruiting body (the mushroom you can see) and the mycelium (the root-like network). We grow on certified organic sorghum in British Columbia. <a href="/fruiting-body-vs-mycelium-whats-the-difference-in-functional-mushroom-products/">Read more</a>.'],
+  ['What does full spectrum mean?', 'It means the powder includes both the fruiting body (the mushroom you can see) and the mycelium (the root-like network). Ours is grown on certified organic sorghum in British Columbia by our partner grower. <a href="/fruiting-body-vs-mycelium-whats-the-difference-in-functional-mushroom-products/">Read more</a>.'],
   ['How long does a bag last?', 'A 100g bag holds roughly 70 to 100 half-teaspoon servings, so about two to three months of daily use.'],
   ['How should I store it?', 'In a cool, dry place away from direct sunlight. Reseal the pouch after use. Best within 3 years of purchase.'],
   ['Is this medical advice?', 'No. Our products are foods, not medicine. They are not intended to diagnose, treat, cure or prevent any disease. Talk to your healthcare practitioner before use if you are pregnant, nursing or taking medication.'],
@@ -386,7 +386,7 @@ const lab = {
   <div class="stack">
     <p class="eyebrow">Lab results</p>
     <h1 class="h1" style="font-size:clamp(40px,5vw,64px);color:#fff">What's on the label is what's inside.</h1>
-    <p class="lead" style="color:var(--on-dark)">Every pouch and every bottle starts as a tested lot. Identity, potency and purity, checked before anything is released. Here's what we test for, and the numbers.</p>
+    <p class="lead" style="color:var(--on-dark)">Every pouch and every bottle starts as a tested lot. Identity, potency and purity, checked before anything is released. Here's what every lot is tested for, and the numbers.</p>
     <div class="row"><a class="btn btn-yellow" href="#request">Request a full report</a><a class="btn btn-ghost" href="#results">See the numbers</a></div>
   </div>
   <div class="stats lab-hero-stats" style="align-self:center">
@@ -399,7 +399,7 @@ const lab = {
 
 <section class="section"><div class="wrap">
   <div class="stack-sm" style="max-width:720px;margin-bottom:40px;gap:14px">
-    <p class="eyebrow">What we test for</p>
+    <p class="eyebrow">What every lot is tested for</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,46px)">Four questions every lot has to answer.</h2>
   </div>
   <div class="grid-4">${TESTS.map(([t, sub, body], i) => `<div class="stat stack-sm" style="background:var(--stone);gap:10px;padding:28px"><span class="eyebrow ember">0${i + 1} · ${esc(t)}</span><h3 style="font-size:22px">${esc(sub)}</h3><p class="muted" style="font-size:16px">${body}</p></div>`).join('')}</div>
@@ -435,7 +435,7 @@ const lab = {
   <div class="stack-sm" style="max-width:720px;margin-bottom:40px;gap:14px">
     <p class="eyebrow">From grain to powder</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,46px)">How it's grown.</h2>
-    <p class="lead">Grown in British Columbia on certified organic sorghum, in a 45,000 sq ft solar-powered facility. Nothing is imported or relabelled.</p>
+    <p class="lead">REWILD doesn't grow its own mushrooms. We partner with a specialist grower in British Columbia that cultivates them on certified organic sorghum in a 45,000 sq ft solar-powered facility. Nothing is imported from overseas.</p>
   </div>
   <ol class="process">${PROCESS.map(([t, d], i) => `<li><span class="n">${String(i + 1).padStart(2, '0')}</span><b>${esc(t)}</b><span>${esc(d)}</span></li>`).join('')}</ol>
 </div></section>
@@ -443,7 +443,7 @@ const lab = {
 <section class="section dark"><div class="narrow stack" style="gap:18px">
   <p class="eyebrow">Why this matters</p>
   <h2 class="h2" style="font-size:clamp(30px,3.6vw,46px);color:#fff">Most mushroom products ask you to take their word for it.</h2>
-  <p class="lead" style="color:var(--on-dark)">A label can say anything. A lab report can't. We think you should be able to see exactly what's inside before you make it part of your day, so we test every lot and we'll show you the report.</p>
+  <p class="lead" style="color:var(--on-dark)">A label can say anything. A lab report can't. We think you should be able to see exactly what's inside before you make it part of your day, so every lot is tested and we'll show you the report.</p>
 </div></section>
 
 <section class="section" id="request"><div class="wrap split" style="align-items:flex-start">
@@ -521,9 +521,9 @@ const story = {
   <div class="founder-photo"><img class="cover sq" src="/img/sean-turner.webp" alt="Sean Turner, co-founder of REWILD Mushrooms, holding an orange cat" width="560" height="560" loading="lazy"><p class="small muted" style="margin-top:10px">Sean Turner, co-founder</p></div>
 </div></section>
 <section class="section stone"><div class="narrow prose" style="max-width:780px">
-  <h2 style="margin-top:0">Meet the grower</h2>
-  <p>Our mushrooms are grown in British Columbia from DNA-verified strains, cultivated on certified organic sorghum in a solar-powered facility. The whole organism is harvested together: fruiting body, mycelium and the compounds the mycelium releases as it grows. Then it's dried, milled and lab tested before it ever reaches a pouch or a bottle. <a href="/lab-results/">See how it's grown and tested</a>.</p>
-  <p>Grown, not sourced. You can know exactly where your mushrooms come from.</p>
+  <h2 style="margin-top:0">Where our mushrooms come from</h2>
+  <p>We don't grow our own mushrooms. We work with a specialist grower in British Columbia that cultivates them from DNA-verified strains, on certified organic sorghum, in a solar-powered facility. We chose them for their science, their testing and their award-winning CordyFuel™. The whole organism is harvested together: fruiting body, mycelium and the compounds the mycelium releases as it grows. Then it's dried, milled and lab tested before it ever reaches a pouch or a bottle. <a href="/lab-results/">See how it's grown and tested</a>.</p>
+  <p>Our job is choosing what goes into every REWILD pouch and bottle, and making sure you can know exactly where it came from.</p>
   <h2>What we believe</h2>
   <ul><li>Mushrooms are tools. Not miracles. Not shortcuts.</li><li>You should know exactly what's inside. One mushroom per product, clearly labelled.</li><li>Trust comes from transparency, not hype. That's why every lot is lab tested and <a href="/lab-results/">the numbers are public</a>.</li><li>Small daily choices compound.</li></ul>
 </div></section>
@@ -662,6 +662,7 @@ const shipping = simple('/shipping/', 'Shipping & Returns | Free Shipping in Can
 
 const FAQS = [
   ['Where are your mushrooms grown?', 'In British Columbia, Canada, on certified organic sorghum, from DNA-verified strains.'],
+  ['Who grows your mushrooms?', 'REWILD is not the grower. Our mushrooms are grown by NuCelium, a certified organic cultivator in British Columbia and the maker of CordyFuel™. We choose the products, brand them, pack them and share the lab results for every lot.'],
   ['What does full spectrum mean?', 'Our powders contain the whole organism: fruiting body and mycelium together. <a href="/fruiting-body-vs-mycelium-whats-the-difference-in-functional-mushroom-products/">Read the full explainer</a>.'],
   ['How do I take the powder?', 'Our labels suggest ½ teaspoon a day in a smoothie, elixir, soup, tea, coffee, or hot water and honey.'],
   ['How do I take the tincture?', '10 to 20 ml per serving, straight or in a drink. Each 100 ml bottle holds 5 to 10 servings.'],
@@ -716,7 +717,7 @@ const terms = simple('/terms/', 'Terms of Service | REWILD Mushrooms', 'Terms of
 <h2>Shipping and returns</h2>
 <p>See our <a href="/shipping/">Shipping &amp; Returns</a> page.</p>
 <h2>Trademarks</h2>
-<p>CordyFuel™ is a trademark of our grower, used with permission. REWILD and the REWILD emblem belong to REWILD Mushrooms.</p>
+<p>CordyFuel™ is a trademark of NuCelium, used with permission. REWILD's mushrooms are grown by NuCelium in British Columbia. REWILD and the REWILD emblem belong to REWILD Mushrooms.</p>
 <h2>Governing law</h2>
 <p>These terms are governed by the laws of British Columbia and the federal laws of Canada that apply there.</p>`);
 
@@ -786,7 +787,7 @@ function guidePage(g) {
 </div></section>
 <section class="section stone"><div class="wrap grid-3">
   <div class="stack-sm">
-    <h2 class="h3">What we test for</h2>
+    <h2 class="h3">What every lot is tested for</h2>
     <p class="muted small">Release standards every lot has to meet before it ships.</p>
     ${tbl(g.compounds)}
     ${lab ? `<p class="small">Latest lot (${esc(lab.lot)}): ${lab.results.slice(0, 2).map((r) => `${esc(r[0].replace(/ \(.*\)/, ''))} ${esc(r[2])}`).join(', ')}. <a class="link" href="/lab-results/">Full results</a></p>` : ''}
