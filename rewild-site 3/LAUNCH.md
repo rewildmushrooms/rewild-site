@@ -119,3 +119,4 @@ Netlify only builds when a commit message contains [deploy] (see netlify.toml). 
 - Reset emails are sent from noreply@rewildmushrooms.com (SiteGround). Netlify needs SMTP_USER, SMTP_HOST and SMTP_PASSWORD.
 - Check setup any time: /api/hq-auth?action=status
 - Reset emails switched on Oct 3, 2026 (noreply@ mailbox created, SMTP_PASSWORD set).
+- SMTP_USER / SMTP_HOST re-saved in Netlify the same day.
