@@ -13,6 +13,12 @@
 [functions]
   node_bundler = "esbuild"
 
+# Team dashboard: rewildmushrooms.com/awesomesauce opens REWILD HQ.
+[[redirects]]
+  from = "/awesomesauce"
+  to = "/hq/"
+  status = 301
+
 # Old WordPress URLs
 [[redirects]]
   from = "/sample-page/*"
