@@ -3,7 +3,7 @@ import { esc, proofStrip, signupForm } from './layout.mjs';
 import { PRODUCTS, PRODUCT_BY_ID, SHIPPING, money } from '../netlify/functions/_shared/catalog.mjs';
 import { POSTS } from './journal.mjs';
 import { LAB, TESTS, PROCESS } from './lab.mjs';
-import { GUIDES, GROWN, CLEAN, MICRO, HEAVY } from './learn.mjs';
+import { GUIDES, GUIDE_BY_PRODUCT, GROWN, CLEAN, MICRO, HEAVY } from './learn.mjs';
 
 const powders = PRODUCTS.filter((p) => !p.isTincture && !p.isBundle);
 const SELLABLE = PRODUCTS.filter((p) => !p.isBundle);
@@ -100,8 +100,8 @@ const home = {
   </div></div>
 </section>
 ${proofStrip()}
-<section class="section manifesto-band"><img class="manifesto-mark" src="/img/emblem-dark-lg.png" alt="" width="1000" height="1000" loading="lazy" aria-hidden="true"><div class="narrow stack center" style="text-align:center;position:relative">
-  <img src="/img/emblem-dark.png" alt="REWILD emblem" width="88" height="88" style="margin-bottom:4px">
+<section class="section manifesto-band"><img class="manifesto-mark" src="/img/emblem-dark-lg.webp" alt="" width="600" height="600" loading="lazy" aria-hidden="true"><div class="narrow stack center" style="text-align:center;position:relative">
+  <img src="/img/emblem-dark-sm.webp" alt="REWILD emblem" width="88" height="88" style="margin-bottom:4px">
   <p class="eyebrow">The Rewild Manifesto</p>
   <h2 class="h2" style="font-size:clamp(30px,4vw,48px);line-height:1.12">Somewhere along the way, we forgot that we are part of nature.</h2>
   <p class="lead" style="max-width:680px;font-size:20px">We drink energy to wake up. We scroll to relax. We take in more information in a day than our ancestors did in a year. And many of us feel more tired, distracted and disconnected than ever.</p>
@@ -329,10 +329,11 @@ function productPage(p) {
     <dl class="spec">
       <dt>Ingredients</dt><dd>${p.isTincture ? `CordyFuel™ ${esc(p.latin)} (alcohol-free tincture)` : `Full spectrum (fruiting body + mycelium) ${esc(p.commonName)} mushroom powder (<em>${esc(p.latin)}</em>)`}</dd>
       <dt>Suggested use</dt><dd>${p.isTincture ? USE_TEXT.tincture : USE_TEXT.powder}</dd>
-      <dt>Grown</dt><dd>British Columbia, Canada${p.isTincture ? '' : ', on certified organic sorghum'}</dd>
+      <dt>Grown</dt><dd>British Columbia, Canada${p.isTincture ? '' : ', on certified organic sorghum'}, by our partner grower</dd>
       <dt>Storage</dt><dd>Cool, dry place away from direct sunlight. Reseal after use.</dd>
       <dt>Best before</dt><dd>Use within 3 years of purchase.</dd>
       <dt>Testing</dt><dd>Third-party tested. ${lab && lab.pdf ? `<a href="${lab.pdf}">Read the current COA</a>.` : '<a href="/lab-results/">See lab results</a>.'}</dd>
+      ${GUIDE_BY_PRODUCT[p.isTincture ? 'energy' : p.id] ? `<dt>Learn more</dt><dd><a href="/learn/${GUIDE_BY_PRODUCT[p.isTincture ? 'energy' : p.id].slug}/">The ${esc(GUIDE_BY_PRODUCT[p.isTincture ? 'energy' : p.id].name)} guide</a>: what it is, where it grows and how it's tested.</dd>` : ''}
     </dl>
   </div>
 </div></section>
@@ -362,7 +363,7 @@ const quiz = {
 <section class="section tight"><div class="wrap narrow-quiz" id="quiz">
   <div id="quiz-app" class="stack" aria-live="polite"><noscript><p>Please turn on JavaScript to use the quiz, or <a href="/shop/">browse the shop</a>.</p></noscript></div>
 </div></section>`,
-  scripts: '<script src="/js/quiz.js" defer></script>',
+  scripts: `<script src="/js/quiz.js?v=${SITE.build}" defer></script>`,
 };
 
 
@@ -662,7 +663,7 @@ const shipping = simple('/shipping/', 'Shipping & Returns | Free Shipping in Can
 
 const FAQS = [
   ['Where are your mushrooms grown?', 'In British Columbia, Canada, on certified organic sorghum, from DNA-verified strains.'],
-  ['Who grows your mushrooms?', 'REWILD is not the grower. Our mushrooms are grown by NuCelium, a certified organic cultivator in British Columbia and the maker of CordyFuel™. We choose the products, brand them, pack them and share the lab results for every lot.'],
+  ['Who grows your mushrooms?', 'REWILD is not the grower. Our mushrooms are grown by <a href="https://nucelium.com" rel="noopener" target="_blank">NuCelium</a>, a certified organic cultivator in British Columbia and the maker of CordyFuel™. We choose the products, brand them, pack them and share the lab results for every lot.'],
   ['What does full spectrum mean?', 'Our powders contain the whole organism: fruiting body and mycelium together. <a href="/fruiting-body-vs-mycelium-whats-the-difference-in-functional-mushroom-products/">Read the full explainer</a>.'],
   ['How do I take the powder?', 'Our labels suggest ½ teaspoon a day in a smoothie, elixir, soup, tea, coffee, or hot water and honey.'],
   ['How do I take the tincture?', '10 to 20 ml per serving, straight or in a drink. Each 100 ml bottle holds 5 to 10 servings.'],
@@ -717,7 +718,7 @@ const terms = simple('/terms/', 'Terms of Service | REWILD Mushrooms', 'Terms of
 <h2>Shipping and returns</h2>
 <p>See our <a href="/shipping/">Shipping &amp; Returns</a> page.</p>
 <h2>Trademarks</h2>
-<p>CordyFuel™ is a trademark of NuCelium, used with permission. REWILD's mushrooms are grown by NuCelium in British Columbia. REWILD and the REWILD emblem belong to REWILD Mushrooms.</p>
+<p>CordyFuel™ is a trademark of <a href="https://nucelium.com" rel="noopener" target="_blank">NuCelium</a>, used with permission. REWILD's mushrooms are grown by NuCelium in British Columbia. REWILD and the REWILD emblem belong to REWILD Mushrooms.</p>
 <h2>Governing law</h2>
 <p>These terms are governed by the laws of British Columbia and the federal laws of Canada that apply there.</p>`);
 
@@ -828,7 +829,7 @@ const confirmed = {
   noindex: true,
   body: `
 <section class="section"><div class="narrow stack center" style="text-align:center">
-  <img src="/img/emblem-dark.png" alt="" width="84" height="84">
+  <img src="/img/emblem-dark-sm.webp" alt="" width="84" height="84">
   <p class="eyebrow">Order confirmed</p>
   <h1 class="h1" style="font-size:clamp(36px,5vw,60px)" id="oc-title">Welcome, Rewilder.</h1>
   <div id="oc-details" class="lead">Your order is in. A receipt is on its way to your inbox.</div>

@@ -91,7 +91,9 @@ ${page.noindex ? '<meta name="robots" content="noindex, nofollow">' : '<meta nam
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Noto+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Noto+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Noto+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Noto+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="/css/site.css?v=${SITE.build}">
 ${page.preload ? `<link rel="preload" as="image" href="${page.preload}" fetchpriority="high">` : ''}
 ${ld.map((j) => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n')}
@@ -102,7 +104,7 @@ ${page.head || ''}
 <div class="announce">Free shipping in Canada on orders over $${SHIPPING.CA.freeOver / 100} · Now shipping to the US</div>
 <header class="site-header">
   <div class="wrap">
-    <a href="/" class="brand" aria-label="REWILD home"><img src="/img/emblem-dark.png" alt="" width="38" height="38"><span>REWILD</span></a>
+    <a href="/" class="brand" aria-label="REWILD home"><img src="/img/emblem-dark-sm.webp" alt="" width="38" height="38"><span>REWILD</span></a>
     <nav id="site-nav" class="nav" aria-label="Main">${navHtml}</nav>
     <div class="header-actions">
       <button type="button" class="icon-btn" data-open-cart aria-label="Open cart">${icons.cart}<span class="cart-count" data-count="0">0</span></button>
@@ -117,7 +119,7 @@ ${page.body}
   <div class="wrap">
     <div class="footer-top">
       <div class="stack-sm">
-        <div class="brand" style="color:#fff"><img src="/img/emblem-light.png" alt="" width="38" height="38"><span style="color:#fff">REWILD</span></div>
+        <div class="brand" style="color:#fff"><img src="/img/emblem-light-sm.webp" alt="" width="38" height="38"><span style="color:#fff">REWILD</span></div>
         <p>Organic, full-spectrum mushrooms grown in British Columbia.</p>
         <p style="font-style:italic">Return to your natural state.</p>
         <div style="margin-top:12px"><p style="color:#fff;font-weight:700;margin-bottom:8px">Join the Rewilders</p>${signupForm('footer')}</div>
@@ -148,7 +150,7 @@ ${page.body}
         <a href="/terms/">Terms</a>
       </nav>
     </div>
-    <p class="disclaimer">The information on this site is for educational purposes only and is not medical advice. Our products are not intended to diagnose, treat, cure or prevent any disease. Speak with a healthcare practitioner before use if you are pregnant, nursing or taking medication. CordyFuel™ is a trademark of NuCelium, our grower, used with permission.</p>
+    <p class="disclaimer">The information on this site is for educational purposes only and is not medical advice. Our products are not intended to diagnose, treat, cure or prevent any disease. Speak with a healthcare practitioner before use if you are pregnant, nursing or taking medication. CordyFuel™ is a trademark of <a href="https://nucelium.com" rel="noopener" target="_blank">NuCelium</a>, our grower, used with permission.</p>
     <div class="footer-bottom"><span>© ${new Date().getFullYear()} REWILD Mushrooms · Slocan Valley, British Columbia</span><span><a href="https://instagram.com/rewildmushrooms" rel="me noopener">@rewildmushrooms</a></span></div>
   </div>
 </footer>
