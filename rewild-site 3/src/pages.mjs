@@ -222,7 +222,7 @@ ${CORDYFUEL_SECTION}
   <div class="stack-sm"><h2 class="h3" style="font-size:22px">Shipping to the US</h2><p class="muted">Yes. US shipping and duties are calculated for each parcel. After you order, we email a quote you can pay online before it ships.</p></div>
   <div class="stack-sm"><h2 class="h3" style="font-size:22px">Promo codes</h2><p class="muted">Have a code? Add it in your cart before checkout.</p></div>
 </div>
-<div class="wrap" style="margin-top:40px">${guarantee(' wide')}</div></section>`,
+<div class="wrap" style="margin-top:32px">${guarantee(' band')}</div></section>`,
 };
 
 /* ---------------- PRODUCT PAGES ---------------- */
