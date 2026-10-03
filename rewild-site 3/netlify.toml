@@ -77,7 +77,8 @@
 [[headers]]
   for = "/img/*"
   [headers.values]
-    Cache-Control = "public, max-age=604800"
+    # 1 day, so a replaced photo shows up for returning visitors by the next day.
+    Cache-Control = "public, max-age=86400"
 
 [[headers]]
   for = "/hq/*"
