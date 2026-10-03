@@ -158,7 +158,7 @@ ${CORDYFUEL_SECTION}
     <div class="stack-sm" style="gap:18px;font-size:17px;color:var(--text)">
       <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> Works quietly behind the scenes. Disappears for days and comes back with backcountry photos, good connections and better ideas.</p>
       <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> Says the mushrooms are leading the way and she's but a humble shepherd. If she needs a scapegoat, the mushrooms made her do it.</p>
-      <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> Festival spin performer powered by CordyFuel™. Walks his talk.</p>
+      <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> With 16 years studying nutrition, human optimization and supplementation, Sean brings a whole-food, back-to-basics approach to Rewild. He sees functional mushrooms as simple, natural tools for helping the body perform, adapt and recover.</p>
     </div>
     <a class="btn btn-outline" href="/our-story/" style="align-self:flex-start">Our story</a>
   </div>
@@ -499,6 +499,16 @@ const story = {
     <p style="font-style:italic;color:var(--muted)">Jade</p>
   </div>
 </div></section>
+<section class="section stone"><div class="wrap split" style="align-items:flex-start">
+  <div class="prose" style="max-width:640px">
+    <p class="eyebrow" style="margin-bottom:12px">Co-founder</p>
+    <h2 style="margin-top:0">Sean Turner</h2>
+    <p>Sean Turner has a background in holistic nutrition, with Ayurveda as his first area of study. For 16 years, he has studied and practiced nutrition, human optimization, and supplementation. He has championed functional mushrooms throughout.</p>
+    <p>Alongside a whole-food foundation, he considers functional mushrooms one of his first choices for proactive wellness. Cordyceps is among the first supplements he adds to his fitness and performance regimen.</p>
+    <p>Sean is also a fire arts performer who has appeared on some of the biggest stages in Canada. These days, he's powered by CordyFuel™ seven days a week.</p>
+  </div>
+  <div class="founder-photo"><img class="cover sq" src="/img/sean-turner.webp" alt="Sean Turner, co-founder of REWILD Mushrooms, holding an orange cat" width="560" height="560" loading="lazy"><p class="small muted" style="margin-top:10px">Sean Turner, co-founder</p></div>
+</div></section>
 <section class="section stone"><div class="narrow prose" style="max-width:780px">
   <h2 style="margin-top:0">Meet the grower</h2>
   <p>Our mushrooms are grown in British Columbia from DNA-verified strains, cultivated on certified organic sorghum in a solar-powered facility. The whole organism is harvested together: fruiting body, mycelium and the compounds the mycelium releases as it grows. Then it's dried, milled and lab tested before it ever reaches a pouch or a bottle. <a href="/lab-results/">See how it's grown and tested</a>.</p>
@@ -514,7 +524,7 @@ const story = {
     <div class="stack-sm" style="gap:18px;font-size:17px;color:var(--text)">
       <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> Works quietly behind the scenes. Disappears for days and comes back with backcountry photos, good connections and better ideas.</p>
       <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> Says the mushrooms are leading the way and she's but a humble shepherd. If she needs a scapegoat, the mushrooms made her do it.</p>
-      <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> Festival spin performer powered by CordyFuel™. Walks his talk.</p>
+      <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> With 16 years studying nutrition, human optimization and supplementation, Sean brings a whole-food, back-to-basics approach to Rewild. He sees functional mushrooms as simple, natural tools for helping the body perform, adapt and recover.</p>
     </div>
   </div>
 </div></section>
