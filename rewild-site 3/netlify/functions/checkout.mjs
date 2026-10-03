@@ -1,10 +1,11 @@
-// POST /api/checkout  { items: [{id, qty}], country: 'CA' | 'US', code?: 'SEAN20', newsletter?: true }
+// POST /api/checkout  { items: [{id, qty}], country: 'CA' | 'US', code?: 'SEAN20', ref?: 'sean', newsletter?: true }
 // Creates a Square payment link. Prices, shipping and promo codes are all checked server-side
 // (the browser is never trusted for amounts).
 import { PRODUCTS, PRODUCT_BY_ID, SHIPPING, quote } from './_shared/catalog.mjs';
 import { square, idem, locationId, json } from './_shared/square.mjs';
 import { validatePromo, orderDiscount } from './_shared/promos.mjs';
 import { SITE_EMAIL } from './_shared/config.mjs';
+import { partnerByRef } from './_shared/team.mjs';
 
 const CUR = 'CAD';
 
@@ -15,6 +16,7 @@ export async function buildPaymentLink(body, siteUrl, opts) {
   let promo = null;
   if (body?.code) promo = (await validatePromo(body.code, q.subtotal, opts)).promo;
   const ship = SHIPPING[country];
+  const ref = partnerByRef(body?.ref)?.ref; // partner share link (?ref=sean), for commission
   const summary = q.lines.map((l) => `${l.qty}x ${l.id}`).join(', ');
   const order = {
     location_id: await locationId(opts),
@@ -33,6 +35,7 @@ export async function buildPaymentLink(body, siteUrl, opts) {
       cart: summary.slice(0, 255),
       newsletter: body?.newsletter ? 'yes' : 'no',
       ...(promo ? { promo: promo.code } : {}),
+      ...(ref ? { ref } : {}),
     },
   };
   if (promo) order.discounts = [orderDiscount(promo)];

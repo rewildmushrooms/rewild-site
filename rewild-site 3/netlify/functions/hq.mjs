@@ -1,9 +1,14 @@
-// REWILD HQ API. Every request needs header  x-hq-key: <HQ_PASSWORD>
-//   GET  /api/hq?action=summary&days=30
-//   GET  /api/hq?action=coupons
-//   POST /api/hq  { action:'createCoupon', code, percentOff|amountOff, expiresAt, minimumAmount }
-//   POST /api/hq  { action:'toggleCoupon', id, active }
-//   POST /api/hq  { action:'shippingInvoice', orderId, amount, note? }
+// REWILD HQ API. Every request needs headers  x-hq-user: jade|sean|pete  and  x-hq-key: <that person's password>
+// (no x-hq-user = Jade, for older bookmarks). Owners see everything; partners see stock and their own sales.
+//   GET  /api/hq?action=me
+//   GET  /api/hq?action=summary&days=30                     (owner)
+//   GET  /api/hq?action=coupons                             (owner)
+//   GET  /api/hq?action=inventory                           (everyone)
+//   GET  /api/hq?action=commissions&month=2026-10           (owner: all partners; partner: themselves)
+//   POST /api/hq  { action:'setStock', id, quantity }       (everyone)
+//   POST /api/hq  { action:'createCoupon', code, percentOff|amountOff, expiresAt, minimumAmount }   (owner)
+//   POST /api/hq  { action:'toggleCoupon', id, active }     (owner)
+//   POST /api/hq  { action:'shippingInvoice', orderId, amount, note? }   (owner)
 // Reads website orders from Square (orders tagged source = rewildmushrooms.com).
 import crypto from 'node:crypto';
 import { square, idem, locationId, pages, isLive, json } from './_shared/square.mjs';
@@ -11,14 +16,22 @@ import { groupStats } from './_shared/mailerlite.mjs';
 import { PRODUCTS } from './_shared/catalog.mjs';
 import { listPromos, createPromo, setPromoActive } from './_shared/promos.mjs';
 import { isPaid, orderRef, buyerName } from './_shared/orders.mjs';
+import { TEAM, PARTNERS, COMMISSION_RATE, memberById, partnerForOrder, commissionBase, commissionFor } from './_shared/team.mjs';
+import { inventory, setStock } from './_shared/inventory.mjs';
 
-function authorized(req) {
-  const expected = process.env.HQ_PASSWORD || '';
-  const given = req.headers.get('x-hq-key') || '';
-  if (expected.length < 10) return false; // refuse weak or missing passwords
+const same = (given, expected) => {
   const a = crypto.createHash('sha256').update(given).digest();
   const b = crypto.createHash('sha256').update(expected).digest();
   return crypto.timingSafeEqual(a, b);
+};
+
+// Returns the signed-in team member, or null.
+export function authorized(req) {
+  const member = memberById(req.headers.get('x-hq-user') || 'jade');
+  if (!member) return null;
+  const expected = process.env[member.env] || '';
+  if (expected.length < 10) return null; // refuse weak or missing passwords
+  return same(req.headers.get('x-hq-key') || '', expected) ? member : null;
 }
 
 const amt = (m) => Number(m?.amount || 0);
@@ -205,12 +218,54 @@ export async function sendShippingInvoice(b, opts) {
   return { id: sent.id, url: sent.public_url, status: sent.status };
 }
 
+const monthOf = (iso) => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Vancouver', year: 'numeric', month: '2-digit' }).format(new Date(iso)).slice(0, 7);
+
+export function commissionReport(orders, month, onlyPartnerId = null) {
+  const rows = {};
+  for (const p of PARTNERS) if (!onlyPartnerId || p.id === onlyPartnerId) rows[p.id] = { id: p.id, name: p.name, codePrefix: p.codePrefix, ref: p.ref, orders: 0, sales: 0, commission: 0, lines: [] };
+  for (const o of orders) {
+    if (!isWebOrder(o) || !isPaid(o) || monthOf(o.created_at) !== month) continue;
+    const hit = partnerForOrder(o);
+    if (!hit || !rows[hit.partner.id]) continue;
+    const r = rows[hit.partner.id];
+    const base = commissionBase(o), c = commissionFor(o);
+    r.orders += 1; r.sales += base; r.commission += c;
+    r.lines.push({ ref: orderRef(o.id), created: ts(o.created_at), via: hit.via, code: hit.code, paid: base, commission: c,
+      items: (o.line_items || []).map((li) => `${li.quantity}x ${li.name}`).join(', ') });
+  }
+  return { month, rate: COMMISSION_RATE, partners: Object.values(rows) };
+}
+
+async function commissions(month, member, opts) {
+  const [y, m] = month.split('-').map(Number);
+  const since = new Date(Date.UTC(y, m - 1, 1) - 86400000).toISOString();
+  const orders = (await searchOrders(since, opts)).filter((o) => Date.parse(o.created_at) < Date.UTC(y, m, 2));
+  return commissionReport(orders, month, member.role === 'owner' ? null : member.id);
+}
+
+async function stock(opts) {
+  const orders = await searchOrders(new Date(Date.now() - 120 * 86400000).toISOString(), opts).catch(() => []);
+  return inventory(opts, { orders });
+}
+
+const denied = () => json(403, { error: 'Only Jade can do that.' });
+
 export default async (req) => {
-  if (!authorized(req)) return json(401, { error: 'Wrong password' });
+  const member = authorized(req);
+  if (!member) return json(401, { error: 'Wrong name or password' });
+  const owner = member.role === 'owner';
   try {
     if (req.method === 'GET') {
       const url = new URL(req.url);
       const action = url.searchParams.get('action');
+      if (action === 'me') return json(200, { id: member.id, name: member.name, role: member.role, mode: isLive() ? 'live' : 'test',
+        partners: PARTNERS.filter((p) => owner || p.id === member.id).map((p) => ({ id: p.id, name: p.name, codePrefix: p.codePrefix, ref: p.ref })) });
+      if (action === 'inventory') return json(200, await stock());
+      if (action === 'commissions') {
+        const month = /^\d{4}-\d{2}$/.test(url.searchParams.get('month') || '') ? url.searchParams.get('month') : monthOf(new Date().toISOString());
+        return json(200, await commissions(month, member));
+      }
+      if (!owner) return denied();
       if (action === 'summary') {
         const days = Math.min(365, Math.max(1, Number(url.searchParams.get('days')) || 30));
         return json(200, await summary(days));
@@ -220,6 +275,12 @@ export default async (req) => {
     }
     if (req.method === 'POST') {
       const b = await req.json();
+      if (b.action === 'setStock') {
+        const r = await setStock(b.id, b.quantity);
+        console.log('stock set', member.id, r.id, r.onHand);
+        return json(200, { ok: true, ...r });
+      }
+      if (!owner) return denied();
       if (b.action === 'createCoupon') {
         const p = await createPromo(b);
         return json(200, { ok: true, id: p.id, code: p.code, warning: p.warning });
