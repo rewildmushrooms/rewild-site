@@ -10,7 +10,6 @@
 //   POST /api/hq  { action:'toggleCoupon', id, active }     (owner)
 //   POST /api/hq  { action:'shippingInvoice', orderId, amount, note? }   (owner)
 // Reads website orders from Square (orders tagged source = rewildmushrooms.com).
-import crypto from 'node:crypto';
 import { square, idem, locationId, pages, isLive, json } from './_shared/square.mjs';
 import { groupStats } from './_shared/mailerlite.mjs';
 import { PRODUCTS } from './_shared/catalog.mjs';
@@ -18,20 +17,12 @@ import { listPromos, createPromo, setPromoActive } from './_shared/promos.mjs';
 import { isPaid, orderRef, buyerName } from './_shared/orders.mjs';
 import { TEAM, PARTNERS, COMMISSION_RATE, memberById, partnerForOrder, commissionBase, commissionFor } from './_shared/team.mjs';
 import { inventory, setStock } from './_shared/inventory.mjs';
-
-const same = (given, expected) => {
-  const a = crypto.createHash('sha256').update(given).digest();
-  const b = crypto.createHash('sha256').update(expected).digest();
-  return crypto.timingSafeEqual(a, b);
-};
+import { checkPassword } from './_shared/auth.mjs';
 
 // Returns the signed-in team member, or null.
-export function authorized(req) {
+export async function authorized(req) {
   const member = memberById(req.headers.get('x-hq-user') || 'jade');
-  if (!member) return null;
-  const expected = process.env[member.env] || '';
-  if (expected.length < 10) return null; // refuse weak or missing passwords
-  return same(req.headers.get('x-hq-key') || '', expected) ? member : null;
+  return member && (await checkPassword(member, req.headers.get('x-hq-key') || '')) ? member : null;
 }
 
 const amt = (m) => Number(m?.amount || 0);
@@ -251,7 +242,7 @@ async function stock(opts) {
 const denied = () => json(403, { error: 'Only Jade can do that.' });
 
 export default async (req) => {
-  const member = authorized(req);
+  const member = await authorized(req);
   if (!member) return json(401, { error: 'Wrong name or password' });
   const owner = member.role === 'owner';
   try {
