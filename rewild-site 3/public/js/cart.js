@@ -115,6 +115,7 @@
       try { data = await res.json(); } catch (x) {}
       if (!res.ok || !data.url) throw new Error(data.error || 'Checkout is unavailable right now. Please try again in a minute.');
       try { localStorage.setItem('rewild_last_order', data.orderId || ''); } catch (x) {}
+      if (window.gtag) window.gtag('event', 'begin_checkout', { currency: 'CAD', items: state.items.map((i) => ({ item_id: i.id, quantity: i.qty })) });
       window.location.href = data.url;
     } catch (e) {
       err.textContent = e.message; btn.disabled = false; btn.textContent = label;
