@@ -1,0 +1,12 @@
+{
+  "name": "rewild-site",
+  "private": true,
+  "type": "module",
+  "description": "REWILD Mushrooms website. Zero dependencies: static pages + Netlify Functions (Stripe, MailerLite).",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "STRICT=1 node build.mjs"
+  },
+  "engines": { "node": ">=20" }
+}
