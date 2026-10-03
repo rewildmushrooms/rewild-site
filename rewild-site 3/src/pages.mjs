@@ -503,21 +503,21 @@ const story = {
 <section class="section stone"><div class="wrap split" style="align-items:flex-start">
   <div class="prose" style="max-width:640px">
     <p class="eyebrow" style="margin-bottom:12px">Co-founder</p>
-    <h2 style="margin-top:0">Sean Turner</h2>
-    <p>Sean Turner has a background in holistic nutrition, with Ayurveda as his first area of study. For 16 years, he has studied and practiced nutrition, human optimization, and supplementation. He has championed functional mushrooms throughout.</p>
-    <p>Alongside a whole-food foundation, he considers functional mushrooms one of his first choices for proactive wellness. Cordyceps is among the first supplements he adds to his fitness and performance regimen.</p>
-    <p>Sean is also a fire arts performer who has appeared on some of the biggest stages in Canada. These days, he's powered by CordyFuel™ seven days a week.</p>
-  </div>
-  <div class="founder-photo"><img class="cover sq" src="/img/sean-turner.webp" alt="Sean Turner, co-founder of REWILD Mushrooms, holding an orange cat" width="560" height="560" loading="lazy"><p class="small muted" style="margin-top:10px">Sean Turner, co-founder</p></div>
-</div></section>
-<section class="section"><div class="wrap split" style="align-items:flex-start">
-  <div class="founder-photo"><img class="cover sq" src="/img/pete-moss.webp" alt="Pete Moss, co-founder of REWILD Mushrooms, in an orange hat and sunglasses in the forest" width="560" height="560" loading="lazy"><p class="small muted" style="margin-top:10px">Pete Moss, co-founder</p></div>
-  <div class="prose" style="max-width:640px">
-    <p class="eyebrow" style="margin-bottom:12px">Co-founder</p>
     <h2 style="margin-top:0">Pete Moss</h2>
     <p>A longtime mushroom enthusiast and lifelong mountain guy, Pete has spent years exploring both the outdoors and the world of functional mushrooms, including foraging and making his own tinctures.</p>
     <p>Snowboarding, mountain biking and hiking keep him connected to the wild, while DJing keeps things interesting. That same hands-on, back-to-nature approach is what connects him to REWILD and the idea that some of the best tools for feeling good have been around all along.</p>
     <p>Based in the Kootenays, Pete also helps people create healthier homes through <a href="https://radonboss.ca" rel="noopener" target="_blank">RadonBoss.ca</a>.</p>
+  </div>
+  <div class="founder-photo"><img class="cover sq" src="/img/pete-moss.webp" alt="Pete Moss, co-founder of REWILD Mushrooms, in an orange hat and sunglasses in the forest" width="560" height="560" loading="lazy"><p class="small muted" style="margin-top:10px">Pete Moss, co-founder</p></div>
+</div></section>
+<section class="section"><div class="wrap split" style="align-items:flex-start">
+  <div class="founder-photo"><img class="cover sq" src="/img/sean-turner.webp" alt="Sean Turner, co-founder of REWILD Mushrooms, holding an orange cat" width="560" height="560" loading="lazy"><p class="small muted" style="margin-top:10px">Sean Turner, co-founder</p></div>
+  <div class="prose" style="max-width:640px">
+    <p class="eyebrow" style="margin-bottom:12px">Co-founder</p>
+    <h2 style="margin-top:0">Sean Turner</h2>
+    <p>Sean Turner has a background in holistic nutrition, with Ayurveda as his first area of study. For 16 years, he has studied and practiced nutrition, human optimization, and supplementation. He has championed functional mushrooms throughout.</p>
+    <p>Alongside a whole-food foundation, he considers functional mushrooms one of his first choices for proactive wellness. Cordyceps is among the first supplements he adds to his fitness and performance regimen.</p>
+    <p>Sean is also a fire arts performer who has appeared on some of the biggest stages in Canada. These days, he's powered by CordyFuel™ seven days a week.</p>
   </div>
 </div></section>
 <section class="section stone"><div class="narrow prose" style="max-width:780px">
