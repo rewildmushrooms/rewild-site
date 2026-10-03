@@ -14,7 +14,7 @@ export const SHIPPING = {
     minDays: 2,
     maxDays: 7,
     // Nelson, BC hand delivery (Monday / Tuesday). Set enabled:false to hide it.
-    localDelivery: { enabled: true, name: 'Hand delivery in Nelson, BC (Mon / Tue)', sameAsShipping: true },
+    localDelivery: { enabled: false, name: 'Hand delivery in Nelson, BC (Mon / Tue)', sameAsShipping: true },
   },
   US: {
     label: 'United States',
@@ -137,7 +137,7 @@ export const PRODUCTS = [
     price: 3000,
     color: '#D2481E',
     image: '/img/tincture-river.webp',
-    gallery: ['/img/tincture-river.webp', '/img/tincture-moss-mushrooms.webp', '/img/tincture-sunset-field.webp', '/img/tincture-rock.webp', '/img/tincture-creek.webp'],
+    gallery: ['/img/tincture-river.webp', '/img/tincture-alpine-larches.webp', '/img/tincture-snow-summit.webp', '/img/tincture-in-hand.webp', '/img/tincture-moss-mushrooms.webp', '/img/tincture-sunset-field.webp', '/img/tincture-rock.webp', '/img/tincture-creek.webp'],
     alt: 'CordyFuel™ Cordyceps militaris tincture on moss beside a mountain river',
     seoTitle: 'Cordyceps Tincture, Alcohol-Free | CordyFuel™ | REWILD',
     seoDescription:
