@@ -106,7 +106,7 @@ ${proofStrip()}
   <p class="eyebrow">The Rewild Manifesto</p>
   <h2 class="h2" style="font-size:clamp(30px,4vw,48px);line-height:1.12">Somewhere along the way, we forgot that we are part of nature.</h2>
   <p class="lead" style="max-width:680px;font-size:20px">We drink energy to wake up. We scroll to relax. We take in more information in a day than our ancestors did in a year. And many of us feel more tired, distracted and disconnected than ever.</p>
-  <p class="lead" style="max-width:680px;font-size:20px">Rewild isn't about rejecting modern life. It's about remembering what we've forgotten. Small, intentional choices. One at a time.</p>
+  <p class="lead" style="max-width:680px;font-size:20px">Rewild isn't about rejecting modern life. It's about remembering what you've forgotten. Small, intentional choices. One at a time.</p>
   <a class="btn btn-outline" href="/manifesto/" style="margin-top:8px">Read the manifesto</a>
 </div></section>
 ${CORDYFUEL_SECTION}
@@ -494,9 +494,9 @@ const story = {
   <div class="prose" style="max-width:640px">
     <p class="eyebrow" style="margin-bottom:12px">From the founder</p>
     <h2 style="margin-top:0">I didn't go looking for mushrooms. They found me.</h2>
-    <p>I'm Jade, and I started REWILD. It began with a trade: I accepted mushrooms as payment for my work, and that one yes kept leading somewhere.</p>
+    <p>I'm Jade, and I started REWILD. It began with a trade: mushrooms as payment for my work. That one yes kept leading somewhere.</p>
     <p>I've spent 20 years in design and marketing, from the Calgary Sun to my own studio, Humble Bee Design. I've also been a bartender, a roadie, a snowboarder and a relentless traveller. REWILD brings it all together.</p>
-    <p>Lion's Mane and Cordyceps are the two I take most. But REWILD isn't really about mushrooms. It's about returning to your natural state. <a href="/manifesto/">Read the Rewild Manifesto</a>.</p>
+    <p>Lion's Mane and Cordyceps are the two I take most. But to me, REWILD isn't really about mushrooms. It's about getting outside, slowing down and moving more. Returning to your natural state. <a href="/manifesto/">Read the Rewild Manifesto</a>.</p>
     <p>I'm a humble shepherd. The mushrooms are leading the way.</p>
     <p style="font-style:italic;color:var(--muted)">Jade</p>
   </div>
@@ -563,15 +563,14 @@ const manifesto = {
   <p>We've built lives around convenience, speed, stimulation, and comfort. We spend our days under artificial light, staring at glowing screens, rushing from one thing to the next. We drink energy to wake up. We scroll to relax. We consume more information in a day than our ancestors did in a year.</p>
   <p>And yet many of us feel more exhausted, distracted, disconnected, and unfulfilled than ever.</p>
   <p><strong>Something doesn't add up.</strong></p>
-  <p>Rewild isn't about rejecting modern life. It's about remembering what we've forgotten.</p>
+  <p>Rewild isn't about rejecting modern life. It's about remembering what you've forgotten.</p>
   <p>It's about questioning the idea that newer is always better. That more is always better. That the answer to every problem comes in a package, an app, or a prescription.</p>
   <p>Sometimes the answer is simpler than that. Sometimes it's getting outside. Sometimes it's slowing down. Sometimes it's sleeping more, moving more, breathing deeper, or paying attention to what you're putting into your body. Sometimes it's reconnecting with the rhythms that humans have lived by for thousands of years.</p>
-  <p>That's what Rewild means to me.</p>
-  <p>It's not about perfection. It's not about living off-grid. It's not about becoming some version of a person who only eats wild plants and bathes in rivers.</p>
+  <p>It's not about perfection. It's not about living off-grid. It's not about becoming some version of you who only eats wild plants and bathes in rivers.</p>
   <p>It's about becoming more intentional. More aware. More connected. More human.</p>
-  <p>The mushrooms we offer are part of that philosophy. Not because they're magical. Not because they're a shortcut. And not because we believe one product can fix everything.</p>
-  <p><strong>They're tools.</strong> Simple, natural tools that have been used for generations and that still have a place in our lives today.</p>
-  <p>That's why we don't hide ingredients behind mystery blends. That's why we keep things simple. That's why we believe people should understand what they're taking and choose what works for them.</p>
+  <p>The mushrooms we offer are part of that. Not because they're magical. Not because they're a shortcut. And not because one product can fix everything.</p>
+  <p><strong>They're tools.</strong> Simple, natural tools that have been used for generations and that still have a place in your life today.</p>
+  <p>That's why we don't hide ingredients behind mystery blends. That's why we keep things simple. Because you should understand what you're taking, and choose what works for you.</p>
   <p>At the end of the day, Rewild isn't really about mushrooms.</p>
   <p>It's about returning to your natural state. The version of you beneath the noise. The version of you that knows how to think clearly, rest deeply, adapt, recover, create, and connect. The version of you that modern life keeps trying to pull away from.</p>
   <p>Rewild is simply an invitation to come back.</p>

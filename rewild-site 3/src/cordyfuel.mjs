@@ -61,7 +61,7 @@ export const cordyfuelPage = {
   <p class="lp-big">Somewhere along the way, being tired became normal.</p>
   <p>Coffee to wake up. Something else to push through the afternoon. More stimulation. More inputs. More ways to keep going when our bodies are asking for something different.</p>
   <p>REWILD isn't about rejecting modern life.</p>
-  <p>It's about remembering that we're still part of nature, and choosing simple, natural tools that help us reconnect with how we were built to live.</p>
+  <p>It's about remembering that you're still part of nature, and choosing simple, natural tools that help you reconnect with how you were built to live.</p>
   <p class="lp-big">CordyFuel™ is one of those tools.</p>
 </div></section>
 
@@ -220,7 +220,7 @@ export const cordyfuelPage = {
   <h2 class="h2">We're part of nature.</h2>
   <p>REWILD isn't about escaping modern life. It's about remembering what modern life makes really easy to forget.</p>
   <p class="lp-big" style="color:#fff">We're animals. We're part of nature.</p>
-  <p>We're supposed to move our bodies, breathe deeply, sleep, play, explore, create and connect.</p>
+  <p>And you were built to move your body, breathe deeply, sleep, play, explore, create and connect.</p>
   <p>Mushrooms aren't the answer to everything. But they are incredible tools. And we think some of the oldest tools on Earth still have a place in modern life.</p>
   <p class="lp-stamp" style="color:var(--accent)">Return to your natural state.<span style="color:#fff">One choice at a time.</span></p>
   <div class="row" style="justify-content:center">${cta('Shop Rewild Energy', true)}</div>
