@@ -1,12 +1,16 @@
 // REWILD HQ API. Every request needs header  x-hq-key: <HQ_PASSWORD>
 //   GET  /api/hq?action=summary&days=30
 //   GET  /api/hq?action=coupons
-//   POST /api/hq  { action:'createCoupon', code, percentOff|amountOff, maxRedemptions, expiresAt, minimumAmount, firstTimeOnly }
+//   POST /api/hq  { action:'createCoupon', code, percentOff|amountOff, expiresAt, minimumAmount }
 //   POST /api/hq  { action:'toggleCoupon', id, active }
+//   POST /api/hq  { action:'shippingInvoice', orderId, amount, note? }
+// Reads website orders from Square (orders tagged source = rewildmushrooms.com).
 import crypto from 'node:crypto';
-import { stripe, listAll, json } from './_shared/stripe.mjs';
+import { square, idem, locationId, pages, isLive, json } from './_shared/square.mjs';
 import { groupStats } from './_shared/mailerlite.mjs';
 import { PRODUCTS } from './_shared/catalog.mjs';
+import { listPromos, createPromo, setPromoActive } from './_shared/promos.mjs';
+import { isPaid, orderRef, buyerName } from './_shared/orders.mjs';
 
 function authorized(req) {
   const expected = process.env.HQ_PASSWORD || '';
@@ -17,14 +21,20 @@ function authorized(req) {
   return crypto.timingSafeEqual(a, b);
 }
 
-const productIdFromLine = (li) =>
-  li.price?.metadata?.rewild_id ||
-  PRODUCTS.find((p) => (li.description || '').startsWith(p.name))?.id ||
-  li.description;
+const amt = (m) => Number(m?.amount || 0);
+const ts = (iso) => Math.floor(Date.parse(iso) / 1000);
+const isWebOrder = (o) => o.metadata?.source === 'rewildmushrooms.com';
+const INVOICE_TITLE = 'REWILD US shipping + duties';
 
-export function summarize(sessions, refunds, promoCodes, days, now = Date.now(), invoices = []) {
-  const invBySession = {};
-  for (const inv of invoices) if (inv.metadata?.session_id && !invBySession[inv.metadata.session_id]) invBySession[inv.metadata.session_id] = inv;
+const productIdFromLine = (li) =>
+  li.metadata?.rewild_id || PRODUCTS.find((p) => (li.name || '').startsWith(p.name))?.id || li.name;
+
+export function summarize(orders, days, now = Date.now(), invoices = [], emails = {}) {
+  const invByRef = {};
+  for (const inv of invoices) {
+    const m = /order ([A-Z0-9]{8})/.exec(inv.description || '');
+    if (m && !invByRef[m[1]]) invByRef[m[1]] = inv;
+  }
   const dayMs = 86400000;
   const start = now - days * dayMs;
   const series = Array.from({ length: days }, (_, i) => {
@@ -32,153 +42,167 @@ export function summarize(sessions, refunds, promoCodes, days, now = Date.now(),
     return { date: d.toISOString().slice(0, 10), revenue: 0, orders: 0 };
   });
   const seriesIdx = Object.fromEntries(series.map((s, i) => [s.date, i]));
-  const promoById = Object.fromEntries(promoCodes.map((p) => [p.id, p.code]));
-  const byProduct = {};
-  const byCoupon = {};
-  const byCountry = {};
-  let revenue = 0, shipping = 0, discounts = 0;
+  const byProduct = {}, byCoupon = {}, byCountry = {};
+  let revenue = 0, shipping = 0, discounts = 0, refunded = 0;
   const customers = new Set();
-  for (const s of sessions) {
-    const total = s.amount_total || 0;
+  const paid = orders.filter((o) => isWebOrder(o) && isPaid(o));
+  for (const o of paid) {
+    const total = amt(o.total_money);
     revenue += total;
-    shipping += s.total_details?.amount_shipping || 0;
-    discounts += s.total_details?.amount_discount || 0;
-    if (s.customer_details?.email) customers.add(s.customer_details.email.toLowerCase());
-    const day = new Date(s.created * 1000).toISOString().slice(0, 10);
+    shipping += amt(o.total_service_charge_money);
+    discounts += amt(o.total_discount_money);
+    refunded += (o.refunds || []).filter((r) => r.status !== 'REJECTED' && r.status !== 'FAILED').reduce((a, r) => a + amt(r.amount_money), 0);
+    const email = emails[o.id] || (o.fulfillments || []).map((f) => f.shipment_details?.recipient?.email_address).find(Boolean);
+    if (email) customers.add(email.toLowerCase());
+    const day = new Date(o.created_at).toISOString().slice(0, 10);
     if (day in seriesIdx) { series[seriesIdx[day]].revenue += total; series[seriesIdx[day]].orders += 1; }
-    const country = s.shipping_details?.address?.country || s.customer_details?.address?.country || s.metadata?.destination || '??';
+    const addr = (o.fulfillments || []).map((f) => f.shipment_details?.recipient?.address).find(Boolean) || {};
+    const country = addr.country || o.metadata?.destination || '??';
     byCountry[country] = byCountry[country] || { orders: 0, revenue: 0 };
     byCountry[country].orders += 1; byCountry[country].revenue += total;
-    for (const li of s.line_items?.data || []) {
+    for (const li of o.line_items || []) {
       const id = productIdFromLine(li);
       byProduct[id] = byProduct[id] || { id, units: 0, revenue: 0 };
-      byProduct[id].units += li.quantity || 0;
-      byProduct[id].revenue += li.amount_total || 0;
+      byProduct[id].units += Number(li.quantity) || 0;
+      byProduct[id].revenue += amt(li.total_money);
     }
-    for (const d of s.total_details?.breakdown?.discounts || []) {
-      const code = promoById[d.discount?.promotion_code] || d.discount?.coupon?.name || d.discount?.coupon?.id || 'coupon';
+    for (const d of o.discounts || []) {
+      const code = d.name || 'discount';
       byCoupon[code] = byCoupon[code] || { code, orders: 0, discount: 0, revenue: 0 };
-      byCoupon[code].orders += 1; byCoupon[code].discount += d.amount || 0; byCoupon[code].revenue += total;
+      byCoupon[code].orders += 1; byCoupon[code].discount += amt(d.applied_money); byCoupon[code].revenue += total;
     }
   }
-  const refunded = refunds.reduce((a, r) => a + (r.status === 'succeeded' || r.status === 'pending' ? r.amount : 0), 0);
   const names = Object.fromEntries(PRODUCTS.map((p) => [p.id, p.name]));
   return {
     days,
     revenue, netRevenue: revenue - refunded, refunded, shipping, discounts,
-    orders: sessions.length,
-    aov: sessions.length ? Math.round(revenue / sessions.length) : 0,
+    orders: paid.length,
+    aov: paid.length ? Math.round(revenue / paid.length) : 0,
     customers: customers.size,
     series,
     products: Object.values(byProduct).map((p) => ({ ...p, name: names[p.id] || p.id })).sort((a, b) => b.revenue - a.revenue),
     coupons: Object.values(byCoupon).sort((a, b) => b.orders - a.orders),
     countries: byCountry,
-    recent: sessions.slice(0, 25).map((s) => ({
-      id: s.id,
-      created: s.created,
-      name: s.customer_details?.name || '',
-      email: s.customer_details?.email || '',
-      total: s.amount_total,
-      country: s.shipping_details?.address?.country || '',
-      city: s.shipping_details?.address?.city || '',
-      items: (s.line_items?.data || []).map((li) => `${li.quantity}x ${li.description}`).join(', '),
-      paymentIntent: s.payment_intent,
-      needsShippingQuote: (s.metadata?.destination || s.shipping_details?.address?.country) === 'US',
-      shippingInvoice: invBySession[s.id]
-        ? { id: invBySession[s.id].id, status: invBySession[s.id].status, amount: invBySession[s.id].amount_due, url: invBySession[s.id].hosted_invoice_url }
-        : null,
-    })),
+    recent: paid.slice(0, 25).map((o) => {
+      const addr = (o.fulfillments || []).map((f) => f.shipment_details?.recipient?.address).find(Boolean) || {};
+      const country = addr.country || o.metadata?.destination || '';
+      const inv = invByRef[orderRef(o.id)];
+      return {
+        id: o.id,
+        ref: orderRef(o.id),
+        created: ts(o.created_at),
+        name: buyerName(o),
+        email: emails[o.id] || (o.fulfillments || []).map((f) => f.shipment_details?.recipient?.email_address).find(Boolean) || '',
+        total: amt(o.total_money),
+        country,
+        city: addr.locality || '',
+        items: (o.line_items || []).map((li) => `${li.quantity}x ${li.name}`).join(', '),
+        note: (o.fulfillments || []).map((f) => f.shipment_details?.shipping_note).find(Boolean) || '',
+        needsShippingQuote: (o.metadata?.destination || country) === 'US',
+        shippingInvoice: inv
+          ? { id: inv.id, status: inv.status === 'PAID' ? 'paid' : 'sent', amount: amt(inv.payment_requests?.[0]?.computed_amount_money), url: inv.public_url }
+          : null,
+      };
+    }),
   };
 }
 
-async function summary(days) {
-  const since = Math.floor(Date.now() / 1000) - days * 86400;
-  const [sessions, refunds, promos, subs, invoices] = await Promise.all([
-    listAll('/checkout/sessions', { status: 'complete', 'created[gte]': since, expand: ['data.line_items', 'data.total_details.breakdown'] }, 1000),
-    listAll('/refunds', { 'created[gte]': since }, 1000).catch(() => []),
-    listAll('/promotion_codes', {}, 500).catch(() => []),
+async function searchOrders(sinceIso, opts) {
+  const loc = await locationId(opts);
+  return pages((cursor) => square('POST', '/orders/search', {
+    location_ids: [loc],
+    cursor,
+    limit: 500,
+    query: {
+      filter: { date_time_filter: { created_at: { start_at: sinceIso } }, state_filter: { states: ['OPEN', 'COMPLETED'] } },
+      sort: { sort_field: 'CREATED_AT', sort_order: 'DESC' },
+    },
+  }, opts), 'orders', 3000);
+}
+
+async function paymentEmails(sinceIso, opts) {
+  const pays = await pages((cursor) => square('GET', `/payments?begin_time=${encodeURIComponent(sinceIso)}&limit=100${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`, null, opts), 'payments', 3000);
+  return Object.fromEntries(pays.filter((p) => p.order_id && p.buyer_email_address).map((p) => [p.order_id, p.buyer_email_address]));
+}
+
+async function listInvoices(opts) {
+  const loc = await locationId(opts);
+  const all = await pages((cursor) => square('GET', `/invoices?location_id=${loc}&limit=200${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`, null, opts), 'invoices', 1000);
+  return all.filter((i) => i.title === INVOICE_TITLE);
+}
+
+async function summary(days, opts) {
+  const since = new Date(Date.now() - days * 86400000).toISOString();
+  const [orders, emails, invoices, subs] = await Promise.all([
+    searchOrders(since, opts),
+    paymentEmails(since, opts).catch(() => ({})),
+    listInvoices(opts).catch(() => []),
     groupStats().catch(() => null),
-    listAll('/invoices', { 'created[gte]': since }, 500).catch(() => []),
   ]);
-  return { ...summarize(sessions, refunds, promos, days, Date.now(), invoices), subscribers: subs, mode: (process.env.STRIPE_SECRET_KEY || '').startsWith('sk_live') ? 'live' : 'test' };
+  return { ...summarize(orders, days, Date.now(), invoices, emails), subscribers: subs, mode: isLive() ? 'live' : 'test' };
 }
 
-async function coupons() {
-  const promos = await listAll('/promotion_codes', { expand: ['data.coupon'] }, 500);
-  return promos.map((p) => ({
-    id: p.id,
-    code: p.code,
-    active: p.active,
-    timesRedeemed: p.times_redeemed,
-    maxRedemptions: p.max_redemptions,
-    expiresAt: p.expires_at,
-    created: p.created,
-    percentOff: p.coupon?.percent_off ?? null,
-    amountOff: p.coupon?.amount_off ?? null,
-    minimumAmount: p.restrictions?.minimum_amount ?? null,
-    firstTimeOnly: !!p.restrictions?.first_time_transaction,
-  }));
+async function coupons(opts) {
+  const [promos, orders] = await Promise.all([
+    listPromos(opts, { fresh: true }),
+    searchOrders(new Date(Date.now() - 365 * 86400000).toISOString(), opts).catch(() => []),
+  ]);
+  const used = {};
+  for (const o of orders) if (isWebOrder(o) && isPaid(o)) for (const d of o.discounts || []) used[d.name] = (used[d.name] || 0) + 1;
+  return promos.map((p) => ({ ...p, timesRedeemed: used[p.code] || 0 })).sort((a, b) => a.code.localeCompare(b.code));
 }
 
-export async function createCoupon(b, opts) {
-  const code = String(b.code || '').trim().toUpperCase();
-  if (!/^[A-Z0-9_-]{3,30}$/.test(code)) throw Object.assign(new Error('Code must be 3 to 30 letters, numbers, - or _.'), { status: 400 });
-  const pct = b.percentOff ? Number(b.percentOff) : null;
-  const amt = b.amountOff ? Math.round(Number(b.amountOff) * 100) : null;
-  if (!(pct > 0 && pct <= 100) && !(amt > 0)) throw Object.assign(new Error('Enter a percent off (1 to 100) or a dollar amount off.'), { status: 400 });
-  const coupon = await stripe('POST', '/coupons', {
-    name: code,
-    duration: 'once',
-    ...(pct ? { percent_off: pct } : { amount_off: amt, currency: 'cad' }),
-    metadata: { created_by: 'rewild_hq' },
-  }, opts);
-  const params = { coupon: coupon.id, code, metadata: { created_by: 'rewild_hq' } };
-  if (b.maxRedemptions) params.max_redemptions = Math.floor(Number(b.maxRedemptions));
-  if (b.expiresAt) {
-    // Expires at 11:59 pm Pacific time on the chosen date.
-    const ts = Math.floor(new Date(`${b.expiresAt}T23:59:00-07:00`).getTime() / 1000);
-    if (ts > Date.now() / 1000) params.expires_at = ts;
-  }
-  const restrictions = {};
-  if (b.minimumAmount) { restrictions.minimum_amount = Math.round(Number(b.minimumAmount) * 100); restrictions.minimum_amount_currency = 'cad'; }
-  if (b.firstTimeOnly) restrictions.first_time_transaction = true;
-  if (Object.keys(restrictions).length) params.restrictions = restrictions;
-  return stripe('POST', '/promotion_codes', params, opts);
+async function findOrCreateCustomer(order, opts) {
+  if (order.customer_id) return order.customer_id;
+  let email = (order.fulfillments || []).map((f) => f.shipment_details?.recipient?.email_address).find(Boolean);
+  const pid = (order.tenders || []).map((t) => t.payment_id || t.id).find(Boolean);
+  let payment = null;
+  if (pid) payment = (await square('GET', `/payments/${pid}`, null, opts).catch(() => ({}))).payment;
+  if (payment?.customer_id) return payment.customer_id;
+  email = email || payment?.buyer_email_address;
+  if (!email) throw Object.assign(new Error('No email on this order, so an invoice cannot be sent.'), { status: 400 });
+  const found = await square('POST', '/customers/search', { query: { filter: { email_address: { exact: email } } }, limit: 1 }, opts).catch(() => ({}));
+  if (found.customers?.[0]) return found.customers[0].id;
+  const name = buyerName(order).split(' ');
+  const { customer } = await square('POST', '/customers', { idempotency_key: idem(), email_address: email, given_name: name[0] || undefined, family_name: name.slice(1).join(' ') || undefined }, opts);
+  return customer.id;
 }
 
-// US orders: Jade declares the parcel in Zonos, then sends the customer a Stripe invoice
-// for shipping + duties. Stripe emails it with a secure pay link.
+// US orders: Jade declares the parcel in Zonos, then sends the customer a Square invoice
+// for shipping + duties. Square emails it with a secure pay link.
 export async function sendShippingInvoice(b, opts) {
-  if (!/^cs_(test|live)_[A-Za-z0-9]+$/.test(b.sessionId || '')) throw Object.assign(new Error('Bad order id'), { status: 400 });
+  if (!/^[A-Za-z0-9_-]{10,64}$/.test(b.orderId || '')) throw Object.assign(new Error('Bad order id'), { status: 400 });
   const amount = Math.round(Number(b.amount) * 100);
   if (!(amount > 0 && amount < 100000)) throw Object.assign(new Error('Enter the shipping + duties amount in dollars.'), { status: 400 });
-  const s = await stripe('GET', `/checkout/sessions/${b.sessionId}`, null, opts);
-  let customer = s.customer;
-  if (!customer) {
-    const c = await stripe('POST', '/customers', { email: s.customer_details?.email, name: s.customer_details?.name }, opts);
-    customer = c.id;
-  }
-  const ref = String(s.payment_intent || s.id).slice(-8).toUpperCase();
-  const inv = await stripe('POST', '/invoices', {
-    customer,
-    collection_method: 'send_invoice',
-    days_until_due: 7,
-    currency: 'cad',
-    auto_advance: false,
-    pending_invoice_items_behavior: 'exclude',
-    description: `Shipping and duties for your REWILD order ${ref}. Your order ships as soon as this is paid.`,
-    metadata: { session_id: s.id, order_ref: ref, type: 'us_shipping' },
+  const { order } = await square('GET', `/orders/${b.orderId}`, null, opts);
+  const loc = await locationId(opts);
+  const customerId = await findOrCreateCustomer(order, opts);
+  const ref = orderRef(order.id);
+  const { order: invOrder } = await square('POST', '/orders', {
+    idempotency_key: idem(),
+    order: {
+      location_id: loc,
+      customer_id: customerId,
+      line_items: [{ name: b.note ? `US shipping + duties (${String(b.note).slice(0, 80)})` : 'US shipping + duties', quantity: '1', base_price_money: { amount, currency: 'CAD' } }],
+      metadata: { type: 'us_shipping', original_order: order.id },
+    },
   }, opts);
-  await stripe('POST', '/invoiceitems', {
-    customer,
-    invoice: inv.id,
-    amount,
-    currency: 'cad',
-    description: b.note ? `US shipping + duties (${String(b.note).slice(0, 80)})` : 'US shipping + duties',
+  const due = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
+  const { invoice } = await square('POST', '/invoices', {
+    idempotency_key: idem(),
+    invoice: {
+      location_id: loc,
+      order_id: invOrder.id,
+      primary_recipient: { customer_id: customerId },
+      payment_requests: [{ request_type: 'BALANCE', due_date: due }],
+      delivery_method: 'EMAIL',
+      accepted_payment_methods: { card: true },
+      title: INVOICE_TITLE,
+      description: `Shipping and duties for your REWILD order ${ref}. Your order ships as soon as this is paid.`,
+    },
   }, opts);
-  await stripe('POST', `/invoices/${inv.id}/finalize`, {}, opts);
-  const sent = await stripe('POST', `/invoices/${inv.id}/send`, {}, opts);
-  return { id: sent.id, url: sent.hosted_invoice_url, status: sent.status };
+  const { invoice: sent } = await square('POST', `/invoices/${invoice.id}/publish`, { version: invoice.version, idempotency_key: idem() }, opts);
+  return { id: sent.id, url: sent.public_url, status: sent.status };
 }
 
 export default async (req) => {
@@ -197,20 +221,16 @@ export default async (req) => {
     if (req.method === 'POST') {
       const b = await req.json();
       if (b.action === 'createCoupon') {
-        const p = await createCoupon(b);
-        return json(200, { ok: true, id: p.id, code: p.code });
+        const p = await createPromo(b);
+        return json(200, { ok: true, id: p.id, code: p.code, warning: p.warning });
       }
+      if (b.action === 'toggleCoupon') return json(200, await setPromoActive(b.id, b.active));
       if (b.action === 'shippingInvoice') return json(200, { ok: true, ...(await sendShippingInvoice(b)) });
-      if (b.action === 'toggleCoupon') {
-        if (!/^promo_[A-Za-z0-9]+$/.test(b.id || '')) return json(400, { error: 'Bad id' });
-        await stripe('POST', `/promotion_codes/${b.id}`, { active: !!b.active });
-        return json(200, { ok: true });
-      }
       return json(400, { error: 'Unknown action' });
     }
     return json(405, { error: 'Method not allowed' });
   } catch (err) {
-    console.error('hq error', err.message, err.stripe);
+    console.error('hq error', err.message, JSON.stringify(err.square || ''));
     return json(err.status && err.status < 500 ? err.status : 500, { error: err.message });
   }
 };

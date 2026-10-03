@@ -1,6 +1,6 @@
 // POST /api/subscribe { email, website (honeypot) }
 import { addSubscriber, isEmail } from './_shared/mailerlite.mjs';
-import { json } from './_shared/stripe.mjs';
+import { json } from './_shared/square.mjs';
 
 export default async (req) => {
   if (req.method !== 'POST') return json(405, { error: 'Method not allowed' });
