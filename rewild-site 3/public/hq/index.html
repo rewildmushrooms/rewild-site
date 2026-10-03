@@ -77,6 +77,11 @@ a{color:var(--ink)}
 .copy{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .copy code{background:var(--stone);padding:8px 10px;border-radius:2px;font-size:14px;word-break:break-all}
 .owed{font-family:Montserrat,sans-serif;font-weight:800;font-size:22px}
+.linkbtn{background:none;border:0;padding:6px 0;font:inherit;font-size:14px;color:var(--muted);text-decoration:underline;cursor:pointer;align-self:flex-start}
+.rules{list-style:none;padding:0;margin:0;font-size:13px;display:grid;gap:4px}
+.rules li::before{content:'○ ';color:var(--muted)}
+.rules li.ok{color:var(--good)}.rules li.ok::before{content:'✓ ';color:var(--good)}
+.pw-row{display:flex;gap:6px}.pw-row input{flex:1;min-width:0;font-family:ui-monospace,Menlo,monospace}
 </style>
 </head>
 <body>
@@ -89,6 +94,24 @@ a{color:var(--ink)}
     <label>Password<input type="password" id="pw" autocomplete="current-password" required></label>
     <button class="btn" type="submit">Open HQ</button>
     <p class="msg err" id="login-msg" role="alert"></p>
+    <button type="button" class="linkbtn" id="forgot-link">Forgot password?</button>
+  </form>
+  <form id="forgot-form" hidden style="display:flex;flex-direction:column;gap:12px">
+    <p class="muted" style="margin:0">We'll email a reset link to your @rewildmushrooms.com inbox. It works once, for 30 minutes.</p>
+    <label>Who are you?<select id="forgot-user"><option value="jade">Jade</option><option value="sean">Sean</option><option value="pete">Pete</option></select></label>
+    <button class="btn" type="submit">Email me a reset link</button>
+    <p class="msg" id="forgot-msg" role="status"></p>
+    <button type="button" class="linkbtn" data-back>Back to sign in</button>
+  </form>
+  <form id="reset-form" hidden style="display:flex;flex-direction:column;gap:12px">
+    <p class="muted" style="margin:0" id="reset-who"></p>
+    <label for="new-pw">New password</label>
+    <div class="pw-row"><input type="text" id="new-pw" autocomplete="new-password" required spellcheck="false"><button type="button" class="btn ghost small" id="gen-pw">Generate</button></div>
+    <ul class="rules" id="pw-rules"><li data-r="len">14 or more characters</li><li data-r="up">An upper case letter</li><li data-r="low">A lower case letter</li><li data-r="num">A number</li><li data-r="sym">A symbol</li></ul>
+    <label>Type it again<input type="text" id="new-pw2" autocomplete="new-password" required spellcheck="false"></label>
+    <p class="small muted" style="margin:0">Save it in your password manager (or somewhere safe) before you press Save.</p>
+    <button class="btn" type="submit">Save new password</button>
+    <p class="msg" id="reset-msg" role="status"></p>
   </form>
 </div>
 
@@ -194,7 +217,7 @@ a{color:var(--ink)}
   }
   function logout(){sessionStorage.removeItem(KEY);sessionStorage.removeItem(UKEY);key='';me=null;$('#who').textContent='';$('#app').hidden=true;$('#login').hidden=false;$('#logout').hidden=true;}
   $('#logout').onclick=logout;
-  $('#login-form').onsubmit=async(e)=>{e.preventDefault();key=$('#pw').value;user=$('#user').value;$('#login-msg').textContent='';
+  $('#login-form').onsubmit=async(e)=>{e.preventDefault();key=$('#pw').value;user=$('#user').value;$('#login-msg').textContent='';$('#login-msg').className='msg err';
     try{await start();sessionStorage.setItem(KEY,key);sessionStorage.setItem(UKEY,user);$('#pw').value='';}catch(err){$('#login-msg').textContent=err.message;}};
 
   document.querySelectorAll('[data-days]').forEach(b=>b.onclick=()=>{days=Number(b.dataset.days);document.querySelectorAll('[data-days]').forEach(x=>x.setAttribute('aria-pressed',x===b));loadSummary();});
@@ -348,7 +371,38 @@ a{color:var(--ink)}
     for(const k in loaded)delete loaded[k];
     show(owner?'overview':'commissions');
   }
-  if(key) start().catch(()=>{logout();}); else $('#login').hidden=false;
+  // ---- Forgot / reset password
+  const forms=['#login-form','#forgot-form','#reset-form'];
+  const showForm=(id)=>{forms.forEach(f=>{$(f).hidden=f!==id;});$('#login h2').textContent=id==='#login-form'?'Sign in':id==='#forgot-form'?'Forgot password':'New password';};
+  $('#forgot-link').onclick=()=>{$('#forgot-user').value=$('#user').value;showForm('#forgot-form');};
+  document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>showForm('#login-form'));
+  async function authApi(body){const res=await fetch('/api/hq-auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await res.json().catch(()=>({}));if(!res.ok)throw new Error(d.error||'Something went wrong.');return d;}
+  $('#forgot-form').onsubmit=async(e)=>{e.preventDefault();const m=$('#forgot-msg'),b=e.target.querySelector('.btn');b.disabled=true;m.className='msg';m.textContent='Sending…';
+    try{const d=await authApi({action:'forgot',user:$('#forgot-user').value});m.className='msg ok';m.textContent=d.message;}catch(err){m.className='msg err';m.textContent=err.message;}b.disabled=false;};
+  // Strong password generator: 20 characters, every kind of character, no look-alikes (0/O, 1/l/I).
+  function strongPassword(n=20){
+    const sets=['ABCDEFGHJKLMNPQRSTUVWXYZ','abcdefghijkmnopqrstuvwxyz','23456789','!@#$%^&*-_=+?'];
+    const all=sets.join('');const pick=(str)=>{const r=new Uint32Array(1);crypto.getRandomValues(r);return str[r[0]%str.length];};
+    const out=sets.map(pick);while(out.length<n)out.push(pick(all));
+    for(let i=out.length-1;i>0;i--){const r=new Uint32Array(1);crypto.getRandomValues(r);const j=r[0]%(i+1);[out[i],out[j]]=[out[j],out[i]];}
+    return out.join('');
+  }
+  const RULES={len:p=>p.length>=14,up:p=>/[A-Z]/.test(p),low:p=>/[a-z]/.test(p),num:p=>/[0-9]/.test(p),sym:p=>/[^A-Za-z0-9]/.test(p)};
+  const checkRules=()=>{const p=$('#new-pw').value;let ok=true;document.querySelectorAll('#pw-rules li').forEach(li=>{const pass=RULES[li.dataset.r](p);li.classList.toggle('ok',pass);if(!pass)ok=false;});return ok;};
+  $('#new-pw').oninput=checkRules;
+  $('#gen-pw').onclick=()=>{const p=strongPassword();$('#new-pw').value=p;$('#new-pw2').value=p;checkRules();$('#new-pw').select();};
+  const resetParam=new URLSearchParams(location.search).get('reset')||'';
+  const [resetUser,resetToken]=[resetParam.split('.')[0],resetParam.split('.').slice(1).join('.')];
+  $('#reset-form').onsubmit=async(e)=>{e.preventDefault();const m=$('#reset-msg');
+    if(!checkRules()){m.className='msg err';m.textContent='Your password needs everything on the list.';return;}
+    if($('#new-pw').value!==$('#new-pw2').value){m.className='msg err';m.textContent='The two passwords do not match.';return;}
+    const b=e.target.querySelector('.btn[type=submit]');b.disabled=true;m.className='msg';m.textContent='Saving…';
+    try{await authApi({action:'reset',user:resetUser,token:resetToken,password:$('#new-pw').value});
+      history.replaceState(null,'',location.pathname);$('#user').value=resetUser;$('#pw').value='';showForm('#login-form');$('#login-msg').className='msg ok';$('#login-msg').textContent='Password saved. Sign in with your new password.';}
+    catch(err){m.className='msg err';m.textContent=err.message;b.disabled=false;}};
+
+  if(resetUser&&resetToken){logout();$('#reset-who').textContent='Choosing a new password for '+({jade:'Jade',sean:'Sean',pete:'Pete'}[resetUser]||resetUser)+'.';showForm('#reset-form');}
+  else if(key) start().catch(()=>{logout();}); else $('#login').hidden=false;
 })();
 </script>
 </body>
