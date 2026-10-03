@@ -537,6 +537,7 @@ const story = {
     <p>Sean Turner has a background in holistic nutrition, with Ayurveda as his first area of study. For 16 years, he has studied and practiced nutrition, human optimization, and supplementation. He has championed functional mushrooms throughout.</p>
     <p>Alongside a whole-food foundation, he considers functional mushrooms one of his first choices for proactive wellness. Cordyceps is among the first supplements he adds to his fitness and performance regimen.</p>
     <p>Sean is also a fire arts performer who has appeared on some of the biggest stages in Canada. These days, he's powered by CordyFuel™ seven days a week.</p>
+    <p>Follow Sean on Instagram: <a href="https://www.instagram.com/sean.solace/" target="_blank" rel="noopener">@sean.solace</a></p>
   </div>
 </div></section>
 <section class="section stone"><div class="narrow prose" style="max-width:780px">
