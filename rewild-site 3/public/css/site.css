@@ -275,7 +275,7 @@ p{text-wrap:pretty}
 .save-tag{font-style:normal;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:var(--accent);padding:3px 8px;border-radius:2px;margin-left:6px;vertical-align:2px}
 @media (max-width:480px){.offer-row{grid-template-columns:1fr auto;padding:14px}.offer-row .btn{grid-column:1/-1}}
 
-.founder-photo{flex:0 1 380px!important}
+.founder-photo{flex:0 1 460px!important}
 .manifesto-band{position:relative;overflow:hidden}
 .manifesto-mark{position:absolute;left:50%;top:50%;width:min(760px,120vw);height:auto;transform:translate(-50%,-50%);opacity:.05;pointer-events:none}
 .new-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:var(--accent);color:var(--ink);padding:2px 6px;border-radius:2px;margin-right:6px;vertical-align:2px}
