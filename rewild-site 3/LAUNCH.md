@@ -118,3 +118,4 @@ Netlify only builds when a commit message contains [deploy] (see netlify.toml). 
 - Forgot password? Click it on the sign-in page. A one-time link (30 minutes) goes to jade@ / sean@ / petemoss@rewildmushrooms.com. New passwords need 14+ characters with upper and lower case, a number and a symbol (the Generate button makes one).
 - Reset emails are sent from noreply@rewildmushrooms.com (SiteGround). Netlify needs SMTP_USER, SMTP_HOST and SMTP_PASSWORD.
 - Check setup any time: /api/hq-auth?action=status
+- Reset emails switched on Oct 3, 2026 (noreply@ mailbox created, SMTP_PASSWORD set).
