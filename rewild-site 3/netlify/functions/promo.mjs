@@ -14,7 +14,7 @@ export default async (req) => {
     return json(200, { code: promo.code, percentOff: promo.percentOff, amountOff: promo.amountOff, minimumAmount: promo.minimumAmount, discount });
   } catch (err) {
     if (err.status !== 400) console.error('promo error', err.message);
-    return json(err.status === 400 ? 400 : 500, { error: err.status === 400 ? err.message : 'Could not check that code. Please try again.' });
+    return json(err.status === 400 ? 400 : 500, { error: err.status === 400 ? err.message : 'Could not check that code. Please try again.', detail: String(err.square?.[0]?.code || err.message || '').slice(0, 80) });
   }
 };
 
