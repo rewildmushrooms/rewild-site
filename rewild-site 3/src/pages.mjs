@@ -3,6 +3,7 @@ import { esc, proofStrip, signupForm } from './layout.mjs';
 import { PRODUCTS, PRODUCT_BY_ID, SHIPPING, money } from '../netlify/functions/_shared/catalog.mjs';
 import { POSTS } from './journal.mjs';
 import { LAB, TESTS, PROCESS } from './lab.mjs';
+import { cordyfuelPage } from './cordyfuel.mjs';
 import { GUIDES, GUIDE_BY_PRODUCT, GROWN, CLEAN, MICRO, HEAVY } from './learn.mjs';
 
 const powders = PRODUCTS.filter((p) => !p.isTincture && !p.isBundle);
@@ -865,6 +866,7 @@ const notFound = {
 
 export const PAGES = [
   home,
+  cordyfuelPage,
   shop,
   ...SELLABLE.map(productPage),
   quiz,

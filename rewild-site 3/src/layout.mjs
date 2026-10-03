@@ -7,6 +7,7 @@ export const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&am
 
 const NAV = [
   ['/', 'Home'],
+  ['/cordyfuel/', 'CordyFuel™', 'hot'],
   ['/shop/', 'Shop'],
   ['/build-your-stack/', 'Build Your Stack'],
   ['LEARN'],
@@ -67,7 +68,7 @@ export function layout(page) {
   const ld = [].concat(page.jsonld || []);
   const cur = (href) => (href === '/' ? page.path === '/' : page.path === href || page.path.startsWith(href)) ? ' aria-current="page"' : '';
   const learnMenu = `<div class="nav-group"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="learn-menu"${isLearnPath(page.path) ? ' aria-current="page"' : ''}>Learn <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button><div class="nav-sub" id="learn-menu"><span class="sub-label">Mushroom guides</span>${LEARN_LINKS.map(([h, l]) => `<a href="${h}"${cur(h)}>${l}</a>`).join('')}<hr><a href="/journal/"${page.path === '/journal/' ? ' aria-current="page"' : ''}>Journal</a><a href="/learn/"${page.path === '/learn/' ? ' aria-current="page"' : ''}>All guides</a></div></div>`;
-  const navHtml = NAV.map(([href, label]) => href === 'LEARN' ? learnMenu : `<a href="${href}"${cur(href)}>${label}</a>`).join('');
+  const navHtml = NAV.map(([href, label, hot]) => href === 'LEARN' ? learnMenu : `<a href="${href}"${hot ? ' class="nav-hot"' : ''}${cur(href)}>${label}</a>`).join('');
   return `<!doctype html>
 <html lang="en-CA">
 <head>
