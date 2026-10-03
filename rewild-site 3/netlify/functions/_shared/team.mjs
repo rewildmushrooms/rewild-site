@@ -1,6 +1,7 @@
 // REWILD HQ team: who can log in, what they can see, and how partner commission works.
-// Passwords are NOT stored here. Each person's password lives in a Netlify environment variable
-// (named in `env` below). Delete that variable to remove someone's access instantly.
+// Passwords are NOT stored here. Each person's first password lives in a Netlify environment variable
+// (named in `env` below); a password they reset by email is saved hashed in Netlify Blobs (see auth.mjs).
+// Delete their Netlify variable to remove someone's access instantly.
 //
 // Commission: partners earn COMMISSION_RATE of what the customer paid for products
 // (after any discount, not counting shipping, tax or refunds) on orders that used one of
@@ -9,9 +10,9 @@
 export const COMMISSION_RATE = 0.5;
 
 export const TEAM = [
-  { id: 'jade', name: 'Jade Stevens', role: 'owner', env: 'HQ_PASSWORD' },
-  { id: 'sean', name: 'Sean Turner', role: 'partner', env: 'HQ_PASSWORD_SEAN', codePrefix: 'SEAN', ref: 'sean' },
-  { id: 'pete', name: 'Pete Moss', role: 'partner', env: 'HQ_PASSWORD_PETE', codePrefix: 'PETEMOSS', ref: 'petemoss' },
+  { id: 'jade', name: 'Jade Stevens', role: 'owner', env: 'HQ_PASSWORD', email: 'jade@rewildmushrooms.com' },
+  { id: 'sean', name: 'Sean Turner', role: 'partner', env: 'HQ_PASSWORD_SEAN', email: 'sean@rewildmushrooms.com', codePrefix: 'SEAN', ref: 'sean' },
+  { id: 'pete', name: 'Pete Moss', role: 'partner', env: 'HQ_PASSWORD_PETE', email: 'petemoss@rewildmushrooms.com', codePrefix: 'PETEMOSS', ref: 'petemoss' },
 ];
 
 export const PARTNERS = TEAM.filter((m) => m.role === 'partner');
