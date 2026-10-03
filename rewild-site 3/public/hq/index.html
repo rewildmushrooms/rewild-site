@@ -168,6 +168,20 @@ a{color:var(--ink)}
     <div class="tip" id="tip"></div>
   </section>
 
+  <section class="panel" id="traffic">
+    <div class="panel-head"><h2>Website traffic</h2><a class="muted small" href="https://analytics.google.com" target="_blank" rel="noopener">Open Google Analytics</a></div>
+    <p class="msg" id="tr-msg" role="status"></p>
+    <div class="tiles" id="tr-tiles"></div>
+    <div id="tr-body" hidden>
+      <div class="chart" id="tr-chart" role="img" aria-label="Daily visitors bar chart" style="height:140px"></div>
+      <div class="axis"><span id="tr-ax-start"></span><span class="muted">Visitors per day</span><span id="tr-ax-end"></span></div>
+      <div class="cols" style="margin-top:16px">
+        <div><h2 style="font-size:13px;margin-bottom:8px">Top pages</h2><div class="scroll"><table><thead><tr><th>Page</th><th class="num">Views</th><th class="num">Visitors</th></tr></thead><tbody id="tr-pages"></tbody></table></div></div>
+        <div><h2 style="font-size:13px;margin-bottom:8px">Where visitors come from</h2><div id="tr-channels" class="bars-h"></div><h2 style="font-size:13px;margin:18px 0 8px">Countries</h2><div id="tr-countries" class="bars-h"></div></div>
+      </div>
+    </div>
+  </section>
+
   <div class="cols">
     <section class="panel"><div class="panel-head"><h2>Products</h2></div><div id="products" class="bars-h"></div></section>
     <section class="panel"><div class="panel-head"><h2>Coupon performance</h2></div><div class="scroll"><table><thead><tr><th>Code</th><th class="num">Orders</th><th class="num">Discount</th><th class="num">Revenue</th></tr></thead><tbody id="coupon-perf"></tbody></table></div></section>
@@ -240,6 +254,7 @@ a{color:var(--ink)}
       $('#t-subs').textContent=s.subscribers?s.subscribers.active.toLocaleString('en-CA'):'–';
       $('#t-subs-sub').textContent=s.subscribers?('in '+s.subscribers.name):'connect MailerLite';
       drawChart(s.series);
+      loadTraffic(s.orders);
       const maxP=Math.max(1,...s.products.map(p=>p.revenue));
       $('#products').innerHTML=s.products.length?s.products.map(p=>`<div class="row"><span>${esc(p.name)}</span><div class="track" title="${esc(p.name)}: ${p.units} units, ${money(p.revenue)}"><div class="fill" style="width:${Math.max(2,p.revenue/maxP*100)}%"></div></div><span style="text-align:right;font-variant-numeric:tabular-nums">${money(p.revenue)}<br><span class="muted" style="font-size:12px">${p.units} units</span></span></div>`).join(''):'<p class="muted">No sales in this range yet.</p>';
       $('#coupon-perf').innerHTML=s.coupons.length?s.coupons.map(c=>`<tr><td><strong>${esc(c.code)}</strong></td><td class="num">${c.orders}</td><td class="num">${money(c.discount)}</td><td class="num">${money(c.revenue)}</td></tr>`).join(''):'<tr><td colspan="4" class="muted">No codes used in this range.</td></tr>';
@@ -248,6 +263,27 @@ a{color:var(--ink)}
       const cs=Object.entries(s.countries||{}).map(([k,v])=>k+': '+v.orders).join(' · ');
       $('#countries').textContent=cs;
     }catch(err){$('#load-msg').textContent=err.message;$('#load-msg').className='msg err';}
+  }
+
+  async function loadTraffic(orders){
+    const m=$('#tr-msg');m.className='msg';m.textContent='Loading visitors…';$('#tr-body').hidden=true;$('#tr-tiles').innerHTML='';
+    try{
+      const t=await api('?action=traffic&days='+days);
+      if(!t.configured){m.textContent='Google Analytics is not connected yet. Visitor numbers will show here once it is.';return;}
+      if(t.error){m.className='msg err';m.textContent='Google Analytics: '+t.error;return;}
+      m.textContent='';
+      const conv=t.sessions?(orders/t.sessions*100):0;const mins=Math.floor(t.avgSessionSeconds/60),secs=t.avgSessionSeconds%60;
+      const tile=(l,v,sub)=>`<div class="tile" style="background:var(--stone)"><div class="label">${l}</div><div class="value">${v}</div><div class="sub">${sub||''}</div></div>`;
+      $('#tr-tiles').innerHTML=tile('Visitors',t.visitors.toLocaleString('en-CA'),t.sessions.toLocaleString('en-CA')+' visits')+tile('Page views',t.pageviews.toLocaleString('en-CA'),(t.sessions?(t.pageviews/t.sessions).toFixed(1):'0')+' per visit')+tile('Time on site',mins+'m '+String(secs).padStart(2,'0')+'s','average visit')+tile('Visits that buy',conv.toFixed(conv<10?1:0)+'%',orders+' order'+(orders===1?'':'s')+' from '+t.sessions.toLocaleString('en-CA')+' visits');
+      const max=Math.max(1,...t.series.map(d=>d.visitors));
+      $('#tr-chart').innerHTML=t.series.map(d=>`<div class="bar${d.visitors?'':' zero'}" title="${d.date}: ${d.visitors} visitors" style="height:${d.visitors?Math.max(2,d.visitors/max*100):0}%"></div>`).join('');
+      $('#tr-ax-start').textContent=t.series[0]?.date||'';$('#tr-ax-end').textContent=t.series[t.series.length-1]?.date||'';
+      $('#tr-pages').innerHTML=t.pages.length?t.pages.map(p=>`<tr><td><a href="${esc(p.path)}" target="_blank" rel="noopener">${esc(p.path)}</a></td><td class="num">${p.views.toLocaleString('en-CA')}</td><td class="num">${p.visitors.toLocaleString('en-CA')}</td></tr>`).join(''):'<tr><td colspan="3" class="muted">No visits yet.</td></tr>';
+      const bars=(list,key,unit)=>{const mx=Math.max(1,...list.map(x=>x[key]));return list.length?list.map(x=>`<div class="row"><span>${esc(x.name)}</span><div class="track"><div class="fill" style="width:${Math.max(2,x[key]/mx*100)}%"></div></div><span style="text-align:right;font-variant-numeric:tabular-nums">${x[key].toLocaleString('en-CA')}<br><span class="muted" style="font-size:12px">${unit}</span></span></div>`).join(''):'<p class="muted">No visits yet.</p>';};
+      $('#tr-channels').innerHTML=bars(t.channels,'sessions','visits');
+      $('#tr-countries').innerHTML=bars(t.countries,'visitors','visitors');
+      $('#tr-body').hidden=false;
+    }catch(err){m.className='msg err';m.textContent=err.message;}
   }
 
   function usCell(o){
