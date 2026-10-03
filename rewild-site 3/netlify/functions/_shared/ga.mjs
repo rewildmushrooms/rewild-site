@@ -62,13 +62,18 @@ const rows = (r, map) => (r.rows || []).map((row) => map(row.dimensionValues || 
 export async function traffic(days, opts) {
   if (!gaConfigured()) return { configured: false };
   const dateRanges = [{ startDate: `${days - 1}daysAgo`, endDate: 'today' }];
-  const [tot, byDay, pages, channels, countries] = await Promise.all([
+  const prevRanges = [{ startDate: `${2 * days - 1}daysAgo`, endDate: `${days}daysAgo` }];
+  const [tot, byDay, pages, channels, countries, prevTot, events] = await Promise.all([
     runReport({ dateRanges, metrics: [{ name: 'activeUsers' }, { name: 'sessions' }, { name: 'screenPageViews' }, { name: 'engagementRate' }, { name: 'averageSessionDuration' }] }, opts),
     runReport({ dateRanges, dimensions: [{ name: 'date' }], metrics: [{ name: 'activeUsers' }, { name: 'sessions' }], orderBys: [{ dimension: { dimensionName: 'date' } }], limit: 400 }, opts),
     runReport({ dateRanges, dimensions: [{ name: 'pagePath' }], metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }], orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }], limit: 10 }, opts),
     runReport({ dateRanges, dimensions: [{ name: 'sessionDefaultChannelGroup' }], metrics: [{ name: 'sessions' }], orderBys: [{ metric: { metricName: 'sessions' }, desc: true }], limit: 8 }, opts),
     runReport({ dateRanges, dimensions: [{ name: 'country' }], metrics: [{ name: 'activeUsers' }], orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }], limit: 6 }, opts),
+    runReport({ dateRanges: prevRanges, metrics: [{ name: 'activeUsers' }, { name: 'sessions' }] }, opts),
+    runReport({ dateRanges, dimensions: [{ name: 'eventName' }], metrics: [{ name: 'eventCount' }], dimensionFilter: { filter: { fieldName: 'eventName', inListFilter: { values: ['add_to_cart', 'begin_checkout', 'quiz_complete'] } } } }, opts),
   ]);
+  const pt = (prevTot.rows?.[0]?.metricValues || []).map((m) => num(m.value));
+  const ev = Object.fromEntries(rows(events, (d, m) => [d[0]?.value, m[0]]));
   const t = (tot.rows?.[0]?.metricValues || []).map((m) => num(m.value));
   const fromDay = Object.fromEntries(rows(byDay, (d, m) => [d[0]?.value, { visitors: m[0], sessions: m[1] }]));
   const series = Array.from({ length: days }, (_, i) => {
@@ -80,6 +85,8 @@ export async function traffic(days, opts) {
     configured: true,
     visitors: t[0] || 0, sessions: t[1] || 0, pageviews: t[2] || 0,
     engagementRate: t[3] || 0, avgSessionSeconds: Math.round(t[4] || 0),
+    previous: { visitors: pt[0] || 0, sessions: pt[1] || 0 },
+    events: { addToCart: ev.add_to_cart || 0, beginCheckout: ev.begin_checkout || 0, quizComplete: ev.quiz_complete || 0 },
     series,
     pages: rows(pages, (d, m) => ({ path: d[0]?.value || '', views: m[0], visitors: m[1] })),
     channels: rows(channels, (d, m) => ({ name: d[0]?.value || 'Other', sessions: m[0] })),
