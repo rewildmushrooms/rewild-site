@@ -15,7 +15,8 @@ const EM_DASH = /—/;
 async function build() {
   await rm(dist, { recursive: true, force: true });
   await mkdir(dist, { recursive: true });
-  await cp(join(root, 'public'), dist, { recursive: true });
+  // Skip original photo uploads (phone .jpeg files and screenshots): only the optimized .webp copies go live.
+  await cp(join(root, 'public'), dist, { recursive: true, filter: (src) => !/[\\/]img[\\/]([^\\/]+\.jpeg|Screenshot [^\\/]+)$/i.test(src) });
 
   // Browser copy of the catalog (only what the cart needs)
   const browserCatalog = {
