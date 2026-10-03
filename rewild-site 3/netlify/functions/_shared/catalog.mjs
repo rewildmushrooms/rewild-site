@@ -35,7 +35,7 @@ export const PRODUCTS = [
     slug: 'cordyceps-militaris-powder',
     name: 'Rewild Energy',
     word: 'Energy',
-    mushroom: 'CordyFuel™ Cordyceps',
+    mushroom: 'Cordyceps · powered by CordyFuel™',
     commonName: 'Cordyceps',
     latin: 'Cordyceps militaris',
     format: '100g full-spectrum powder',
@@ -55,7 +55,7 @@ export const PRODUCTS = [
       'Organic, full-spectrum Cordyceps militaris powder grown in BC. CordyFuel™ is standardized to 3+ mg/g cordycepin, every batch third-party tested. $80 / 100g.',
     tagline: 'Award-winning. Standardized. Grown in BC.',
     story:
-      'Cordyceps has been part of mountain traditions for centuries. CordyFuel™ is our Cordyceps militaris, grown in British Columbia and awarded Best Fruiting Body / Full Spectrum at the 2025 Cordy Cup.',
+      'Cordyceps has been part of mountain traditions for centuries. Rewild Energy is powered by CordyFuel™ Cordyceps militaris, grown in British Columbia and awarded Best Fruiting Body / Full Spectrum at the 2025 Cordy Cup.',
     featured: true,
   },
   {
@@ -127,9 +127,9 @@ export const PRODUCTS = [
   {
     id: 'tincture',
     slug: 'cordyceps-tincture',
-    name: 'CordyFuel™ Tincture',
+    name: 'Rewild Energy Tincture',
     word: 'Energy',
-    mushroom: 'CordyFuel™ Cordyceps',
+    mushroom: 'Cordyceps · powered by CordyFuel™',
     commonName: 'Cordyceps',
     latin: 'Cordyceps militaris',
     format: '100 ml alcohol-free tincture',
@@ -142,7 +142,7 @@ export const PRODUCTS = [
     seoTitle: 'Cordyceps Tincture, Alcohol-Free | CordyFuel™ | REWILD',
     seoDescription:
       'Alcohol-free Cordyceps militaris tincture made with CordyFuel™. 100% Cordyceps, nothing added, grown in BC. Portable and easy to take. $30 / 100 ml.',
-    tagline: 'CordyFuel™ without the powder.',
+    tagline: 'Rewild Energy, without the powder.',
     story:
       'Same CordyFuel™ Cordyceps militaris, in a portable, alcohol-free liquid. Even people who do not love the taste of mushrooms tend to love this one.',
     isTincture: true,
@@ -150,9 +150,9 @@ export const PRODUCTS = [
   {
     id: 'duo',
     slug: 'cordyfuel-powder-and-tincture',
-    name: 'CordyFuel™ Duo',
+    name: 'Rewild Energy Duo',
     word: 'Energy',
-    mushroom: 'CordyFuel™ Cordyceps',
+    mushroom: 'Cordyceps · powered by CordyFuel™',
     commonName: 'Cordyceps',
     latin: 'Cordyceps militaris',
     format: '100g powder + 100 ml tincture',
@@ -161,7 +161,7 @@ export const PRODUCTS = [
     color: '#D2481E',
     image: '/img/cordyfuel-duo-square.webp',
     gallery: ['/img/cordyfuel-duo-square.webp'],
-    alt: 'CordyFuel™ Energy powder pouch and tincture bottle',
+    alt: 'Rewild Energy powder pouch and tincture bottle, powered by CordyFuel™',
     isBundle: true, // sold from the home page, no product page of its own
   },
 ];
