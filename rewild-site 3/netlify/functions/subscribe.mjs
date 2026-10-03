@@ -15,7 +15,7 @@ export default async (req) => {
   const email = String(body.email || '').trim().toLowerCase();
   if (!isEmail(email)) return json(400, { error: 'Please enter a valid email address.' });
   try {
-    const fields = { source: body.source === 'quiz' ? 'quiz' : 'website' };
+    const fields = { signup_source: body.source === 'quiz' ? 'quiz' : 'website' };
     const q = body.quiz && typeof body.quiz === 'object' ? body.quiz : null;
     if (q) for (const k of ['stack', 'stack_names', 'how_to', 'why', 'want', 'day', 'when', 'coffee', 'how', 'format', 'start']) if (q[k]) fields['quiz_' + k] = String(q[k]).slice(0, k === 'how_to' ? 250 : 80);
     const groups = [process.env.MAILERLITE_GROUP_ID, q && process.env.MAILERLITE_QUIZ_GROUP_ID].filter(Boolean);
@@ -24,7 +24,7 @@ export default async (req) => {
     } catch (e) {
       // Custom quiz fields may not exist in MailerLite yet: retry with the basics.
       if (!q) throw e;
-      await addSubscriber(email, { source: fields.source }, { groups });
+      await addSubscriber(email, { signup_source: fields.signup_source }, { groups });
     }
     return json(200, { ok: true });
   } catch (err) {

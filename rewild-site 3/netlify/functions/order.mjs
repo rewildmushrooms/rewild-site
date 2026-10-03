@@ -14,7 +14,7 @@ export async function handleOrder(id, deps = {}, opts) {
       const email = await buyerEmail(order, opts);
       if (isEmail(email)) {
         const groups = [process.env.MAILERLITE_GROUP_ID, process.env.MAILERLITE_CUSTOMERS_GROUP_ID].filter(Boolean);
-        await (deps.addSubscriber || addSubscriber)(email, { name: name.split(' ')[0], source: 'checkout' }, { groups });
+        await (deps.addSubscriber || addSubscriber)(email, { name: name.split(' ')[0], signup_source: 'checkout' }, { groups });
       }
     } catch (err) { console.error('newsletter add failed', err.message); }
   }
