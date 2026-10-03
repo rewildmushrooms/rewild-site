@@ -3,6 +3,7 @@
 (function () {
   const C = window.REWILD_CATALOG;
   const KEY = 'rewild_cart_v1';
+  function partnerRef() { try { const r = JSON.parse(localStorage.getItem('rewild_ref')); if (r && r.ref && Date.now() - r.at < 30 * 86400000) return r.ref; } catch (e) {} return undefined; }
   const byId = Object.fromEntries(C.products.map((p) => [p.id, p]));
   const money = (c) => '$' + (c / 100).toFixed(c % 100 === 0 ? 0 : 2);
 
@@ -109,7 +110,7 @@
     const err = $('#cart-error'); err.textContent = '';
     btn.disabled = true; const label = btn.textContent; btn.textContent = 'Opening secure checkout…';
     try {
-      const res = await fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: state.items, country: state.country, code: state.promo ? state.promo.code : undefined, newsletter: !!state.newsletter }) });
+      const res = await fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: state.items, country: state.country, code: state.promo ? state.promo.code : undefined, ref: partnerRef(), newsletter: !!state.newsletter }) });
       let data = {};
       try { data = await res.json(); } catch (x) {}
       if (!res.ok || !data.url) throw new Error(data.error || 'Checkout is unavailable right now. Please try again in a minute.');
@@ -214,6 +215,9 @@
 
   const pf = $('#promo-form');
   if (pf) pf.addEventListener('submit', (e) => { e.preventDefault(); applyCode($('#promo-code').value); });
+  // Partner share links like /?ref=sean credit that partner for 30 days (no discount).
+  const urlRef = new URLSearchParams(location.search).get('ref');
+  if (urlRef && /^[a-z0-9_-]{2,30}$/i.test(urlRef)) { try { localStorage.setItem('rewild_ref', JSON.stringify({ ref: urlRef.toLowerCase(), at: Date.now() })); } catch (e) {} }
   // Shareable links like /shop/?code=SEAN20 apply the code automatically.
   const urlCode = new URLSearchParams(location.search).get('code');
   if (urlCode) setTimeout(() => { applyCode(urlCode, true); toast(urlCode.toUpperCase() + ' will be applied in your cart.'); }, 200);
