@@ -17,7 +17,7 @@
       ['gift', "I'm buying for someone else", 'A gift that means something'],
     ] },
     { key: 'want', q: 'What do you want more of?', hint: 'Pick up to two.', max: 2, opts: [
-      ['energy', 'Energy', 'CordyFuel™ Cordyceps'],
+      ['energy', 'Energy', 'Cordyceps, powered by CordyFuel™'],
       ['clarity', 'Clarity', "Lion's Mane"],
       ['strength', 'Strength', 'Chaga'],
       ['peace', 'Peace', 'Reishi'],
@@ -147,7 +147,7 @@
     const { pickIds, duo, addLater } = recommend();
     const cartIds = duo ? pickIds.map((x) => (x === 'energy' ? 'duo' : x)) : pickIds;
     const total = cartIds.reduce((a, id) => a + byId[id].price, 0);
-    const names = pickIds.map((id) => (id === 'tincture' ? 'CordyFuel™ Tincture' : WORD[id]));
+    const names = pickIds.map((id) => (id === 'tincture' ? 'Energy Tincture' : WORD[id]));
     const hasEnergy = pickIds.includes('energy') || pickIds.includes('tincture');
     const coffee = A.coffee[0];
     let coffeeLine = '';
@@ -167,11 +167,11 @@
         <h3 style="font-size:20px;margin-bottom:10px">How to take it</h3>
         <ul class="ticks">
           ${howLine ? `<li>${cf(esc(howLine))}</li>` : ''}
-          ${pickIds.map((id) => `<li><strong>${cf(esc(id === 'tincture' ? 'CordyFuel™ Tincture' : WORD[id]))}:</strong> ${esc(TIMING[id === 'tincture' ? 'energy' : id])}</li>`).join('')}
+          ${pickIds.map((id) => `<li><strong>${cf(esc(id === 'tincture' ? 'Energy Tincture' : WORD[id]))}:</strong> ${esc(TIMING[id === 'tincture' ? 'energy' : id])}</li>`).join('')}
           ${coffeeLine ? `<li>${cf(esc(coffeeLine))}</li>` : ''}
         </ul>
       </div>
-      ${duo ? `<p class="small muted">${cf('Your Energy comes as the CordyFuel™ Duo: powder at home, tincture on the go. You save $20.')}</p>` : ''}
+      ${duo ? `<p class="small muted">${cf('Your Energy comes as the Rewild Energy Duo: powder at home, tincture on the go. You save $20.')}</p>` : ''}
       <div class="row" style="margin-top:12px"><button type="button" class="btn btn-yellow" data-add-many="${cartIds.join(',')}">Add my stack · ${money(total)}</button><button type="button" class="btn btn-outline" id="q-restart">Start over</button></div>
       ${addLater ? `<p class="muted">Worth adding later: <a class="link" href="/shop/${byId[addLater].slug}/">${cf(esc(byId[addLater].name))}</a></p>` : ''}
       <form class="stat quiz-email stack-sm" style="margin-top:20px;gap:12px" novalidate>
