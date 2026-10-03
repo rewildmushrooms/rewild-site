@@ -125,8 +125,8 @@ ${page.body}
         <div style="margin-top:12px"><p style="color:#fff;font-weight:700;margin-bottom:8px">Join the Rewilders</p>${signupForm('footer')}</div>
       </div>
       <nav class="footer-col" aria-label="Shop"><p class="footer-h">Shop</p>
-        <a href="/shop/cordyceps-tincture/"><span class="new-tag">New</span> CordyFuel™ Tincture</a>
-        <a href="/shop/cordyceps-militaris-powder/">Energy · CordyFuel™</a>
+        <a href="/shop/cordyceps-tincture/"><span class="new-tag">New</span> Energy Tincture · Cordyceps</a>
+        <a href="/shop/cordyceps-militaris-powder/">Energy · Cordyceps</a>
         <a href="/shop/lions-mane-powder/">Clarity · Lion's Mane</a>
         <a href="/shop/chaga-powder/">Strength · Chaga</a>
         <a href="/shop/reishi-powder/">Peace · Reishi</a>

@@ -50,14 +50,14 @@ const CORDYFUEL_SECTION = `<section class="section stone" id="cordyfuel"><div cl
   <div class="stack">
     <p class="eyebrow ember">If you try one thing, start here</p>
     <h2 class="h2">This is<br>Rewild Energy.</h2>
-    <p class="lead">CordyFuel™ is our <em>Cordyceps militaris</em>. In 2025 it won Best Fruiting Body / Full Spectrum at the Cordy Cup in Sweden. The numbers are hard to ignore.</p>
+    <p class="lead">Rewild Energy is powered by CordyFuel™ <em>Cordyceps militaris</em>. In 2025 CordyFuel™ won Best Fruiting Body / Full Spectrum at the Cordy Cup in Sweden. The numbers are hard to ignore.</p>
     <div class="stats">
       <div class="stat inverse"><b>3+ mg/g</b><span>Cordycepin minimum. Every batch. Third-party verified.</span></div>
       <div class="stat"><b>7.1 mg/g</b><span>Our highest independent lab result to date</span></div>
       <div class="stat"><b style="color:#6B6D64">0.1 to 0.5</b><span>mg/g, where most commercial Cordyceps tests</span></div>
     </div>
     <p>Every batch is third-party tested. Want to see the lab report? <a class="link" href="/contact/?subject=Lab%20results">Just ask</a> and we'll send it.</p>
-    <div class="offer" id="cordyfuel-options" role="group" aria-label="Choose your CordyFuel™">
+    <div class="offer" id="cordyfuel-options" role="group" aria-label="Choose your Rewild Energy">
       <div class="offer-row"><div><b>Powder</b><span>100g · stir into coffee, smoothies, food</span></div><span class="offer-price">$80</span><button type="button" class="btn btn-dark" data-add="energy">Add</button></div>
       <div class="offer-row"><div><b>Tincture</b><span>100 ml · alcohol-free, take it anywhere</span></div><span class="offer-price">$30</span><button type="button" class="btn btn-dark" data-add="tincture">Add</button></div>
       <div class="offer-row best"><div><b>Get both <em class="save-tag">Save $20</em></b><span>Powder at home, tincture on the go</span></div><span class="offer-price"><s>$110</s> $90</span><button type="button" class="btn btn-yellow" data-add="duo">Add</button></div>
@@ -95,7 +95,7 @@ const home = {
     <h1 class="h1">Feel more alive.</h1>
     <p class="tag">Energy. Clarity. Strength. Peace.</p>
     <p class="body">Exceptionally grown mushrooms for people doing meaningful things in the world. Organic. Full-spectrum. Grown in BC. Third-party lab tested.</p>
-    <div class="row" style="margin-top:8px"><a class="btn btn-yellow" href="#cordyfuel-options">Start with CordyFuel™</a><a class="btn btn-ghost" href="/shop/">Shop all mushrooms</a></div>
+    <div class="row" style="margin-top:8px"><a class="btn btn-yellow" href="#cordyfuel-options">Start with Rewild Energy</a><a class="btn btn-ghost" href="/shop/">Shop all mushrooms</a></div>
     <p class="note">Return to your natural state.</p>
   </div></div>
 </section>
@@ -136,9 +136,9 @@ ${CORDYFUEL_SECTION}
 <section class="section" id="tincture"><div class="wrap split" style="flex-wrap:wrap-reverse">
   <div class="stack">
     <span style="align-self:flex-start;background:var(--accent);font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:6px 12px;border-radius:2px">New · Liquid tincture</span>
-    <h2 class="h2">CordyFuel™<br>without the powder.</h2>
+    <h2 class="h2">Rewild Energy,<br>without the powder.</h2>
     <p class="small" style="font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">100 ml · Take 10-20 ml per serving · 5-10 servings</p>
-    <p class="lead">Same CordyFuel™. A different way to take it. Simple, portable and easy to work into your day. Even people who don't love the taste of mushrooms tend to love this one.</p>
+    <p class="lead">Same CordyFuel™ Cordyceps. A different way to take it. Simple, portable and easy to work into your day. Even people who don't love the taste of mushrooms tend to love this one.</p>
     <p>100% Cordyceps militaris. Alcohol-free. Nothing added. Take it straight, or add it to whatever you're already drinking.</p>
     <div class="row"><button type="button" class="btn btn-dark" data-add="tincture">Add the tincture · $30</button><a class="btn btn-outline" href="/shop/cordyceps-tincture/">Details</a></div>
   </div>
@@ -172,7 +172,7 @@ ${signupBanner('home')}`,
 const shop = {
   path: '/shop/',
   title: 'Shop Organic Mushroom Powder in Canada | REWILD',
-  description: "Shop organic, BC-grown Cordyceps (CordyFuel™), Lion's Mane, Chaga and Reishi powders plus the alcohol-free CordyFuel™ tincture. Free shipping in Canada over $175.",
+  description: "Shop organic, BC-grown Cordyceps (CordyFuel™), Lion's Mane, Chaga and Reishi powders plus the alcohol-free Rewild Energy tincture. Free shipping in Canada over $175.",
   jsonld: [
     crumbs([['Home', '/'], ['Shop', '/shop/']]),
     {
@@ -195,7 +195,7 @@ ${CORDYFUEL_SECTION}
   <div><img class="cover wide" src="/img/tincture-river-wide.webp" alt="CordyFuel™ Cordyceps militaris tincture on moss beside a mountain river" width="1400" height="933" loading="lazy"></div>
   <div class="stack">
     <p class="eyebrow ember">New</p>
-    <h2 class="h2">CordyFuel™ Tincture</h2>
+    <h2 class="h2">Rewild Energy Tincture</h2>
     <p class="lead">100% Cordyceps militaris. Alcohol-free. 100 ml for ${money(PRODUCT_BY_ID.tincture.price)}.</p>
     <div class="row"><button type="button" class="btn btn-dark" data-add="tincture">Add to cart</button><a class="btn btn-outline" href="/shop/cordyceps-tincture/">Details</a></div>
   </div>
@@ -214,7 +214,7 @@ const USE_TEXT = {
 };
 const PRODUCT_DETAILS = {
   energy: {
-    intro: `<p>CordyFuel™ is our <em>Cordyceps militaris</em>, grown in British Columbia and awarded <strong>Best Fruiting Body / Full Spectrum at the 2025 Cordy Cup</strong>.</p><p>Cordycepin is the compound Cordyceps militaris is best known for. CordyFuel™ is standardized to a minimum of 3 mg/g in every batch, verified by third-party testing before release. Our highest result so far, from an independent lab, came in at 7.1 mg/g. Most commercial Cordyceps tests between 0.1 and 0.5 mg/g.</p><p>Bright, savoury and slightly sweet. A natural fit for your morning coffee or smoothie.</p>`,
+    intro: `<p>Rewild Energy is powered by CordyFuel™ <em>Cordyceps militaris</em>, grown in British Columbia and awarded <strong>Best Fruiting Body / Full Spectrum at the 2025 Cordy Cup</strong>.</p><p>Cordycepin is the compound Cordyceps militaris is best known for. CordyFuel™ is standardized to a minimum of 3 mg/g in every batch, verified by third-party testing before release. Our highest result so far, from an independent lab, came in at 7.1 mg/g. Most commercial Cordyceps tests between 0.1 and 0.5 mg/g.</p><p>Bright, savoury and slightly sweet. A natural fit for your morning coffee or smoothie.</p>`,
     ticks: ['Minimum 3 mg/g cordycepin, every batch', '2025 Cordy Cup: Best Fruiting Body / Full Spectrum', 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · No fillers · Non-GMO', 'Caffeine-free'],
     faqs: [
       ['What is cordycepin?', 'Cordycepin is a naturally occurring compound found in Cordyceps militaris. We use it as a marker of quality and consistency: every batch of CordyFuel™ is tested and standardized to a minimum of 3 mg/g.'],

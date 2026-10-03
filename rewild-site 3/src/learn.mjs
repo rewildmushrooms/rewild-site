@@ -23,7 +23,7 @@ export const GUIDES = [
     image: '/img/learn-cordyceps.webp',
     alt: 'Fresh, bright orange Cordyceps militaris fruiting bodies',
     seoTitle: 'Cordyceps militaris: A Guide to the Orange Mushroom | REWILD',
-    description: 'What Cordyceps militaris is, how it grows in the wild, why it can be cultivated without insects, and how REWILD CordyFuel™ is grown and tested in BC.',
+    description: 'What Cordyceps militaris is, how it grows in the wild, why it can be cultivated without insects, and how Rewild Energy (powered by CordyFuel™) is tested.',
     intro: 'A bright orange club fungus with one of the strangest life stories in nature, and the mushroom behind CordyFuel™.',
     sections: [
       ['Meet the mushroom', [
