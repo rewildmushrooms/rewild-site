@@ -158,8 +158,8 @@ ${CORDYFUEL_SECTION}
     <p class="eyebrow">Meet the team</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Built on trust, integrity and a solid passion for 'shrooms.</h2>
     <div class="stack-sm" style="gap:18px;font-size:17px;color:var(--text)">
-      <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> A longtime mushroom enthusiast and lifelong mountain guy, Pete has spent years foraging, making his own tinctures and exploring the Kootenays on a snowboard, a mountain bike and his own two feet. He brings a hands-on, back-to-nature approach to REWILD, grounded in the idea that some of the best tools for feeling good have been around all along.</p>
-      <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> A self-taught designer, marketer, builder and lifelong explorer, Jade has spent 20 years turning ideas into things people can actually experience. At REWILD, she brings it all together, leading the brand, design, marketing and tech while following the mushrooms wherever they decide to take her next.</p>
+      <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> A longtime mushroom enthusiast and lifelong mountain guy, Pete forages, makes his own tinctures and explores the Kootenays on a snowboard and a mountain bike. He brings a hands-on, back-to-nature approach to REWILD.</p>
+      <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> A self-taught designer, marketer and lifelong explorer, Jade has spent 20 years turning ideas into things people can experience. At REWILD she leads brand, design, marketing and tech, following the mushrooms wherever they lead next.</p>
       <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> With 16 years studying nutrition, human optimization and supplementation, Sean brings a whole-food, back-to-basics approach to Rewild. He sees functional mushrooms as simple, natural tools for helping the body perform, adapt and recover.</p>
     </div>
     <a class="btn btn-outline" href="/our-story/" style="align-self:flex-start">Our story</a>
@@ -493,22 +493,10 @@ const story = {
   <div class="prose" style="max-width:640px">
     <p class="eyebrow" style="margin-bottom:12px">From the founder</p>
     <h2 style="margin-top:0">I didn't go looking for mushrooms. They found me.</h2>
-    <p>I'm Jade, and I started REWILD.</p>
-    <p>It began with a trade. I accepted mushrooms as payment for my work. That one yes kept leading somewhere. The more time I spent with mushrooms, the more it felt like they were leading me. Starting REWILD felt like the right next step in life.</p>
-    <p>My path here hasn't exactly been linear.</p>
-    <p>I've spent the last 20 years in design and marketing, starting at the Calgary Sun, then working with a boutique design firm in Calgary before eventually building my own business, Humble Bee Design, in 2013. I'm mostly self-taught and have always been someone who figures things out by doing them.</p>
-    <p>I've also been a bartender, a roadie, a snowboarder and a pretty relentless traveller. I spent two months living at an ashram in India, went to my first Burning Man in 2009, and have always been drawn to experiences that challenge the way we normally live and see the world.</p>
-    <p>I grew up playing hockey and basketball in southern Alberta. These days I'm just as passionate about personal development, spirituality and understanding what makes us human. Mushrooms sit right where those worlds meet for me: the body, nature and the inner work.</p>
-    <p>Lion's Mane and Cordyceps are the two I take most. Lion's Mane has been with me for a long time. Cordyceps is newer, and since starting REWILD it's become part of pretty much every active day.</p>
-    <p>REWILD has also brought together nearly everything I've learned along the way. I currently handle the website, tech, marketing and design, which means on any given day I might be building a webpage, designing a label, packing mushrooms or figuring out something I've never done before.</p>
-    <p>But here's why REWILD really matters to me.</p>
-    <p>Somewhere along the way, we've forgotten that we're part of nature. We've built lives around convenience, speed and stimulation, while becoming increasingly disconnected from our bodies, the outdoors and ourselves.</p>
-    <p>I believe mushrooms can be one of the catalysts that helps bring us back.</p>
-    <p>Back to natural products. Back to the outdoors. Back to paying attention to what we put into our bodies. Back to ourselves. Not by rejecting modern life, but by becoming more intentional about how we live within it.</p>
-    <p>That's what REWILD means to me.</p>
-    <p>It's not really about mushrooms. They're simply tools. It's about returning to your natural state and remembering a part of ourselves that I think modern life has made very easy to forget. <a href="/manifesto/">Read the Rewild Manifesto</a>.</p>
-    <p>I'm still figuring it out as I go. I'm a humble shepherd.</p>
-    <p>The mushrooms are leading the way.</p>
+    <p>I'm Jade, and I started REWILD. It began with a trade: I accepted mushrooms as payment for my work, and that one yes kept leading somewhere.</p>
+    <p>I've spent 20 years in design and marketing, from the Calgary Sun to my own studio, Humble Bee Design. I've also been a bartender, a roadie, a snowboarder and a relentless traveller. REWILD brings it all together.</p>
+    <p>Lion's Mane and Cordyceps are the two I take most. But REWILD isn't really about mushrooms. It's about returning to your natural state. <a href="/manifesto/">Read the Rewild Manifesto</a>.</p>
+    <p>I'm a humble shepherd. The mushrooms are leading the way.</p>
     <p style="font-style:italic;color:var(--muted)">Jade</p>
   </div>
 </div></section>
@@ -545,8 +533,8 @@ const story = {
     <p class="eyebrow">The team</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Built on trust, integrity and a solid passion for 'shrooms.</h2>
     <div class="stack-sm" style="gap:18px;font-size:17px;color:var(--text)">
-      <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> A longtime mushroom enthusiast and lifelong mountain guy, Pete has spent years foraging, making his own tinctures and exploring the Kootenays on a snowboard, a mountain bike and his own two feet. He brings a hands-on, back-to-nature approach to REWILD, grounded in the idea that some of the best tools for feeling good have been around all along.</p>
-      <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> A self-taught designer, marketer, builder and lifelong explorer, Jade has spent 20 years turning ideas into things people can actually experience. At REWILD, she brings it all together, leading the brand, design, marketing and tech while following the mushrooms wherever they decide to take her next.</p>
+      <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> A longtime mushroom enthusiast and lifelong mountain guy, Pete forages, makes his own tinctures and explores the Kootenays on a snowboard and a mountain bike. He brings a hands-on, back-to-nature approach to REWILD.</p>
+      <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> A self-taught designer, marketer and lifelong explorer, Jade has spent 20 years turning ideas into things people can experience. At REWILD she leads brand, design, marketing and tech, following the mushrooms wherever they lead next.</p>
       <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> With 16 years studying nutrition, human optimization and supplementation, Sean brings a whole-food, back-to-basics approach to Rewild. He sees functional mushrooms as simple, natural tools for helping the body perform, adapt and recover.</p>
     </div>
   </div>
