@@ -112,7 +112,7 @@ ${CORDYFUEL_SECTION}
 <section class="section" id="shop"><div class="wrap">
   <div class="row" style="justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:52px">
     <div class="stack-sm" style="max-width:640px;gap:16px">
-      <p class="eyebrow">Different tools for different jobs</p>
+      <p class="eyebrow">Organic mushroom powders, grown in BC</p>
       <h2 class="h2" style="font-size:clamp(30px,3.6vw,46px)">Which mushrooms belong in your life?</h2>
       <p class="lead" style="font-size:18px">Mushrooms are tools. Not miracles. Not shortcuts.</p>
     </div>
@@ -146,6 +146,7 @@ ${CORDYFUEL_SECTION}
 </div></section>
 <section class="section stone"><div class="wrap stack" style="gap:48px">
   <div class="stack-sm" style="max-width:720px;gap:16px">
+    <p class="eyebrow">How to take mushroom powder</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,46px)">Mushrooms that fit<br>real life.</h2>
     <p class="lead">Coffee. Cacao. Smoothies. Food. Or whatever is already part of your day. Returning to your natural state doesn't have to be complicated.</p>
   </div>
@@ -157,7 +158,7 @@ ${CORDYFUEL_SECTION}
     <p class="eyebrow">Meet the team</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Built on trust, integrity and a solid passion for 'shrooms.</h2>
     <div class="stack-sm" style="gap:18px;font-size:17px;color:var(--text)">
-      <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> Works quietly behind the scenes. Disappears for days and comes back with backcountry photos, good connections and better ideas.</p>
+      <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> A longtime mushroom enthusiast and lifelong mountain guy, Pete has spent years foraging, making his own tinctures and exploring the Kootenays on a snowboard, a mountain bike and his own two feet. He brings a hands-on, back-to-nature approach to REWILD, grounded in the idea that some of the best tools for feeling good have been around all along.</p>
       <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> A self-taught designer, marketer, builder and lifelong explorer, Jade has spent 20 years turning ideas into things people can actually experience. At REWILD, she brings it all together, leading the brand, design, marketing and tech while following the mushrooms wherever they decide to take her next.</p>
       <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> With 16 years studying nutrition, human optimization and supplementation, Sean brings a whole-food, back-to-basics approach to Rewild. He sees functional mushrooms as simple, natural tools for helping the body perform, adapt and recover.</p>
     </div>
@@ -182,7 +183,7 @@ const shop = {
   ],
   body: `
 <section class="page-hero"><div class="wrap stack-sm" style="gap:16px">
-  <p class="eyebrow">Shop</p>
+  <p class="eyebrow">Shop organic mushroom powder in Canada</p>
   <h1 class="h1" style="font-size:clamp(40px,5vw,64px)">The mushrooms serious people take seriously.</h1>
   <p class="lead" style="max-width:640px">Organic, full-spectrum mushroom powders grown in British Columbia on certified organic sorghum. Choose the ones that fit your life, or <a class="link" href="/build-your-stack/">build your stack</a>.</p>
 </div></section>
@@ -309,7 +310,7 @@ function productPage(p) {
     </div>
     <div class="buybox">
       <div class="dot-label"><span class="dot" style="background:${p.color}"></span>${esc(p.mushroom)}</div>
-      <h1 class="h1" style="font-size:clamp(38px,4.4vw,58px)">${esc(p.name)}</h1>
+      <h1 class="h1" style="font-size:clamp(38px,4.4vw,58px)">${esc(p.name)}<span class="h1-sub">${esc(p.isTincture ? 'Alcohol-free Cordyceps militaris tincture' : `Organic ${p.commonName} mushroom powder`)}</span></h1>
       <p class="latin" style="font-size:17px">${esc(p.latin)} · ${esc(p.format)}</p>
       <p class="lead">${esc(p.tagline)}</p>
       <div class="big-price">${money(p.price)} <span class="small muted" style="font-family:var(--body);font-weight:400;letter-spacing:0;text-transform:none">CAD</span></div>
@@ -385,7 +386,7 @@ const lab = {
   body: `
 <section class="page-hero dark"><div class="wrap split" style="align-items:center">
   <div class="stack">
-    <p class="eyebrow">Lab results</p>
+    <p class="eyebrow">Third-party lab results</p>
     <h1 class="h1" style="font-size:clamp(40px,5vw,64px);color:#fff">What's on the label is what's inside.</h1>
     <p class="lead" style="color:var(--on-dark)">Every pouch and every bottle starts as a tested lot. Identity, potency and purity, checked before anything is released. Here's what every lot is tested for, and the numbers.</p>
     <div class="row"><a class="btn btn-yellow" href="#request">Request a full report</a><a class="btn btn-ghost" href="#results">See the numbers</a></div>
@@ -435,7 +436,7 @@ const lab = {
 <section class="section"><div class="wrap">
   <div class="stack-sm" style="max-width:720px;margin-bottom:40px;gap:14px">
     <p class="eyebrow">From grain to powder</p>
-    <h2 class="h2" style="font-size:clamp(30px,3.6vw,46px)">How it's grown.</h2>
+    <h2 class="h2" style="font-size:clamp(30px,3.6vw,46px)">How our mushrooms are grown.</h2>
     <p class="lead">REWILD doesn't grow its own mushrooms. We partner with a specialist grower in British Columbia that cultivates them on certified organic sorghum in a 45,000 sq ft solar-powered facility. Nothing is imported from overseas.</p>
   </div>
   <ol class="process">${PROCESS.map(([t, d], i) => `<li><span class="n">${String(i + 1).padStart(2, '0')}</span><b>${esc(t)}</b><span>${esc(d)}</span></li>`).join('')}</ol>
@@ -481,7 +482,7 @@ const story = {
   body: `
 <section class="page-hero"><div class="wrap split">
   <div class="stack">
-    <p class="eyebrow">Our story</p>
+    <p class="eyebrow">Our story · Slocan Valley, BC</p>
     <h1 class="h1" style="font-size:clamp(40px,5vw,64px)">Rewild isn't really about mushrooms.</h1>
     <p class="lead">It's about returning to your natural state. The version of you beneath the noise. The mushrooms are simply good tools for the journey.</p>
   </div>
@@ -521,6 +522,16 @@ const story = {
   </div>
   <div class="founder-photo"><img class="cover sq" src="/img/sean-turner.webp" alt="Sean Turner, co-founder of REWILD Mushrooms, holding an orange cat" width="560" height="560" loading="lazy"><p class="small muted" style="margin-top:10px">Sean Turner, co-founder</p></div>
 </div></section>
+<section class="section"><div class="wrap split" style="align-items:flex-start">
+  <div class="founder-photo"><img class="cover sq" src="/img/pete-moss.webp" alt="Pete Moss, co-founder of REWILD Mushrooms, in an orange hat and sunglasses in the forest" width="560" height="560" loading="lazy"><p class="small muted" style="margin-top:10px">Pete Moss, co-founder</p></div>
+  <div class="prose" style="max-width:640px">
+    <p class="eyebrow" style="margin-bottom:12px">Co-founder</p>
+    <h2 style="margin-top:0">Pete Moss</h2>
+    <p>A longtime mushroom enthusiast and lifelong mountain guy, Pete has spent years exploring both the outdoors and the world of functional mushrooms, including foraging and making his own tinctures.</p>
+    <p>Snowboarding, mountain biking and hiking keep him connected to the wild, while DJing keeps things interesting. That same hands-on, back-to-nature approach is what connects him to REWILD and the idea that some of the best tools for feeling good have been around all along.</p>
+    <p>Based in the Kootenays, Pete also helps people create healthier homes through <a href="https://radonboss.ca" rel="noopener" target="_blank">RadonBoss.ca</a>.</p>
+  </div>
+</div></section>
 <section class="section stone"><div class="narrow prose" style="max-width:780px">
   <h2 style="margin-top:0">Where our mushrooms come from</h2>
   <p>We don't grow our own mushrooms. We work with a specialist grower in British Columbia that cultivates them from DNA-verified strains, on certified organic sorghum, in a solar-powered facility. We chose them for their science, their testing and their award-winning CordyFuel™. The whole organism is harvested together: fruiting body, mycelium and the compounds the mycelium releases as it grows. Then it's dried, milled and lab tested before it ever reaches a pouch or a bottle. <a href="/lab-results/">See how it's grown and tested</a>.</p>
@@ -534,7 +545,7 @@ const story = {
     <p class="eyebrow">The team</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Built on trust, integrity and a solid passion for 'shrooms.</h2>
     <div class="stack-sm" style="gap:18px;font-size:17px;color:var(--text)">
-      <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> Works quietly behind the scenes. Disappears for days and comes back with backcountry photos, good connections and better ideas.</p>
+      <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> A longtime mushroom enthusiast and lifelong mountain guy, Pete has spent years foraging, making his own tinctures and exploring the Kootenays on a snowboard, a mountain bike and his own two feet. He brings a hands-on, back-to-nature approach to REWILD, grounded in the idea that some of the best tools for feeling good have been around all along.</p>
       <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> A self-taught designer, marketer, builder and lifelong explorer, Jade has spent 20 years turning ideas into things people can actually experience. At REWILD, she brings it all together, leading the brand, design, marketing and tech while following the mushrooms wherever they decide to take her next.</p>
       <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> With 16 years studying nutrition, human optimization and supplementation, Sean brings a whole-food, back-to-basics approach to Rewild. He sees functional mushrooms as simple, natural tools for helping the body perform, adapt and recover.</p>
     </div>
@@ -592,11 +603,11 @@ const journalIndex = {
   jsonld: [crumbs([['Home', '/'], ['Journal', '/journal/']])],
   body: `
 <section class="page-hero"><div class="wrap stack-sm" style="gap:16px">
-  <p class="eyebrow">Journal</p>
+  <p class="eyebrow">Functional mushroom journal</p>
   <h1 class="h1" style="font-size:clamp(40px,5vw,64px)">Field notes.</h1>
 </div></section>
 <section class="section tight"><div class="wrap grid-3">
-  ${POSTS.map((p) => `<a class="post-card" href="/${p.slug}/"><img src="${p.image}" alt="" width="800" height="533" loading="lazy"><span class="eyebrow">${new Date(p.date + 'T12:00:00').toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric' })} · ${p.readMins} min read</span><h2 class="h3" style="font-size:22px;line-height:1.15">${esc(p.title)}</h2><p class="muted" style="font-size:16px">${esc(p.description)}</p><span class="link small">Read</span></a>`).join('')}
+  ${POSTS.map((p) => `<a class="post-card" href="/${p.slug}/"><img src="${p.image}" alt="${esc(p.imageAlt)}" width="800" height="533" loading="lazy"><span class="eyebrow">${new Date(p.date + 'T12:00:00').toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric' })} · ${p.readMins} min read</span><h2 class="h3" style="font-size:22px;line-height:1.15">${esc(p.title)}</h2><p class="muted" style="font-size:16px">${esc(p.description)}</p><span class="link small">Read</span></a>`).join('')}
 </div></section>
 ${signupBanner('journal')}`,
 };
@@ -676,7 +687,7 @@ const FAQS = [
   ['Is this medical advice?', 'No. Our products are foods and are not intended to diagnose, treat, cure or prevent any disease. Talk to your healthcare practitioner before use if you are pregnant, nursing or taking medication.'],
 ];
 const faq = {
-  ...simple('/faq/', 'FAQ | Mushroom Powder Questions Answered | REWILD', 'Answers about REWILD mushroom powders: where they are grown, full spectrum, how to take them, testing, shipping to Canada and the US, and promo codes.', 'Questions, answered', faqHtml(FAQS)),
+  ...simple('/faq/', 'FAQ | Mushroom Powder Questions Answered | REWILD', 'Answers about REWILD mushroom powders: where they are grown, full spectrum, how to take them, testing, shipping to Canada and the US, and promo codes.', 'Mushroom powder questions, answered', faqHtml(FAQS)),
 };
 faq.jsonld.push(faqLd(FAQS));
 
@@ -735,7 +746,7 @@ const learnIndex = {
   jsonld: [crumbs([['Home', '/'], ['Learn', '/learn/']])],
   body: `
 <section class="page-hero"><div class="wrap stack-sm" style="gap:16px">
-  <p class="eyebrow">Learn</p>
+  <p class="eyebrow">Functional mushroom guides</p>
   <h1 class="h1" style="font-size:clamp(40px,5vw,64px)">Know your mushrooms.</h1>
   <p class="lead" style="max-width:640px">What each one is, where it grows, where it comes from, and exactly how ours are grown and tested.</p>
 </div></section>
@@ -773,7 +784,7 @@ function guidePage(g) {
 <section class="page-hero"><div class="wrap split">
   <div class="stack-sm" style="gap:16px">
     <p class="eyebrow"><a href="/learn/" style="text-decoration:none">Learn</a> · Mushroom guide</p>
-    <h1 class="h1" style="font-size:clamp(44px,6vw,76px)">${esc(g.name)}</h1>
+    <h1 class="h1" style="font-size:clamp(44px,6vw,76px)">${esc(g.name)}<span class="h1-sub">${esc(g.h1sub)}</span></h1>
     <p class="latin" style="font-size:20px">${esc(g.latin)}</p>
     <p class="lead">${esc(g.intro)}</p>
     <p class="small muted">${esc(g.aka)}</p>

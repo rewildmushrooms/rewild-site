@@ -124,14 +124,14 @@ ${page.body}
         <p style="font-style:italic">Return to your natural state.</p>
         <div style="margin-top:12px"><p style="color:#fff;font-weight:700;margin-bottom:8px">Join the Rewilders</p>${signupForm('footer')}</div>
       </div>
-      <nav class="footer-col" aria-label="Shop"><h2>Shop</h2>
+      <nav class="footer-col" aria-label="Shop"><p class="footer-h">Shop</p>
         <a href="/shop/cordyceps-tincture/"><span class="new-tag">New</span> CordyFuel™ Tincture</a>
         <a href="/shop/cordyceps-militaris-powder/">Energy · CordyFuel™</a>
         <a href="/shop/lions-mane-powder/">Clarity · Lion's Mane</a>
         <a href="/shop/chaga-powder/">Strength · Chaga</a>
         <a href="/shop/reishi-powder/">Peace · Reishi</a>
       </nav>
-      <nav class="footer-col" aria-label="Learn"><h2>Learn</h2>
+      <nav class="footer-col" aria-label="Learn"><p class="footer-h">Learn</p>
         <a href="/learn/cordyceps/">Cordyceps</a>
         <a href="/learn/lions-mane/">Lion's Mane</a>
         <a href="/learn/reishi/">Reishi</a>
@@ -142,7 +142,7 @@ ${page.body}
         <a href="/our-story/">Our Story</a>
         <a href="/journal/">Journal</a>
       </nav>
-      <nav class="footer-col" aria-label="Help"><h2>Help</h2>
+      <nav class="footer-col" aria-label="Help"><p class="footer-h">Help</p>
         <a href="/shipping/">Shipping &amp; Returns</a>
         <a href="/faq/">FAQ</a>
         <a href="/contact/">Contact</a>

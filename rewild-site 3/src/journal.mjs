@@ -3,8 +3,8 @@
 export const POSTS = [
   {
     slug: 'how-to-choose-a-mushroom-supplement-in-canada',
-    image: '/img/label-energy-back.webp',
-    imageAlt: 'The back label of a REWILD Energy pouch listing species, ingredients and suggested use',
+    image: '/img/journal-choose.webp',
+    imageAlt: 'A woven basket of freshly foraged wild mushrooms resting on moss in the forest',
     title: 'How To Choose A Mushroom Product In Canada (Without Getting Fooled By The Label)',
     seoTitle: 'How To Choose A Mushroom Supplement In Canada | REWILD Journal',
     description: "Lion's Mane, Reishi, Chaga, Cordyceps. Here is how to read a mushroom product label in Canada: species, fruiting body vs mycelium, sourcing and third-party testing.",
@@ -54,8 +54,8 @@ export const POSTS = [
   },
   {
     slug: 'fruiting-body-vs-mycelium-whats-the-difference-in-functional-mushroom-products',
-    image: '/img/energy-cordyceps-powder.webp',
-    imageAlt: 'Cordyceps militaris fruiting bodies beside a REWILD Energy pouch on the forest floor',
+    image: '/img/journal-fruiting.webp',
+    imageAlt: 'The fruiting body of a wild orange mushroom, showing its gills and stem, on the forest floor',
     title: "Fruiting Body vs Mycelium: What's The Difference In Functional Mushroom Products?",
     seoTitle: 'Fruiting Body vs Mycelium: What’s The Difference? | REWILD Journal',
     description: 'Fruiting body, mycelium or full spectrum? A plain-language guide to what each term means on a mushroom label, and why transparency matters more than tribes.',
@@ -103,8 +103,8 @@ export const POSTS = [
   },
   {
     slug: 'why-mushroom-sourcing-matters-canada-china-what-consumers-should-know',
-    image: '/img/hero-tincture-mountains.webp',
-    imageAlt: 'CordyFuel™ tincture on a mountain ridge in British Columbia at sunrise',
+    image: '/img/journal-sourcing.webp',
+    imageAlt: 'Golden evening light over a mountain meadow and conifer forest in western Canada',
     title: 'Why Mushroom Sourcing Matters: Canada, China & What Consumers Should Know',
     seoTitle: 'Why Mushroom Sourcing Matters: Canada vs China | REWILD Journal',
     description: 'Many mushroom products sold in Canada are grown overseas. What "grown in Canada" really means on a label, and the questions worth asking about sourcing and testing.',
