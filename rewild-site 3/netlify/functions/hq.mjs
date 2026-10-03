@@ -4,6 +4,7 @@
 //   GET  /api/hq?action=summary&days=30                     (owner)
 //   GET  /api/hq?action=coupons                             (owner)
 //   GET  /api/hq?action=traffic&days=30                     (owner, Google Analytics)
+//   GET  /api/hq?action=alerts                              (owner, things to look at)
 //   GET  /api/hq?action=inventory                           (everyone)
 //   GET  /api/hq?action=commissions&month=2026-10           (owner: all partners; partner: themselves)
 //   POST /api/hq  { action:'setStock', id, quantity }       (everyone)
@@ -137,15 +138,113 @@ async function listInvoices(opts) {
   return all.filter((i) => i.title === INVOICE_TITLE);
 }
 
+const buyerKey = (o, emails = {}) => (emails[o.id] || (o.fulfillments || []).map((f) => f.shipment_details?.recipient?.email_address).find(Boolean) || buyerName(o) || o.id).toLowerCase();
+
+// Extra numbers for the Overview: abandoned checkouts, where sales come from, repeat buyers.
+export function extras(orders, emails = {}, now = Date.now()) {
+  const web = orders.filter(isWebOrder);
+  const paid = web.filter(isPaid);
+  const unpaid = web.filter((o) => !isPaid(o) && now - Date.parse(o.created_at) > 3600000);
+  const src = {};
+  for (const o of paid) {
+    const hit = partnerForOrder(o);
+    const code = (o.metadata?.promo || (o.discounts || [])[0]?.name || '').toUpperCase();
+    const name = hit ? `${hit.partner.name.split(' ')[0]} (${hit.via === 'code' ? 'code' : 'share link'})` : code ? 'Other codes' : 'Direct, no code';
+    src[name] = src[name] || { name, orders: 0, revenue: 0 };
+    src[name].orders += 1; src[name].revenue += amt(o.total_money);
+  }
+  const perBuyer = {};
+  for (const o of paid) { const k = buyerKey(o, emails); perBuyer[k] = (perBuyer[k] || 0) + 1; }
+  const buyers = Object.keys(perBuyer).length;
+  const repeat = Object.values(perBuyer).filter((n) => n > 1).length;
+  return {
+    abandoned: { count: unpaid.length, value: unpaid.reduce((a, o) => a + amt(o.total_money), 0) },
+    sources: Object.values(src).sort((a, b) => b.revenue - a.revenue),
+    repeatBuyers: repeat, repeatRate: buyers ? repeat / buyers : 0,
+  };
+}
+
 async function summary(days, opts) {
-  const since = new Date(Date.now() - days * 86400000).toISOString();
-  const [orders, emails, invoices, subs] = await Promise.all([
-    searchOrders(since, opts),
+  const now = Date.now();
+  const since = new Date(now - days * 86400000).toISOString();
+  const [all, emails, invoices, subs] = await Promise.all([
+    searchOrders(new Date(now - 2 * days * 86400000).toISOString(), opts),
     paymentEmails(since, opts).catch(() => ({})),
     listInvoices(opts).catch(() => []),
     groupStats().catch(() => null),
   ]);
-  return { ...summarize(orders, days, Date.now(), invoices, emails), subscribers: subs, mode: isLive() ? 'live' : 'test' };
+  const cur = all.filter((o) => o.created_at >= since);
+  const prev = summarize(all.filter((o) => o.created_at < since), days, now - days * 86400000);
+  return {
+    ...summarize(cur, days, now, invoices, emails),
+    previous: { revenue: prev.revenue, orders: prev.orders, aov: prev.aov, customers: prev.customers },
+    ...extras(cur, emails, now),
+    subscribers: subs, mode: isLive() ? 'live' : 'test',
+  };
+}
+
+// "Heads up" list for Jade: things worth a look, most urgent first.
+export function buildAlerts({ inv, promos = [], orders = [], invoices = [], traffic: tr = null, commission = null }, now = Date.now()) {
+  const out = [];
+  const add = (level, title, detail, tab) => out.push({ level, title, detail, tab });
+  const day = 86400000;
+  if (inv?.items) {
+    for (const i of inv.items) {
+      if (i.onHand <= 0) add('urgent', `${i.name} is sold out`, 'Restock, or enter the real count in Inventory if this is wrong.', 'inventory');
+      else if (i.onHand <= 5) add('watch', `${i.name} is running low`, `${i.onHand} left.`, 'inventory');
+    }
+    for (const b of inv.bundles || []) if (b.canMake <= 0) add('urgent', `${b.name} can't be made`, 'One of its parts is out of stock, so the Duo will oversell.', 'inventory');
+  }
+  const web = orders.filter(isWebOrder);
+  const paid = web.filter(isPaid);
+  const invRefs = new Set(invoices.map((i) => (/order ([A-Z0-9]{8})/.exec(i.description || '') || [])[1]).filter(Boolean));
+  const waiting = paid.filter((o) => o.metadata?.destination === 'US' && !invRefs.has(orderRef(o.id)));
+  if (waiting.length) add('urgent', `${waiting.length} US order${waiting.length === 1 ? '' : 's'} waiting for a shipping quote`, 'Price it in Zonos, then click Send quote in Recent orders.', 'overview');
+  const stale = invoices.filter((i) => i.status !== 'PAID' && i.status !== 'CANCELED' && now - Date.parse(i.created_at || 0) > 3 * day);
+  if (stale.length) add('watch', `${stale.length} US shipping quote${stale.length === 1 ? '' : 's'} unpaid for 3+ days`, 'Send a friendly nudge, or refund the order if they changed their mind.', 'overview');
+  const in7 = (o) => now - Date.parse(o.created_at) <= 7 * day;
+  const prev7 = (o) => now - Date.parse(o.created_at) > 7 * day && now - Date.parse(o.created_at) <= 14 * day;
+  const rev = (list) => list.reduce((a, o) => a + amt(o.total_money), 0);
+  const w = paid.filter(in7), pw = paid.filter(prev7);
+  if (!w.length) add('watch', 'No website orders in the last 7 days', 'A good week for an email to the Rewilders list or a social post with a code.', 'codes');
+  else if (pw.length && rev(w) < rev(pw) * 0.7) add('watch', `Sales are down ${Math.round((1 - rev(w) / rev(pw)) * 100)}% on last week`, `$${(rev(w) / 100).toFixed(0)} this week vs $${(rev(pw) / 100).toFixed(0)} the week before.`, 'overview');
+  else if (pw.length && rev(w) > rev(pw) * 1.3) add('good', `Sales are up ${Math.round((rev(w) / rev(pw) - 1) * 100)}% on last week`, `$${(rev(w) / 100).toFixed(0)} this week. Nice.`, 'overview');
+  const abandoned = web.filter((o) => !isPaid(o) && in7(o) && now - Date.parse(o.created_at) > 3600000);
+  if (abandoned.length) add('watch', `${abandoned.length} checkout${abandoned.length === 1 ? '' : 's'} started but not paid this week`, `$${(rev(abandoned) / 100).toFixed(0)} left in carts. If it keeps happening, check shipping costs and the checkout page.`, 'overview');
+  const used30 = {};
+  for (const o of paid) if (now - Date.parse(o.created_at) <= 30 * day) for (const d of o.discounts || []) used30[(d.name || '').toUpperCase()] = 1;
+  const nowS = now / 1000;
+  for (const p of promos) {
+    if (!p.active) continue;
+    if (p.expiresAt && p.expiresAt < nowS) add('watch', `${p.code} has expired but is still switched on`, 'Turn it off in Promo codes to keep the list tidy.', 'codes');
+    else if (p.expiresAt && p.expiresAt - nowS < 7 * 86400) add('info', `${p.code} ends ${p.expiresOn}`, `Last day to use it is ${p.expiresOn} (11:59 pm Pacific).`, 'codes');
+  }
+  const unused = promos.filter((p) => p.active && !(p.expiresAt && p.expiresAt < nowS) && !used30[p.code]).map((p) => p.code);
+  if (unused.length) add('info', `${unused.length} code${unused.length === 1 ? '' : 's'} not used in 30 days`, `${unused.join(', ')}. Share them, or switch them off.`, 'codes');
+  if (tr?.configured && !tr.error) {
+    const conv = tr.sessions ? (w.length / tr.sessions) : 0;
+    if (tr.sessions >= 100 && conv < 0.01) add('watch', 'Few visits are turning into orders', `${(conv * 100).toFixed(1)}% of ${tr.sessions} visits this week bought. Most shops sit around 1 to 3%.`, 'overview');
+    if (tr.previous?.visitors >= 20 && tr.visitors < tr.previous.visitors * 0.7) add('watch', `Visitors are down ${Math.round((1 - tr.visitors / tr.previous.visitors) * 100)}% on last week`, `${tr.visitors} this week vs ${tr.previous.visitors}.`, 'overview');
+    else if (tr.previous?.visitors >= 20 && tr.visitors > tr.previous.visitors * 1.3) add('good', `Visitors are up ${Math.round((tr.visitors / tr.previous.visitors - 1) * 100)}% on last week`, `${tr.visitors} this week.`, 'overview');
+    if (tr.events?.addToCart >= 10 && tr.events.beginCheckout < tr.events.addToCart * 0.25) add('watch', 'People add to cart but few start checkout', `${tr.events.addToCart} add-to-carts, ${tr.events.beginCheckout} checkouts started this week. Check the cart and shipping price.`, 'overview');
+  }
+  const owed = (commission?.partners || []).filter((p) => p.commission > 0);
+  if (owed.length) add('info', 'Partner commission this month', owed.map((p) => `${p.name.split(' ')[0]} $${(p.commission / 100).toFixed(2)}`).join(', '), 'commissions');
+  const order = { urgent: 0, watch: 1, info: 2, good: 3 };
+  return out.sort((a, b) => order[a.level] - order[b.level]);
+}
+
+async function alerts(opts) {
+  const now = Date.now();
+  const orders = await searchOrders(new Date(now - 60 * 86400000).toISOString(), opts).catch(() => []);
+  const [inv, promos, invoices, tr, com] = await Promise.all([
+    inventory(opts, { orders }).catch(() => null),
+    listPromos(opts, { fresh: true }).catch(() => []),
+    listInvoices(opts).catch(() => []),
+    traffic(7).catch(() => null),
+    Promise.resolve(commissionReport(orders, monthOf(new Date(now).toISOString()))),
+  ]);
+  return { alerts: buildAlerts({ inv, promos, orders, invoices, traffic: tr, commission: com }, now), checkedAt: Math.floor(now / 1000) };
 }
 
 async function coupons(opts) {
@@ -264,6 +363,7 @@ export default async (req) => {
         return json(200, await summary(days));
       }
       if (action === 'coupons') return json(200, { coupons: await coupons() });
+      if (action === 'alerts') return json(200, await alerts());
       if (action === 'traffic') {
         const days = Math.min(365, Math.max(1, Number(url.searchParams.get('days')) || 30));
         try { return json(200, await traffic(days)); } catch (e) { return json(200, { configured: true, error: e.message }); }
