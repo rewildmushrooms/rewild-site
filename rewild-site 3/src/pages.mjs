@@ -508,7 +508,7 @@ const story = {
   <div><img class="cover sq" src="/img/rewild-team-2026.webp" alt="REWILD founders Pete, Jade and Sean in the forest with mushrooms and an orange cat" width="1100" height="1100"></div>
 </div></section>
 <section class="section"><div class="wrap split" style="align-items:flex-start">
-  <div class="founder-photo"><img class="cover portrait" src="/img/jade-stevens-founder-mountains.webp" alt="Jade Stevens, founder of REWILD Mushrooms, hiking in the snowy Rockies with her black and white cat" width="800" height="1000" loading="lazy"><p class="small muted" style="margin-top:10px">Jade Stevens, founder</p></div>
+  <div class="founder-photo"><img class="cover sq" src="/img/jade-stevens-founder-mountains.webp" alt="Jade Stevens, founder of REWILD Mushrooms, hiking in the snowy Rockies with her black and white cat" width="800" height="800" loading="lazy"><p class="small muted" style="margin-top:10px">Jade Stevens, founder</p></div>
   <div class="prose" style="max-width:640px">
     <p class="eyebrow" style="margin-bottom:12px">From the founder</p>
     <h2 style="margin-top:0">I didn't go looking for mushrooms. They found me.</h2>
@@ -527,10 +527,10 @@ const story = {
     <p>Snowboarding, mountain biking and hiking keep him connected to the wild, while DJing keeps things interesting. That same hands-on, back-to-nature approach is what connects him to REWILD and the idea that some of the best tools for feeling good have been around all along.</p>
     <p>Based in the Kootenays, Pete also helps people create healthier homes through <a href="https://radonboss.ca" rel="noopener" target="_blank">RadonBoss.ca</a>.</p>
   </div>
-  <div class="founder-photo"><img class="cover portrait" src="/img/pete-moss-snowboarding.webp" alt="Pete Moss, co-founder of REWILD Mushrooms, snowboarding mid-air above a mountain event" width="684" height="856" loading="lazy"><p class="small muted" style="margin-top:10px">Pete Moss, co-founder</p></div>
+  <div class="founder-photo"><img class="cover sq" style="object-position:50% 0" src="/img/pete-moss-snowboarding.webp" alt="Pete Moss, co-founder of REWILD Mushrooms, snowboarding mid-air above a mountain event" width="800" height="800" loading="lazy"><p class="small muted" style="margin-top:10px">Pete Moss, co-founder</p></div>
 </div></section>
 <section class="section"><div class="wrap split" style="align-items:flex-start">
-  <div class="founder-photo"><img class="cover portrait" src="/img/sean-turner-fire-performer-hood.webp" alt="Sean Turner, co-founder of REWILD Mushrooms, in a hooded jacket surrounded by fire" width="800" height="1000" loading="lazy"><p class="small muted" style="margin-top:10px">Sean Turner, co-founder</p></div>
+  <div class="founder-photo"><img class="cover sq" src="/img/sean-turner-fire-hood-square.webp" alt="Sean Turner, co-founder of REWILD Mushrooms, in a hooded jacket surrounded by fire" width="800" height="800" loading="lazy"><p class="small muted" style="margin-top:10px">Sean Turner, co-founder</p></div>
   <div class="prose" style="max-width:640px">
     <p class="eyebrow" style="margin-bottom:12px">Co-founder</p>
     <h2 style="margin-top:0">Sean Turner</h2>
