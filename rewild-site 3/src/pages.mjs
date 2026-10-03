@@ -29,6 +29,9 @@ const faqLd = (faqs) => ({
   '@type': 'FAQPage',
   mainEntity: faqs.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a.replace(/<[^>]+>/g, '') } })),
 });
+const GUARANTEE_TEXT = "Don't love it? Email us within 14 days of delivery for a full refund. No questions asked.";
+const SHIELD = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>';
+const guarantee = (extra = '') => `<div class="guarantee${extra}">${SHIELD}<div><b>100% Risk-Free Guarantee</b><span>${GUARANTEE_TEXT}</span></div></div>`;
 const faqHtml = (faqs) => faqs.map(([q, a]) => `<details class="faq"><summary>${esc(q)}</summary><div class="answer">${a}</div></details>`).join('');
 
 function productCard(p, { headingLevel = 3 } = {}) {
@@ -63,6 +66,7 @@ const CORDYFUEL_SECTION = `<section class="section stone" id="cordyfuel"><div cl
       <div class="offer-row"><div><b>Tincture</b><span>100 ml · alcohol-free, take it anywhere</span></div><span class="offer-price">$30</span><button type="button" class="btn btn-dark" data-add="tincture">Add</button></div>
       <div class="offer-row best"><div><b>Get both <em class="save-tag">Save $20</em></b><span>Powder at home, tincture on the go</span></div><span class="offer-price"><s>$110</s> $90</span><button type="button" class="btn btn-yellow" data-add="duo">Add</button></div>
     </div>
+    ${guarantee(' compact')}
   </div>
 </div></section>`;
 const signupBanner = (id) => `<section class="hero hero-signup"><div class="wrap"><div class="hero-copy" style="max-width:560px">
@@ -192,20 +196,33 @@ const shop = {
   <div class="grid-4">${powders.map((p) => productCard(p, { headingLevel: 2 })).join('')}</div>
 </div></section>
 ${CORDYFUEL_SECTION}
-<section class="section tight"><div class="wrap split">
-  <div><img class="cover wide" src="/img/tincture-river-wide.webp" alt="CordyFuel™ Cordyceps militaris tincture on moss beside a mountain river" width="1400" height="933" loading="lazy"></div>
+<section class="section dark tincture-feature" id="tincture"><div class="wrap split">
+  <div class="tf-media"><img class="cover" src="/img/tincture-river-wide.webp" alt="Rewild Energy alcohol-free Cordyceps militaris tincture, powered by CordyFuel™, on moss beside a mountain river" width="1400" height="933" loading="lazy"><span class="tf-badge">New</span></div>
   <div class="stack">
-    <p class="eyebrow ember">New</p>
-    <h2 class="h2">Rewild Energy Tincture</h2>
-    <p class="lead">100% Cordyceps militaris. Alcohol-free. 100 ml for ${money(PRODUCT_BY_ID.tincture.price)}.</p>
-    <div class="row"><button type="button" class="btn btn-dark" data-add="tincture">Add to cart</button><a class="btn btn-outline" href="/shop/cordyceps-tincture/">Details</a></div>
+    <p class="eyebrow">Alcohol-free Cordyceps tincture</p>
+    <h2 class="h2">Rewild Energy,<br>without the powder.</h2>
+    <p class="lead" style="color:var(--on-dark)">The same award-winning CordyFuel™ <em>Cordyceps militaris</em>, in a bottle that goes wherever you go. Even people who don't love the taste of mushrooms tend to love this one.</p>
+    <ul class="lp-badges" aria-label="At a glance"><li>Alcohol-free</li><li>100% Cordyceps militaris</li><li>Caffeine-free</li><li>Grown in BC</li></ul>
+    <ul class="ticks" style="font-size:17px">
+      <li>Take it straight, or add it to water, coffee or a smoothie</li>
+      <li>Fits in a pocket, a gym bag or a ski jacket</li>
+      <li>100 ml bottle · 10 to 20 ml per serving · 5 to 10 servings</li>
+    </ul>
+    <div class="tf-buy">
+      <div class="tf-price">${money(PRODUCT_BY_ID.tincture.price)}<span>100 ml</span></div>
+      <button type="button" class="btn btn-yellow" data-add="tincture">Add to cart</button>
+      <a class="btn btn-ghost" href="/shop/cordyceps-tincture/">Details</a>
+    </div>
+    <p class="small" style="color:var(--on-dark)">Want both? The <button type="button" class="link-btn tf-duo" data-add="duo">Rewild Energy Duo</button> is powder + tincture for ${money(PRODUCT_BY_ID.duo.price)} (save $20). <a class="link" style="color:#fff" href="/cordyfuel/">What is CordyFuel™?</a></p>
+    ${guarantee(' on-dark compact')}
   </div>
 </div></section>
 <section class="section tight"><div class="wrap grid-3">
-  <div class="stack-sm"><h2 class="h3" style="font-size:22px">Free shipping over $175</h2><p class="muted">Anywhere in Canada. $20 flat rate under that. Nelson hand delivery Monday and Tuesday.</p></div>
+  <div class="stack-sm"><h2 class="h3" style="font-size:22px">Free shipping over $175</h2><p class="muted">Anywhere in Canada. $20 flat rate under that.</p></div>
   <div class="stack-sm"><h2 class="h3" style="font-size:22px">Shipping to the US</h2><p class="muted">Yes. US shipping and duties are calculated for each parcel. After you order, we email a quote you can pay online before it ships.</p></div>
   <div class="stack-sm"><h2 class="h3" style="font-size:22px">Promo codes</h2><p class="muted">Have a code? Add it in your cart before checkout.</p></div>
-</div></section>`,
+</div>
+<div class="wrap" style="margin-top:40px">${guarantee(' wide')}</div></section>`,
 };
 
 /* ---------------- PRODUCT PAGES ---------------- */
@@ -248,6 +265,7 @@ const COMMON_FAQS = [
   ['How much should I take?', 'Our labels suggest ½ teaspoon of powder a day, added to food or drink. Start there and see what works for you.'],
   ['What does full spectrum mean?', 'It means the powder includes both the fruiting body (the mushroom you can see) and the mycelium (the root-like network). Ours is grown on certified organic sorghum in British Columbia by our partner grower. <a href="/fruiting-body-vs-mycelium-whats-the-difference-in-functional-mushroom-products/">Read more</a>.'],
   ['How long does a bag last?', 'A 100g bag holds roughly 70 to 100 half-teaspoon servings, so about two to three months of daily use.'],
+  ['What if I don\u2019t like it?', `Our 100% Risk-Free Guarantee has you covered. ${GUARANTEE_TEXT} <a href="/shipping/#guarantee">How it works</a>.`],
   ['How should I store it?', 'In a cool, dry place away from direct sunlight. Reseal the pouch after use. Best within 3 years of purchase.'],
   ['Is this medical advice?', 'No. Our products are foods, not medicine. They are not intended to diagnose, treat, cure or prevent any disease. Talk to your healthcare practitioner before use if you are pregnant, nursing or taking medication.'],
 ];
@@ -320,6 +338,7 @@ function productPage(p) {
         <button type="button" class="btn btn-yellow" style="flex:1" data-add="${p.id}" data-qty-from="#qty">Add to cart</button>
       </div>
       <p class="small muted">Free shipping in Canada over $175 · $20 flat rate under that · <a href="/shipping/">US shipping quoted per order</a></p>
+      ${guarantee(' compact')}
       <ul class="ticks">${d.ticks.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
     </div>
   </div>
@@ -354,13 +373,13 @@ function productPage(p) {
 const quiz = {
   path: '/build-your-stack/',
   title: 'Build Your Mushroom Stack | Find Your Mushrooms | REWILD',
-  description: 'Seven quick questions to match Cordyceps, Lion\u2019s Mane, Chaga and Reishi to how you actually live. Get your stack and how to take it in about a minute.',
+  description: 'Eight quick questions to match Cordyceps, Lion\u2019s Mane, Chaga and Reishi to how you actually live. Get your stack and how to take it in about a minute.',
   jsonld: [crumbs([['Home', '/'], ['Build Your Stack', '/build-your-stack/']])],
   body: `
 <section class="page-hero dark"><div class="wrap stack-sm" style="gap:16px">
   <p class="eyebrow">Build your stack</p>
   <h1 class="h1" style="font-size:clamp(40px,5vw,64px);color:#fff">Find the mushrooms that fit your life.</h1>
-  <p class="lead" style="color:var(--on-dark);max-width:620px">Seven quick questions about how you actually live. About a minute. You'll get your stack, when to take it and how.</p>
+  <p class="lead" style="color:var(--on-dark);max-width:620px">Eight quick questions about how you actually live. About a minute. You'll get your stack, when to take it and how.</p>
 </div></section>
 <section class="section tight"><div class="wrap narrow-quiz" id="quiz">
   <div id="quiz-app" class="stack" aria-live="polite"><noscript><p>Please turn on JavaScript to use the quiz, or <a href="/shop/">browse the shop</a>.</p></noscript></div>
@@ -427,11 +446,10 @@ const lab = {
           <tr><td>Microbial panel (7 tests)</td><td>Within limits</td><td><b>Pass</b></td></tr>
           <tr><td>Gluten</td><td>&lt; 15 ppm</td><td><b>&lt; 10 ppm</b></td></tr>
         </tbody></table>
-        <p class="small muted">Lot ${esc(l.lot)} · Issued ${esc(l.issued)}</p>
       </div>
     </article>`;
   }).join('')}</div>
-  <p class="small muted" style="margin-top:20px">Results apply to the lot shown. Every lot is tested, and numbers vary naturally from lot to lot. Measurements describe composition only and are not health claims.</p>
+  <p class="small muted" style="margin-top:20px">Results are from recent lots. Every lot is tested, and numbers vary naturally from lot to lot. Measurements describe composition only and are not health claims.</p>
 </div></section>
 
 <section class="section"><div class="wrap">
@@ -490,7 +508,7 @@ const story = {
   <div><img class="cover sq" src="/img/rewild-team-forest.webp" alt="Pete, Jade and Sean in the forest holding Lion's Mane and Reishi" width="1100" height="1100"></div>
 </div></section>
 <section class="section"><div class="wrap split" style="align-items:flex-start">
-  <div class="founder-photo"><img class="cover sq" src="/img/jade-founder.webp" alt="Jade Stevens, founder of REWILD Mushrooms" width="800" height="800" loading="lazy"><p class="small muted" style="margin-top:10px">Jade Stevens, founder</p></div>
+  <div class="founder-photo"><img class="cover portrait" src="/img/jade-stevens-founder-mountains.webp" alt="Jade Stevens, founder of REWILD Mushrooms, hiking in the snowy Rockies with her black and white cat" width="800" height="1000" loading="lazy"><p class="small muted" style="margin-top:10px">Jade Stevens, founder</p></div>
   <div class="prose" style="max-width:640px">
     <p class="eyebrow" style="margin-bottom:12px">From the founder</p>
     <h2 style="margin-top:0">I didn't go looking for mushrooms. They found me.</h2>
@@ -509,10 +527,10 @@ const story = {
     <p>Snowboarding, mountain biking and hiking keep him connected to the wild, while DJing keeps things interesting. That same hands-on, back-to-nature approach is what connects him to REWILD and the idea that some of the best tools for feeling good have been around all along.</p>
     <p>Based in the Kootenays, Pete also helps people create healthier homes through <a href="https://radonboss.ca" rel="noopener" target="_blank">RadonBoss.ca</a>.</p>
   </div>
-  <div class="founder-photo"><img class="cover sq" src="/img/pete-moss.webp" alt="Pete Moss, co-founder of REWILD Mushrooms, in an orange hat and sunglasses in the forest" width="560" height="560" loading="lazy"><p class="small muted" style="margin-top:10px">Pete Moss, co-founder</p></div>
+  <div class="founder-photo"><img class="cover portrait" src="/img/pete-moss-snowboarding.webp" alt="Pete Moss, co-founder of REWILD Mushrooms, snowboarding mid-air above a mountain event" width="684" height="856" loading="lazy"><p class="small muted" style="margin-top:10px">Pete Moss, co-founder</p></div>
 </div></section>
 <section class="section"><div class="wrap split" style="align-items:flex-start">
-  <div class="founder-photo"><img class="cover sq" src="/img/sean-turner.webp" alt="Sean Turner, co-founder of REWILD Mushrooms, holding an orange cat" width="560" height="560" loading="lazy"><p class="small muted" style="margin-top:10px">Sean Turner, co-founder</p></div>
+  <div class="founder-photo"><img class="cover portrait" src="/img/sean-turner-fire-performer.webp" alt="Sean Turner, co-founder of REWILD Mushrooms, performing with fire on stage" width="800" height="1000" loading="lazy"><p class="small muted" style="margin-top:10px">Sean Turner, co-founder</p></div>
   <div class="prose" style="max-width:640px">
     <p class="eyebrow" style="margin-bottom:12px">Co-founder</p>
     <h2 style="margin-top:0">Sean Turner</h2>
@@ -542,7 +560,6 @@ const story = {
 </div></section>
 <section class="section"><div class="narrow stack center" style="text-align:center">
   <h2 class="h2">Read the manifesto.</h2>
-  <p class="lead">The whole idea, in one page.</p>
   <a class="btn btn-dark" href="/manifesto/">The Rewild Manifesto</a>
 </div></section>`,
 };
@@ -647,16 +664,16 @@ const simple = (path, title, description, h1, html, extra = {}) => ({
   ...extra,
 });
 
-const shipping = simple('/shipping/', 'Shipping & Returns | Free Shipping in Canada Over $175 | REWILD', 'REWILD ships across Canada ($20 flat rate, free over $175) and to the US with shipping and duties quoted per order. Nelson hand delivery Mon and Tue.', 'Shipping & Returns', `
+const shipping = simple('/shipping/', 'Shipping & Returns | Free Shipping in Canada Over $175 | REWILD', 'REWILD ships across Canada ($20 flat rate, free over $175) and to the US with duties quoted per order. Every order has a 14-day, 100% risk-free guarantee.', 'Shipping & Returns', `
 <h2>Canada</h2>
 <ul><li><strong>$20 flat rate</strong> on orders under $175.</li><li><strong>Free shipping</strong> on orders of $175 or more (before discounts).</li><li>Orders ship within 1 to 3 business days with tracking. Most arrive in 2 to 7 business days.</li><li><strong>Nelson, BC hand delivery</strong> is available at checkout. Local deliveries happen Monday and Tuesday.</li></ul>
 <h2>United States</h2>
 <p>Yes, we ship to the US. Every US parcel now goes through customs, so shipping and duties depend on what's in your order. Here's how it works:</p>
 <ol><li>Place your order. You pay for the products only.</li><li>We declare your parcel with customs and work out the exact shipping and duties.</li><li>We email you a quote with a secure link to pay it online, usually within 1 business day.</li><li>As soon as it's paid, your order ships. Most US orders arrive in 5 to 12 business days.</li></ol>
 <p>If the quote doesn't work for you, just reply and we'll cancel and fully refund your order.</p>
-<h2>Returns</h2>
-<p>Because our products are food, we can't accept returns of opened bags or bottles. If your order arrives damaged, or we sent the wrong thing, email us within 14 days at <a href="mailto:${SITE.email}">${SITE.email}</a> with a photo and we'll make it right with a replacement or refund.</p>
-<p>Unopened products can be returned within 30 days of delivery for a refund of the product price. Return shipping is the customer's responsibility.</p>
+<h2 id="guarantee">Returns: our 100% Risk-Free Guarantee</h2>
+<p>Try it. If you don't love it, email us at <a href="mailto:${SITE.email}">${SITE.email}</a> within 14 days of delivery and we'll give you a full refund. No questions asked, and no need to send anything back.</p>
+<p>If your order arrives damaged, or we sent the wrong thing, email us a photo within 14 days and we'll replace it or refund it, whichever you prefer.</p>
 <h2>Questions?</h2>
 <p><a href="/contact/">Contact us</a>. A real person answers.</p>`);
 
@@ -670,6 +687,7 @@ const FAQS = [
   ['Can I see the lab report?', 'Yes. Full certificates of analysis are sent on request. <a href="/lab-results/#request">Request one here</a> and we\u2019ll email it, usually within one business day.'],
   ['How much is shipping?', `$20 flat rate in Canada, free on orders of $175 or more. US shipping and duties are quoted per order by email after you check out.`],
   ['Do you ship to the United States?', 'Yes. Choose United States in your cart. After you order, we email a quote for shipping and duties that you can pay online before it ships.'],
+  ['What if I don\u2019t like it?', `Every order comes with our 100% Risk-Free Guarantee. ${GUARANTEE_TEXT} <a href="/shipping/#guarantee">How it works</a>.`],
   ['I have a promo code. Where do I enter it?', 'Open your cart and type it in the promo code box, then tap Apply. You will see the discount before you check out.'],
   ['Is CordyFuel™ caffeinated?', 'No. CordyFuel™ is pure Cordyceps militaris with no caffeine or stimulants added.'],
   ['Is this medical advice?', 'No. Our products are foods and are not intended to diagnose, treat, cure or prevent any disease. Talk to your healthcare practitioner before use if you are pregnant, nursing or taking medication.'],
@@ -715,7 +733,7 @@ const terms = simple('/terms/', 'Terms of Service | REWILD Mushrooms', 'Terms of
 <h2>Promo codes</h2>
 <p>One promo code per order. Codes have no cash value, may expire, and may be limited in number of uses.</p>
 <h2>Shipping and returns</h2>
-<p>See our <a href="/shipping/">Shipping &amp; Returns</a> page.</p>
+<p>Every order comes with our 100% Risk-Free Guarantee: if you don't love it, email us within 14 days of delivery for a full refund, no questions asked. Details are on our <a href="/shipping/">Shipping &amp; Returns</a> page.</p>
 <h2>Trademarks</h2>
 <p>CordyFuel™ is a trademark of <a href="https://nucelium.com" rel="noopener" target="_blank">NuCelium</a>, used with permission. REWILD's mushrooms are grown by NuCelium in British Columbia. REWILD and the REWILD emblem belong to REWILD Mushrooms.</p>
 <h2>Governing law</h2>

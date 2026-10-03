@@ -6,7 +6,7 @@ export const LAB = [
     id: 'energy', lot: '240807-CM300-4118', issued: 'June 2025', idMethod: 'FTIR / HPTLC',
     results: [
       ['Cordycepin (UPLC)', '≥ 3 mg/g', '5.7 mg/g'],
-      ['Cordycepin, independent lab (lot 240423-CM300-4081)', '≥ 3 mg/g', '7.1 mg/g'],
+      ['Cordycepin, independent lab', '≥ 3 mg/g', '7.1 mg/g'],
       ['Beta-glucans (1,3-1,6)', '≥ 30%', '42.8%'],
       ['Total polysaccharides', '≥ 50%', '50.1%'],
     ],

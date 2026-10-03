@@ -133,6 +133,7 @@ ${page.body}
         <a href="/shop/reishi-powder/">Peace · Reishi</a>
       </nav>
       <nav class="footer-col" aria-label="Learn"><p class="footer-h">Learn</p>
+        <a href="/cordyfuel/">CordyFuel™, Decoded</a>
         <a href="/learn/cordyceps/">Cordyceps</a>
         <a href="/learn/lions-mane/">Lion's Mane</a>
         <a href="/learn/reishi/">Reishi</a>
@@ -175,6 +176,7 @@ ${page.body}
     <p class="small muted" id="cart-ship-note"></p>
     <label class="small news-opt"><input type="checkbox" id="cart-news"> Email me new products and offers. Unsubscribe anytime.</label>
     <button type="button" class="btn btn-yellow btn-block" id="checkout-btn">Checkout</button>
+    <p class="small cart-guarantee"><b>100% Risk-Free Guarantee.</b> Full refund within 14 days of delivery. No questions asked.</p>
     <p class="error-msg" id="cart-error" role="alert"></p>
     <p class="small muted" style="text-align:center">Secure payment by Square. Cards, Apple Pay and Google Pay.</p>
   </div>
