@@ -3,7 +3,7 @@
 export const POSTS = [
   {
     slug: 'how-to-choose-a-mushroom-supplement-in-canada',
-    image: '/img/journal-choose.webp',
+    image: '/img/choosing-mushroom-supplement-canada.webp',
     imageAlt: 'A woven basket of freshly foraged wild mushrooms resting on moss in the forest',
     title: 'How To Choose A Mushroom Product In Canada (Without Getting Fooled By The Label)',
     seoTitle: 'How To Choose A Mushroom Supplement In Canada | REWILD Journal',
@@ -54,7 +54,7 @@ export const POSTS = [
   },
   {
     slug: 'fruiting-body-vs-mycelium-whats-the-difference-in-functional-mushroom-products',
-    image: '/img/journal-fruiting.webp',
+    image: '/img/mushroom-fruiting-body.webp',
     imageAlt: 'The fruiting body of a wild orange mushroom, showing its gills and stem, on the forest floor',
     title: "Fruiting Body vs Mycelium: What's The Difference In Functional Mushroom Products?",
     seoTitle: 'Fruiting Body vs Mycelium: What’s The Difference? | REWILD Journal',
@@ -103,7 +103,7 @@ export const POSTS = [
   },
   {
     slug: 'why-mushroom-sourcing-matters-canada-china-what-consumers-should-know',
-    image: '/img/journal-sourcing.webp',
+    image: '/img/bc-mountains-mushroom-sourcing.webp',
     imageAlt: 'Golden evening light over a mountain meadow and conifer forest in western Canada',
     title: 'Why Mushroom Sourcing Matters: Canada, China & What Consumers Should Know',
     seoTitle: 'Why Mushroom Sourcing Matters: Canada vs China | REWILD Journal',
