@@ -7,12 +7,12 @@ Nothing here touches your current site until Step 6.
 
 | Path | What it is |
 |---|---|
-| `netlify/functions/_shared/catalog.mjs` | **Prices, products and shipping rules.** Change a price here and it changes everywhere, including Stripe. |
+| `netlify/functions/_shared/catalog.mjs` | **Prices, products and shipping rules.** Change a price here and it changes everywhere, including checkout. |
 | `src/pages.mjs` | All page copy (home, shop, product pages, story, FAQ, legal) |
 | `src/journal.mjs` | Journal articles. Your 3 existing articles keep their old URLs. |
 | `src/lab.mjs` | Certificates of analysis. Drop PDFs in `public/coa/` and fill in the line. |
 | `public/` | Images, styles, scripts, and REWILD HQ (`public/hq/`) |
-| `netlify/functions/` | Checkout, Stripe webhook, email signup, order lookup, HQ API |
+| `netlify/functions/` | Square checkout, promo codes, email signup, order lookup, HQ API |
 | `tests/` | Automated checks (`npm test`) |
 
 No WordPress, no plugins, no monthly platform fee. Hosting is Netlify's free tier.
@@ -32,18 +32,17 @@ No WordPress, no plugins, no monthly platform fee. Hosting is Netlify's free tie
 3. Netlify reads the settings automatically (build: `node build.mjs`, publish: `dist`). Click **Deploy**.
 4. You'll get a temporary address like `rewild-xyz.netlify.app`. The site works there right away (checkout won't until Step 3).
 
-## Step 3: Connect Stripe (10 min)
+## Step 3: Connect Square (10 min)
 
-Start in **test mode** (toggle top-right in Stripe) so you can place fake orders first.
+Start in the **Sandbox** (Square's test mode) so you can place fake orders first.
 
-1. Stripe → Developers → **API keys** → copy the **Secret key** (`sk_test_...`).
-2. Stripe → Developers → **Webhooks** → **Add endpoint**
-   - URL: `https://YOUR-SITE.netlify.app/api/stripe-webhook`
-   - Event: `checkout.session.completed`
-   - Copy the **Signing secret** (`whsec_...`).
-3. Stripe → Settings → **Payment methods**: turn on Apple Pay and Google Pay.
-4. Stripe → Settings → **Customer emails**: turn on **Successful payments** (receipts) and **Refunds**.
-5. Stripe → Settings → **Branding**: add the REWILD logo and colours (#121310, #E8C800) so checkout looks like you.
+1. Go to **developer.squareup.com** and sign in with your Square account.
+2. Click **Create an application** (or **+**). Name it `REWILD website`.
+3. Open the app. At the top, switch to **Sandbox**. Go to **Credentials** and copy the **Sandbox access token**.
+4. In your Square dashboard: Settings → **Receipts**: add the REWILD logo so receipts look like you.
+5. Apple Pay on the web: in the developer app, Apple Pay → add `rewildmushrooms.com` once the domain points at Netlify.
+
+No webhook is needed. The order-confirmed page adds newsletter opt-ins to MailerLite.
 
 ## Step 4: Connect MailerLite (10 min)
 
@@ -61,8 +60,9 @@ Netlify → your site → **Site configuration → Environment variables → Add
 
 | Key | Value |
 |---|---|
-| `STRIPE_SECRET_KEY` | `sk_test_...` (switch to `sk_live_...` at launch) |
-| `STRIPE_WEBHOOK_SECRET` | `whsec_...` |
+| `SQUARE_ACCESS_TOKEN` | Sandbox access token (switch to the Production token at launch) |
+| `SQUARE_ENV` | `sandbox` (change to `production` at launch) |
+| `SQUARE_LOCATION_ID` | optional: only if you have more than one Square location |
 | `MAILERLITE_API_KEY` | your MailerLite token |
 | `MAILERLITE_GROUP_ID` | Rewilders group ID |
 | `MAILERLITE_CUSTOMERS_GROUP_ID` | Customers group ID (optional) |
@@ -73,17 +73,17 @@ Then **Deploys → Trigger deploy**.
 
 ### Test it (test mode)
 
-1. Add products to the cart, check out with card `4242 4242 4242 4242`, any future date, any CVC.
-2. Try a promo code: open `/hq/`, log in, click **Add all REWILD codes**, then use one at checkout.
+1. Add products to the cart, check out with Square's sandbox test card `4111 1111 1111 1111`, any future date, CVV `111`, any postal code.
+2. Try a promo code: open `/hq/`, log in, click **Add all REWILD codes**, then type one into the cart's promo box. Links like `/shop/?code=SEAN20` apply a code automatically.
 3. Try shipping: under $175 in Canada shows $20, over $175 shows free, US shows "quoted by email".
 4. Place a US test order, then in `/hq/` → Recent orders, enter an amount and click **Send quote**. Check the invoice email arrives.
-4. Opt in to the email list at checkout and check MailerLite.
-5. Submit the contact form, then find it in Netlify → **Forms**. Turn on email notifications there.
+5. Tick the email box in the cart, finish a test order, and check MailerLite.
+6. Submit the contact form, then find it in Netlify → **Forms**. Turn on email notifications there.
 
 ## Step 6: Go live and point the domain (15 min + DNS wait)
 
-1. In Stripe switch to **live mode**, repeat Step 3 for live keys and a live webhook (with the real domain), and update the two Stripe variables in Netlify.
-2. Open `/hq/` and add your promo codes again (test and live codes are separate in Stripe).
+1. In the Square developer app switch to **Production**, copy the Production access token, and update `SQUARE_ACCESS_TOKEN` in Netlify. Set `SQUARE_ENV` to `production`.
+2. Open `/hq/` and click **Add all REWILD codes** again (sandbox and live codes are separate). Codes also show in Square → Items → Discounts.
 3. Netlify → **Domain management → Add a domain** → `rewildmushrooms.com`.
 4. Netlify shows you the DNS records. Change them wherever your domain is registered (likely SiteGround). Netlify sets up HTTPS automatically.
 5. Once the new site shows up on rewildmushrooms.com, you can cancel the WordPress hosting. Keep a SiteGround backup first.
@@ -92,18 +92,18 @@ Then **Deploys → Trigger deploy**.
 
 ## Before launch: things only you can confirm
 
-- [ ] **US orders.** Customers pay for products only. You declare the parcel in Zonos, then send the shipping + duties quote from `/hq/` (Recent orders → Send quote). Stripe emails a pay link. Ship once it shows **Paid**. If they decline, refund the order in Stripe.
-- [ ] **Stripe invoices.** Turn on Stripe → Settings → Invoices → email customers, and add your logo. Stripe charges a small fee per paid invoice.
+- [ ] **US orders.** Customers pay for products only. You declare the parcel in Zonos, then send the shipping + duties quote from `/hq/` (Recent orders → Send quote). Square emails a pay link. Ship once it shows **Paid**. If they decline, refund the order in Square.
+- [ ] **Square invoices.** Add your logo in Square → Invoices → Settings. Square charges its normal card fee on each paid invoice.
 - [ ] **COA PDFs.** Add to `public/coa/` and fill in `src/lab.mjs`.
 - [ ] **NuCelium.** Confirm the "CordyFuel™ is a trademark of NuCelium" wording and that "Best Fruiting Body / Full Spectrum at the 2025 Cordy Cup" is fine for you to use.
 - [ ] **50g Energy and 200g bags.** Your old order form sold these. They're not on the new site. Tell Claude if you want them back.
 - [ ] **Nelson hand delivery.** Offered at checkout for Canadian orders, same price as shipping. Turn off in `catalog.mjs` (`localDelivery.enabled: false`).
-- [ ] **GST/HST.** Not charged. When you pass $30,000 in sales over four quarters you'll need to register. Stripe Tax can then add it automatically.
+- [ ] **GST/HST.** Not charged. When you pass $30,000 in sales over four quarters you'll need to register. Square can then add it to orders.
 - [ ] **Google Search Console.** Add the new site, submit `https://rewildmushrooms.com/sitemap.xml`.
 
 ## Day to day
 
-- **Orders:** Stripe emails you on each sale. Full details in Stripe → Payments. Ship, then reply to the customer from your email.
+- **Orders:** Square emails you on each sale. Full details in Square → Orders (shipping address and any Nelson delivery note are there). Ship, then reply to the customer from your email.
 - **Metrics, promo codes and US shipping quotes:** `rewildmushrooms.com/hq/`
-- **Refunds:** Stripe → Payments → the order → Refund.
+- **Refunds:** Square → Transactions → the payment → Issue refund.
 - **Changes to the site:** ask Claude. Edits go to GitHub and Netlify redeploys in about a minute.
