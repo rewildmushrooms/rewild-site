@@ -435,11 +435,11 @@ p{text-wrap:pretty}
 .quiz-email-top [data-qmsg]{color:var(--accent)}
 /* Dark page banners with tincture photos */
 .page-hero.hero-photo{background-repeat:no-repeat;background-color:var(--ink)}
-.page-hero.hero-photo.hero-larches{background-image:linear-gradient(90deg,var(--ink) 0%,var(--ink) 40%,rgba(18,19,16,.55) 55%,rgba(18,19,16,0) 75%),url(/img/banner-tincture-larches.webp);background-size:100% 100%,62% auto;background-position:0 0,right 72%}
-.page-hero.hero-photo.hero-snowpeaks{background-image:linear-gradient(90deg,var(--ink) 0%,var(--ink) 38%,rgba(18,19,16,.6) 55%,rgba(18,19,16,.55) 100%),url(/img/banner-tincture-snow-peaks.webp);background-size:100% 100%,62% auto;background-position:0 0,right 60%}
-.page-hero.hero-photo.hero-valley{background-image:linear-gradient(180deg,rgba(10,12,9,.7),rgba(10,12,9,.86)),url(/img/banner-tincture-valley.webp);background-size:cover;background-position:center 62%}
+.page-hero.hero-photo.hero-larches{background-image:linear-gradient(90deg,var(--ink) 0%,var(--ink) 40%,rgba(18,19,16,.55) 55%,rgba(18,19,16,0) 75%),url(/img/banner-tincture-larches-v2.webp);background-size:100% 100%,62% auto;background-position:0 0,right 72%}
+.page-hero.hero-photo.hero-snowpeaks{background-image:linear-gradient(90deg,var(--ink) 0%,var(--ink) 38%,rgba(18,19,16,.6) 55%,rgba(18,19,16,.55) 100%),url(/img/banner-tincture-snow-peaks-v2.webp);background-size:100% 100%,62% auto;background-position:0 0,right 60%}
+.page-hero.hero-photo.hero-valley{background-image:linear-gradient(180deg,rgba(10,12,9,.7),rgba(10,12,9,.86)),url(/img/banner-tincture-valley-v2.webp);background-size:cover;background-position:center 62%}
 @media (max-width:900px){
-  .page-hero.hero-photo.hero-larches{background-image:linear-gradient(180deg,rgba(10,12,9,.62),rgba(10,12,9,.9)),url(/img/banner-tincture-larches-800.webp);background-size:cover;background-position:70% 65%}
-  .page-hero.hero-photo.hero-snowpeaks{background-image:linear-gradient(180deg,rgba(10,12,9,.72),rgba(10,12,9,.92)),url(/img/banner-tincture-snow-peaks-800.webp);background-size:cover;background-position:center}
-  .page-hero.hero-photo.hero-valley{background-image:linear-gradient(180deg,rgba(10,12,9,.72),rgba(10,12,9,.88)),url(/img/banner-tincture-valley-800.webp)}
+  .page-hero.hero-photo.hero-larches{background-image:linear-gradient(180deg,rgba(10,12,9,.62),rgba(10,12,9,.9)),url(/img/banner-tincture-larches-v2-800.webp);background-size:cover;background-position:70% 65%}
+  .page-hero.hero-photo.hero-snowpeaks{background-image:linear-gradient(180deg,rgba(10,12,9,.72),rgba(10,12,9,.92)),url(/img/banner-tincture-snow-peaks-v2-800.webp);background-size:cover;background-position:center}
+  .page-hero.hero-photo.hero-valley{background-image:linear-gradient(180deg,rgba(10,12,9,.72),rgba(10,12,9,.88)),url(/img/banner-tincture-valley-v2-800.webp)}
 }
