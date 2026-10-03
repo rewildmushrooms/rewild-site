@@ -87,8 +87,8 @@ a{color:var(--ink)}
       <button data-days="7" aria-pressed="false">7 days</button><button data-days="30" aria-pressed="true">30 days</button><button data-days="90" aria-pressed="false">90 days</button><button data-days="365" aria-pressed="false">12 months</button>
     </div>
     <div class="links">
-      <a class="btn ghost small" href="https://dashboard.stripe.com/payments" target="_blank" rel="noopener">Stripe payments</a>
-      <a class="btn ghost small" href="https://dashboard.stripe.com/checkout/sessions" target="_blank" rel="noopener">Orders</a>
+      <a class="btn ghost small" href="https://squareup.com/dashboard/sales/transactions" target="_blank" rel="noopener">Square payments</a>
+      <a class="btn ghost small" href="https://squareup.com/dashboard/orders/overview" target="_blank" rel="noopener">Square orders</a>
       <a class="btn ghost small" href="https://dashboard.mailerlite.com" target="_blank" rel="noopener">MailerLite</a>
       <a class="btn ghost small" href="https://app.netlify.com" target="_blank" rel="noopener">Netlify (forms)</a>
     </div>
@@ -125,14 +125,12 @@ a{color:var(--ink)}
       <label>Code<input name="code" required pattern="[A-Za-z0-9_-]{3,30}" placeholder="SUMMER15" style="text-transform:uppercase"></label>
       <label>Type<select name="type"><option value="percent">% off</option><option value="amount">$ off</option></select></label>
       <label>Amount<input name="value" type="number" min="1" step="1" required placeholder="15"></label>
-      <label>Max uses<input name="maxRedemptions" type="number" min="1" placeholder="Unlimited"></label>
       <label>Expires<input name="expiresAt" type="date"></label>
       <label>Min order ($)<input name="minimumAmount" type="number" min="1" placeholder="None"></label>
-      <label class="check"><input type="checkbox" name="firstTimeOnly"> First order only</label>
       <button class="btn" type="submit">Create code</button>
     </form>
     <p class="msg" id="coupon-msg" role="status"></p>
-    <div class="scroll"><table><thead><tr><th>Code</th><th>Discount</th><th class="num">Used</th><th>Limit</th><th>Expires</th><th>Status</th><th></th></tr></thead><tbody id="coupon-list"></tbody></table></div>
+    <div class="scroll"><table><thead><tr><th>Code</th><th>Discount</th><th class="num">Used (12 mo)</th><th>Expires</th><th>Status</th><th></th></tr></thead><tbody id="coupon-list"></tbody></table></div>
   </section>
 </div></main>
 
@@ -181,7 +179,7 @@ a{color:var(--ink)}
       const maxP=Math.max(1,...s.products.map(p=>p.revenue));
       $('#products').innerHTML=s.products.length?s.products.map(p=>`<div class="row"><span>${esc(p.name)}</span><div class="track" title="${esc(p.name)}: ${p.units} units, ${money(p.revenue)}"><div class="fill" style="width:${Math.max(2,p.revenue/maxP*100)}%"></div></div><span style="text-align:right;font-variant-numeric:tabular-nums">${money(p.revenue)}<br><span class="muted" style="font-size:12px">${p.units} units</span></span></div>`).join(''):'<p class="muted">No sales in this range yet.</p>';
       $('#coupon-perf').innerHTML=s.coupons.length?s.coupons.map(c=>`<tr><td><strong>${esc(c.code)}</strong></td><td class="num">${c.orders}</td><td class="num">${money(c.discount)}</td><td class="num">${money(c.revenue)}</td></tr>`).join(''):'<tr><td colspan="4" class="muted">No codes used in this range.</td></tr>';
-      $('#recent').innerHTML=s.recent.length?s.recent.map(o=>`<tr><td>${fmtDate(o.created)}</td><td>${esc(o.name)}<br><span class="muted">${esc(o.email)}</span></td><td>${esc(o.items)}</td><td>${esc(o.city)} ${esc(o.country)}</td><td class="num">${money(o.total)}</td><td>${usCell(o)}</td><td>${o.paymentIntent?`<a href="https://dashboard.stripe.com/${s.mode==='live'?'':'test/'}payments/${esc(o.paymentIntent)}" target="_blank" rel="noopener">Open</a>`:''}</td></tr>`).join(''):'<tr><td colspan="7" class="muted">No orders in this range yet.</td></tr>';
+      $('#recent').innerHTML=s.recent.length?s.recent.map(o=>`<tr><td>${fmtDate(o.created)}</td><td>${esc(o.name)}<br><span class="muted">${esc(o.email)}</span></td><td>${esc(o.items)}</td><td>${esc(o.city)} ${esc(o.country)}</td><td class="num">${money(o.total)}</td><td>${usCell(o)}</td><td><span class="muted">#${esc(o.ref)}</span>${o.note?`<br><span class="muted" style="font-size:12px">${esc(o.note)}</span>`:''}</td></tr>`).join(''):'<tr><td colspan="7" class="muted">No orders in this range yet.</td></tr>';
       wireInvoices();
       const cs=Object.entries(s.countries||{}).map(([k,v])=>k+': '+v.orders).join(' · ');
       $('#countries').textContent=cs;
@@ -192,14 +190,14 @@ a{color:var(--ink)}
     if(!o.needsShippingQuote) return '<span class="muted">n/a</span>';
     const i=o.shippingInvoice;
     if(i) return `<span class="status ${i.status==='paid'?'on':'off'}">${i.status==='paid'?'Paid':'Sent'} ${money(i.amount)}</span>${i.url?`<br><a href="${esc(i.url)}" target="_blank" rel="noopener">View</a>`:''}`;
-    return `<form class="ship-q" data-session="${esc(o.id)}" style="display:flex;gap:6px;align-items:center"><label class="sr-only" for="q-${esc(o.id)}">Shipping + duties</label><input id="q-${esc(o.id)}" type="number" min="1" step="0.01" placeholder="$ total" style="width:90px;min-height:34px" required><button class="btn small">Send quote</button></form><span class="muted" style="font-size:12px">From Zonos, in CAD</span>`;
+    return `<form class="ship-q" data-order="${esc(o.id)}" style="display:flex;gap:6px;align-items:center"><label class="sr-only" for="q-${esc(o.id)}">Shipping + duties</label><input id="q-${esc(o.id)}" type="number" min="1" step="0.01" placeholder="$ total" style="width:90px;min-height:34px" required><button class="btn small">Send quote</button></form><span class="muted" style="font-size:12px">From Zonos, in CAD</span>`;
   }
   function wireInvoices(){
     document.querySelectorAll('form.ship-q').forEach(f=>f.onsubmit=async(e)=>{
       e.preventDefault();const amt=f.querySelector('input').value;const b=f.querySelector('button');
-      if(!confirm('Email this customer a Stripe invoice for $'+amt+' CAD (US shipping + duties)?'))return;
+      if(!confirm('Email this customer a Square invoice for $'+amt+' CAD (US shipping + duties)?'))return;
       b.disabled=true;b.textContent='Sending…';
-      try{await api('',{method:'POST',body:JSON.stringify({action:'shippingInvoice',sessionId:f.dataset.session,amount:amt})});loadSummary();}
+      try{await api('',{method:'POST',body:JSON.stringify({action:'shippingInvoice',orderId:f.dataset.order,amount:amt})});loadSummary();}
       catch(err){b.disabled=false;b.textContent='Send quote';$('#load-msg').textContent=err.message;$('#load-msg').className='msg err';}
     });
   }
@@ -217,7 +215,7 @@ a{color:var(--ink)}
   async function loadCoupons(){
     try{
       const {coupons}=await api('?action=coupons');
-      $('#coupon-list').innerHTML=coupons.length?coupons.map(c=>`<tr><td><strong>${esc(c.code)}</strong>${c.firstTimeOnly?'<br><span class="muted">first order</span>':''}</td><td>${c.percentOff?c.percentOff+'%':money(c.amountOff)} off${c.minimumAmount?`<br><span class="muted">min ${money(c.minimumAmount)}</span>`:''}</td><td class="num">${c.timesRedeemed}</td><td>${c.maxRedemptions||'∞'}</td><td>${c.expiresAt?new Date(c.expiresAt*1000).toLocaleDateString('en-CA'):'Never'}</td><td><span class="status ${c.active?'on':'off'}">${c.active?'Active':'Off'}</span></td><td><button class="btn ghost small" data-toggle="${c.id}" data-active="${c.active}">${c.active?'Turn off':'Turn on'}</button></td></tr>`).join(''):'<tr><td colspan="7" class="muted">No promo codes yet. Create one above.</td></tr>';
+      $('#coupon-list').innerHTML=coupons.length?coupons.map(c=>`<tr><td><strong>${esc(c.code)}</strong></td><td>${c.percentOff?c.percentOff+'%':money(c.amountOff)} off${c.minimumAmount?`<br><span class="muted">min ${money(c.minimumAmount)}</span>`:''}</td><td class="num">${c.timesRedeemed}</td><td>${c.expiresOn||'Never'}</td><td><span class="status ${c.active?'on':'off'}">${c.active?'Active':'Off'}</span></td><td><button class="btn ghost small" data-toggle="${c.id}" data-active="${c.active}">${c.active?'Turn off':'Turn on'}</button></td></tr>`).join(''):'<tr><td colspan="6" class="muted">No promo codes yet. Create one above.</td></tr>';
       document.querySelectorAll('[data-toggle]').forEach(b=>b.onclick=async()=>{b.disabled=true;try{await api('',{method:'POST',body:JSON.stringify({action:'toggleCoupon',id:b.dataset.toggle,active:b.dataset.active!=='true'})});loadCoupons();}catch(err){alertMsg(err.message,true);b.disabled=false;}});
     }catch(err){alertMsg(err.message,true);}
   }
@@ -225,9 +223,9 @@ a{color:var(--ink)}
 
   $('#coupon-form').onsubmit=async(e)=>{
     e.preventDefault();const f=new FormData(e.target);const btn=e.target.querySelector('button');btn.disabled=true;
-    const body={action:'createCoupon',code:f.get('code'),maxRedemptions:f.get('maxRedemptions')||null,expiresAt:f.get('expiresAt')||null,minimumAmount:f.get('minimumAmount')||null,firstTimeOnly:!!f.get('firstTimeOnly')};
+    const body={action:'createCoupon',code:f.get('code'),expiresAt:f.get('expiresAt')||null,minimumAmount:f.get('minimumAmount')||null};
     if(f.get('type')==='percent')body.percentOff=f.get('value');else body.amountOff=f.get('value');
-    try{const r=await api('',{method:'POST',body:JSON.stringify(body)});alertMsg('Created '+r.code+'. It works at checkout right away.');e.target.reset();loadCoupons();}catch(err){alertMsg(err.message,true);}
+    try{const r=await api('',{method:'POST',body:JSON.stringify(body)});alertMsg(r.warning||('Created '+r.code+'. It works in the cart within a minute.'));e.target.reset();loadCoupons();}catch(err){alertMsg(err.message,true);}
     btn.disabled=false;
   };
   $('#legacy').onclick=async(e)=>{
