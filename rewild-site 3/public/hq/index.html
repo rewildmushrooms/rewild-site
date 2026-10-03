@@ -81,6 +81,19 @@ a{color:var(--ink)}
 .rules{list-style:none;padding:0;margin:0;font-size:13px;display:grid;gap:4px}
 .rules li::before{content:'○ ';color:var(--muted)}
 .rules li.ok{color:var(--good)}.rules li.ok::before{content:'✓ ';color:var(--good)}
+.alerts{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.alerts li{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:12px 14px;border-radius:4px;background:var(--stone);border-left:4px solid var(--muted)}
+.alerts li.urgent{border-left-color:var(--bad);background:#FBEDEA}.alerts li.watch{border-left-color:#C98A00;background:#FFF6DB}.alerts li.good{border-left-color:var(--good);background:#EAF4EC}
+.alerts .tag{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
+.alerts li.urgent .tag{color:var(--bad)}.alerts li.watch .tag{color:#8A5E00}.alerts li.good .tag{color:var(--good)}
+.alerts strong{display:block}.alerts span.d{font-size:14px;color:var(--text)}
+.delta{font-size:13px;font-weight:700;margin-top:4px;color:var(--muted)}.delta.up{color:var(--good)}.delta.down{color:var(--bad)}
+.funnel{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.funnel .step{background:var(--stone);padding:14px 16px;border-radius:4px;position:relative}
+.funnel .n{font-family:Montserrat,sans-serif;font-weight:800;font-size:28px;line-height:1.1;font-variant-numeric:tabular-nums}
+.funnel .lbl{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.funnel .pct{font-size:13px;color:var(--muted);margin-top:2px}
+@media (max-width:700px){.funnel{grid-template-columns:repeat(2,1fr)}}
 .pw-row{display:flex;gap:6px}.pw-row input{flex:1;min-width:0;font-family:ui-monospace,Menlo,monospace}
 </style>
 </head>
@@ -144,7 +157,7 @@ a{color:var(--ink)}
     <div class="seg" role="group" aria-label="Date range">
       <button data-days="7" aria-pressed="false">7 days</button><button data-days="30" aria-pressed="true">30 days</button><button data-days="90" aria-pressed="false">90 days</button><button data-days="365" aria-pressed="false">12 months</button>
     </div>
-    <div class="links">
+    <div class="links" data-owner>
       <a class="btn ghost small" href="https://squareup.com/dashboard/sales/transactions" target="_blank" rel="noopener">Square payments</a>
       <a class="btn ghost small" href="https://squareup.com/dashboard/orders/overview" target="_blank" rel="noopener">Square orders</a>
       <a class="btn ghost small" href="https://dashboard.mailerlite.com" target="_blank" rel="noopener">MailerLite</a>
@@ -153,10 +166,15 @@ a{color:var(--ink)}
   </div>
   <p class="msg" id="load-msg" role="status"></p>
 
+  <section class="panel" id="alerts-panel">
+    <div class="panel-head"><h2>Heads up</h2><span class="muted small" id="al-time"></span></div>
+    <ul class="alerts" id="al-list"><li><span class="d">Checking stock, codes, orders and traffic…</span></li></ul>
+  </section>
+
   <section class="tiles" aria-label="Key numbers">
-    <div class="tile"><div class="label">Revenue</div><div class="value" id="t-revenue">–</div><div class="sub" id="t-net"></div></div>
-    <div class="tile"><div class="label">Orders</div><div class="value" id="t-orders">–</div><div class="sub" id="t-customers"></div></div>
-    <div class="tile"><div class="label">Avg order</div><div class="value" id="t-aov">–</div><div class="sub">incl. shipping</div></div>
+    <div class="tile"><div class="label">Revenue</div><div class="value" id="t-revenue">–</div><div class="delta" id="d-revenue"></div><div class="sub" id="t-net"></div></div>
+    <div class="tile"><div class="label">Orders</div><div class="value" id="t-orders">–</div><div class="delta" id="d-orders"></div><div class="sub" id="t-customers"></div></div>
+    <div class="tile"><div class="label">Avg order</div><div class="value" id="t-aov">–</div><div class="delta" id="d-aov"></div><div class="sub">incl. shipping</div></div>
     <div class="tile"><div class="label">Discounts given</div><div class="value" id="t-disc">–</div><div class="sub" id="t-ship"></div></div>
     <div class="tile"><div class="label">Rewilders</div><div class="value" id="t-subs">–</div><div class="sub" id="t-subs-sub">email subscribers</div></div>
   </section>
@@ -168,7 +186,12 @@ a{color:var(--ink)}
     <div class="tip" id="tip"></div>
   </section>
 
-  <section class="panel" id="traffic">
+  <div class="cols">
+    <section class="panel"><div class="panel-head"><h2>Sales funnel</h2><span class="muted small">this period</span></div><div class="funnel" id="funnel"></div><p class="muted small" id="funnel-note" style="margin:10px 0 0"></p></section>
+    <section class="panel"><div class="panel-head"><h2>Where sales come from</h2><span class="muted small" id="repeat-note"></span></div><div id="sources" class="bars-h"></div></section>
+  </div>
+
+  <section class="panel" id="traffic" style="margin-top:12px">
     <div class="panel-head"><h2>Website traffic</h2><a class="muted small" href="https://analytics.google.com" target="_blank" rel="noopener">Open Google Analytics</a></div>
     <p class="msg" id="tr-msg" role="status"></p>
     <div class="tiles" id="tr-tiles"></div>
@@ -249,12 +272,17 @@ a{color:var(--ink)}
       $('#t-orders').textContent=s.orders;
       $('#t-customers').textContent=s.customers+' customers';
       $('#t-aov').textContent=money(s.aov);
+      const delta=(id,cur,prev,fmt)=>{const el=$('#'+id);if(!prev){el.className='delta';el.textContent=cur?'New vs previous '+days+' days':'';return;}const ch=(cur-prev)/prev*100;el.className='delta '+(ch>=0?'up':'down');el.textContent=(ch>=0?'▲ ':'▼ ')+Math.abs(ch).toFixed(0)+'% vs previous '+days+' days';};
+      delta('d-revenue',s.revenue,s.previous.revenue);delta('d-orders',s.orders,s.previous.orders);delta('d-aov',s.aov,s.previous.aov);
+      const maxS=Math.max(1,...s.sources.map(x=>x.revenue));
+      $('#sources').innerHTML=s.sources.length?s.sources.map(x=>`<div class="row"><span>${esc(x.name)}</span><div class="track"><div class="fill" style="width:${Math.max(2,x.revenue/maxS*100)}%"></div></div><span style="text-align:right;font-variant-numeric:tabular-nums">${money(x.revenue)}<br><span class="muted" style="font-size:12px">${x.orders} order${x.orders===1?'':'s'}</span></span></div>`).join(''):'<p class="muted">No sales in this range yet.</p>';
+      $('#repeat-note').textContent=s.repeatBuyers?(s.repeatBuyers+' repeat buyer'+(s.repeatBuyers===1?'':'s')+' ('+Math.round(s.repeatRate*100)+'%)'):'';
       $('#t-disc').textContent=money(s.discounts);
       $('#t-ship').textContent=money(s.shipping)+' shipping collected';
       $('#t-subs').textContent=s.subscribers?s.subscribers.active.toLocaleString('en-CA'):'–';
       $('#t-subs-sub').textContent=s.subscribers?('in '+s.subscribers.name):'connect MailerLite';
       drawChart(s.series);
-      loadTraffic(s.orders);
+      loadTraffic(s);
       const maxP=Math.max(1,...s.products.map(p=>p.revenue));
       $('#products').innerHTML=s.products.length?s.products.map(p=>`<div class="row"><span>${esc(p.name)}</span><div class="track" title="${esc(p.name)}: ${p.units} units, ${money(p.revenue)}"><div class="fill" style="width:${Math.max(2,p.revenue/maxP*100)}%"></div></div><span style="text-align:right;font-variant-numeric:tabular-nums">${money(p.revenue)}<br><span class="muted" style="font-size:12px">${p.units} units</span></span></div>`).join(''):'<p class="muted">No sales in this range yet.</p>';
       $('#coupon-perf').innerHTML=s.coupons.length?s.coupons.map(c=>`<tr><td><strong>${esc(c.code)}</strong></td><td class="num">${c.orders}</td><td class="num">${money(c.discount)}</td><td class="num">${money(c.revenue)}</td></tr>`).join(''):'<tr><td colspan="4" class="muted">No codes used in this range.</td></tr>';
@@ -265,16 +293,37 @@ a{color:var(--ink)}
     }catch(err){$('#load-msg').textContent=err.message;$('#load-msg').className='msg err';}
   }
 
-  async function loadTraffic(orders){
+  function drawFunnel(s,t){
+    const started=s.orders+(s.abandoned?.count||0);
+    const steps=[['Visitors',t&&!t.error&&t.configured?t.visitors:null],['Added to cart',t&&t.events?t.events.addToCart:null],['Started checkout',started],['Paid orders',s.orders]];
+    let prev=null;
+    $('#funnel').innerHTML=steps.map(([l,n])=>{const pct=(prev&&n!=null)?Math.round(n/prev*100)+'% of previous step':'';if(n!=null)prev=n||prev;return `<div class="step"><div class="lbl">${l}</div><div class="n">${n==null?'–':n.toLocaleString('en-CA')}</div><div class="pct">${pct}</div></div>`;}).join('');
+    $('#funnel-note').textContent=s.abandoned?.count?(s.abandoned.count+' checkout'+(s.abandoned.count===1?'':'s')+' not paid ('+money(s.abandoned.value)+' left in carts).'):'';
+  }
+
+  async function loadAlerts(){
+    try{
+      const r=await api('?action=alerts');
+      const tags={urgent:'Act now',watch:'Keep an eye on',info:'FYI',good:'Good news'};
+      $('#al-time').textContent='checked '+new Date(r.checkedAt*1000).toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'});
+      $('#al-list').innerHTML=r.alerts.length?r.alerts.map(a=>`<li class="${a.level}"><div><span class="tag">${tags[a.level]||''}</span><strong>${esc(a.title)}</strong><span class="d">${esc(a.detail||'')}</span></div>${a.tab&&a.tab!=='overview'?`<button class="btn ghost small" data-goto="${a.tab}">Open</button>`:''}</li>`).join(''):'<li class="good"><div><span class="tag">All clear</span><strong>Nothing needs your attention right now.</strong></div></li>';
+      document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>show(b.dataset.goto));
+    }catch(err){$('#al-list').innerHTML=`<li class="watch"><div><strong>Couldn't check alerts</strong><span class="d">${esc(err.message)}</span></div></li>`;}
+  }
+
+  async function loadTraffic(s){
+    const orders=s.orders;
     const m=$('#tr-msg');m.className='msg';m.textContent='Loading visitors…';$('#tr-body').hidden=true;$('#tr-tiles').innerHTML='';
     try{
       const t=await api('?action=traffic&days='+days);
+      drawFunnel(s,t);
       if(!t.configured){m.textContent='Google Analytics is not connected yet. Visitor numbers will show here once it is.';return;}
       if(t.error){m.className='msg err';m.textContent='Google Analytics: '+t.error;return;}
       m.textContent='';
       const conv=t.sessions?(orders/t.sessions*100):0;const mins=Math.floor(t.avgSessionSeconds/60),secs=t.avgSessionSeconds%60;
-      const tile=(l,v,sub)=>`<div class="tile" style="background:var(--stone)"><div class="label">${l}</div><div class="value">${v}</div><div class="sub">${sub||''}</div></div>`;
-      $('#tr-tiles').innerHTML=tile('Visitors',t.visitors.toLocaleString('en-CA'),t.sessions.toLocaleString('en-CA')+' visits')+tile('Page views',t.pageviews.toLocaleString('en-CA'),(t.sessions?(t.pageviews/t.sessions).toFixed(1):'0')+' per visit')+tile('Time on site',mins+'m '+String(secs).padStart(2,'0')+'s','average visit')+tile('Visits that buy',conv.toFixed(conv<10?1:0)+'%',orders+' order'+(orders===1?'':'s')+' from '+t.sessions.toLocaleString('en-CA')+' visits');
+      const tile=(l,v,sub,d)=>`<div class="tile" style="background:var(--stone)"><div class="label">${l}</div><div class="value">${v}</div>${d||''}<div class="sub">${sub||''}</div></div>`;
+      const pv=t.previous?.visitors||0;const vd=pv?`<div class="delta ${t.visitors>=pv?'up':'down'}">${t.visitors>=pv?'▲':'▼'} ${Math.abs(Math.round((t.visitors-pv)/pv*100))}% vs previous ${days} days</div>`:'';
+      $('#tr-tiles').innerHTML=tile('Visitors',t.visitors.toLocaleString('en-CA'),t.sessions.toLocaleString('en-CA')+' visits',vd)+tile('Page views',t.pageviews.toLocaleString('en-CA'),(t.sessions?(t.pageviews/t.sessions).toFixed(1):'0')+' per visit')+tile('Time on site',mins+'m '+String(secs).padStart(2,'0')+'s','average visit')+tile('Visits that buy',conv.toFixed(conv<10?1:0)+'%',orders+' order'+(orders===1?'':'s')+' from '+t.sessions.toLocaleString('en-CA')+' visits');
       const max=Math.max(1,...t.series.map(d=>d.visitors));
       $('#tr-chart').innerHTML=t.series.map(d=>`<div class="bar${d.visitors?'':' zero'}" title="${d.date}: ${d.visitors} visitors" style="height:${d.visitors?Math.max(2,d.visitors/max*100):0}%"></div>`).join('');
       $('#tr-ax-start').textContent=t.series[0]?.date||'';$('#tr-ax-end').textContent=t.series[t.series.length-1]?.date||'';
@@ -283,7 +332,7 @@ a{color:var(--ink)}
       $('#tr-channels').innerHTML=bars(t.channels,'sessions','visits');
       $('#tr-countries').innerHTML=bars(t.countries,'visitors','visitors');
       $('#tr-body').hidden=false;
-    }catch(err){m.className='msg err';m.textContent=err.message;}
+    }catch(err){m.className='msg err';m.textContent=err.message;drawFunnel(s,null);}
   }
 
   function usCell(o){
@@ -347,7 +396,7 @@ a{color:var(--ink)}
     document.querySelectorAll('[role=tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab));
     document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==tab);
     if(loaded[tab])return; loaded[tab]=true;
-    if(tab==='overview')loadSummary();
+    if(tab==='overview'){loadSummary();loadAlerts();}
     if(tab==='codes')loadCoupons();
     if(tab==='inventory')loadInventory();
     if(tab==='commissions')loadCommissions();
