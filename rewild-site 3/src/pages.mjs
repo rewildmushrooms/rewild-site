@@ -3,6 +3,7 @@ import { esc, proofStrip, signupForm } from './layout.mjs';
 import { PRODUCTS, PRODUCT_BY_ID, SHIPPING, money } from '../netlify/functions/_shared/catalog.mjs';
 import { POSTS } from './journal.mjs';
 import { LAB, TESTS, PROCESS } from './lab.mjs';
+import { GUIDES, GROWN, CLEAN, MICRO, HEAVY } from './learn.mjs';
 
 const powders = PRODUCTS.filter((p) => !p.isTincture && !p.isBundle);
 const SELLABLE = PRODUCTS.filter((p) => !p.isBundle);
@@ -157,7 +158,7 @@ ${CORDYFUEL_SECTION}
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Built on trust, integrity and a solid passion for 'shrooms.</h2>
     <div class="stack-sm" style="gap:18px;font-size:17px;color:var(--text)">
       <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> Works quietly behind the scenes. Disappears for days and comes back with backcountry photos, good connections and better ideas.</p>
-      <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> Says the mushrooms are leading the way and she's but a humble shepherd. If she needs a scapegoat, the mushrooms made her do it.</p>
+      <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> A self-taught designer, marketer, builder and lifelong explorer, Jade has spent 20 years turning ideas into things people can actually experience. At REWILD, she brings it all together, leading the brand, design, marketing and tech while following the mushrooms wherever they decide to take her next.</p>
       <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> With 16 years studying nutrition, human optimization and supplementation, Sean brings a whole-food, back-to-basics approach to Rewild. He sees functional mushrooms as simple, natural tools for helping the body perform, adapt and recover.</p>
     </div>
     <a class="btn btn-outline" href="/our-story/" style="align-self:flex-start">Our story</a>
@@ -492,10 +493,20 @@ const story = {
     <h2 style="margin-top:0">I didn't go looking for mushrooms. They found me.</h2>
     <p>I'm Jade, and I started REWILD.</p>
     <p>It began with a trade. I accepted mushrooms as payment for my work. That one yes kept leading somewhere. The more time I spent with mushrooms, the more it felt like they were leading me. Starting REWILD felt like the right next step in life.</p>
-    <p>I grew up playing hockey and basketball in southern Alberta. These days I'm just as passionate about personal development and spirituality. Mushrooms sit right where those two worlds meet: the body and the inner work.</p>
-    <p>Lion's Mane and Cordyceps are the two I take most. Lion's Mane has been with me for a long time. Cordyceps is newer, and since starting REWILD it's become part of every active day.</p>
-    <p>Here's why REWILD matters to me. I see so many people drifting away from nature. I believe mushrooms can be the catalyst that pulls us back to our natural state. Back to natural products. Back to the outdoors. Back to our own inner selves. To me, that's the core solution to so much of what's happening in the world right now.</p>
-    <p>I'm not perfect. I'm a humble shepherd. The mushrooms are leading the way.</p>
+    <p>My path here hasn't exactly been linear.</p>
+    <p>I've spent the last 20 years in design and marketing, starting at the Calgary Sun, then working with a boutique design firm in Calgary before eventually building my own business, Humble Bee Design, in 2013. I'm mostly self-taught and have always been someone who figures things out by doing them.</p>
+    <p>I've also been a bartender, a roadie, a snowboarder and a pretty relentless traveller. I spent two months living at an ashram in India, went to my first Burning Man in 2009, and have always been drawn to experiences that challenge the way we normally live and see the world.</p>
+    <p>I grew up playing hockey and basketball in southern Alberta. These days I'm just as passionate about personal development, spirituality and understanding what makes us human. Mushrooms sit right where those worlds meet for me: the body, nature and the inner work.</p>
+    <p>Lion's Mane and Cordyceps are the two I take most. Lion's Mane has been with me for a long time. Cordyceps is newer, and since starting REWILD it's become part of pretty much every active day.</p>
+    <p>REWILD has also brought together nearly everything I've learned along the way. I currently handle the website, tech, marketing and design, which means on any given day I might be building a webpage, designing a label, packing mushrooms or figuring out something I've never done before.</p>
+    <p>But here's why REWILD really matters to me.</p>
+    <p>Somewhere along the way, we've forgotten that we're part of nature. We've built lives around convenience, speed and stimulation, while becoming increasingly disconnected from our bodies, the outdoors and ourselves.</p>
+    <p>I believe mushrooms can be one of the catalysts that helps bring us back.</p>
+    <p>Back to natural products. Back to the outdoors. Back to paying attention to what we put into our bodies. Back to ourselves. Not by rejecting modern life, but by becoming more intentional about how we live within it.</p>
+    <p>That's what REWILD means to me.</p>
+    <p>It's not really about mushrooms. They're simply tools. It's about returning to your natural state and remembering a part of ourselves that I think modern life has made very easy to forget. <a href="/manifesto/">Read the Rewild Manifesto</a>.</p>
+    <p>I'm still figuring it out as I go. I'm a humble shepherd.</p>
+    <p>The mushrooms are leading the way.</p>
     <p style="font-style:italic;color:var(--muted)">Jade</p>
   </div>
 </div></section>
@@ -523,7 +534,7 @@ const story = {
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Built on trust, integrity and a solid passion for 'shrooms.</h2>
     <div class="stack-sm" style="gap:18px;font-size:17px;color:var(--text)">
       <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> Works quietly behind the scenes. Disappears for days and comes back with backcountry photos, good connections and better ideas.</p>
-      <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> Says the mushrooms are leading the way and she's but a humble shepherd. If she needs a scapegoat, the mushrooms made her do it.</p>
+      <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> A self-taught designer, marketer, builder and lifelong explorer, Jade has spent 20 years turning ideas into things people can actually experience. At REWILD, she brings it all together, leading the brand, design, marketing and tech while following the mushrooms wherever they decide to take her next.</p>
       <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> With 16 years studying nutrition, human optimization and supplementation, Sean brings a whole-food, back-to-basics approach to Rewild. He sees functional mushrooms as simple, natural tools for helping the body perform, adapt and recover.</p>
     </div>
   </div>
@@ -709,6 +720,105 @@ const terms = simple('/terms/', 'Terms of Service | REWILD Mushrooms', 'Terms of
 <h2>Governing law</h2>
 <p>These terms are governed by the laws of British Columbia and the federal laws of Canada that apply there.</p>`);
 
+
+/* ---------------- LEARN: MUSHROOM GUIDES ---------------- */
+const guideImg = (g, cls = 'cover sq', lazy = false) => g.image
+  ? `<img class="${cls}" src="${g.image}" alt="${esc(g.alt)}" width="640" height="640"${lazy ? ' loading="lazy"' : ''}>`
+  : `<div class="img-placeholder ${cls}" role="img" aria-label="${esc(g.alt)}"><span>${esc(g.name)}<br><small>Photo coming soon</small></span></div>`;
+
+const learnIndex = {
+  path: '/learn/',
+  title: 'Learn About Functional Mushrooms | Guides and Journal | REWILD',
+  description: "Plain-language guides to Cordyceps, Lion's Mane, Reishi and Chaga: what they are, where they grow, their history, and how REWILD grows and tests them.",
+  jsonld: [crumbs([['Home', '/'], ['Learn', '/learn/']])],
+  body: `
+<section class="page-hero"><div class="wrap stack-sm" style="gap:16px">
+  <p class="eyebrow">Learn</p>
+  <h1 class="h1" style="font-size:clamp(40px,5vw,64px)">Know your mushrooms.</h1>
+  <p class="lead" style="max-width:640px">What each one is, where it grows, where it comes from, and exactly how ours are grown and tested.</p>
+</div></section>
+<section class="section tight"><div class="wrap grid-4 learn-grid">
+  ${GUIDES.map((g) => `<a class="post-card" href="/learn/${g.slug}/">${guideImg(g, 'cover sq', true)}<span class="eyebrow">Mushroom guide</span><h2 class="h3" style="font-size:24px;line-height:1.15">${esc(g.name)}</h2><p class="latin" style="margin-top:-6px">${esc(g.latin)}</p><p class="muted" style="font-size:16px">${esc(g.intro)}</p><span class="link small">Read the guide</span></a>`).join('')}
+</div></section>
+<section class="section stone"><div class="wrap split">
+  <div class="stack">
+    <p class="eyebrow">Journal</p>
+    <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Field notes.</h2>
+    <p class="lead">Guides to reading labels, fruiting body vs mycelium, testing and building your own stack.</p>
+    <div><a class="btn btn-dark" href="/journal/">Read the journal</a></div>
+  </div>
+  <div class="stack-sm">${POSTS.map((p) => `<a class="link" style="display:block;padding:14px 0;border-bottom:1px solid var(--line);text-decoration:none;font-weight:600" href="/${p.slug}/">${esc(p.title)}</a>`).join('')}</div>
+</div></section>
+${signupBanner('learn')}`,
+};
+
+function guidePage(g) {
+  const prod = PRODUCT_BY_ID[g.productId];
+  const lab = LAB.find((l) => l.id === g.productId);
+  const others = GUIDES.filter((x) => x.slug !== g.slug);
+  const tbl = (rows) => `<table class="lab-table"><tbody>${rows.map(([a, b]) => `<tr><td>${esc(a)}</td><td>${esc(b)}</td></tr>`).join('')}</tbody></table>`;
+  return {
+    path: `/learn/${g.slug}/`,
+    title: g.seoTitle,
+    description: g.description,
+    ogType: 'article',
+    image: g.image ? g.image.replace('.webp', '.jpg') : undefined,
+    jsonld: [
+      crumbs([['Home', '/'], ['Learn', '/learn/'], [g.name, `/learn/${g.slug}/`]]),
+      { '@context': 'https://schema.org', '@type': 'Article', headline: `${g.name} (${g.latin})`, description: g.description, author: { '@id': SITE.url + '/#org' }, publisher: { '@id': SITE.url + '/#org' }, mainEntityOfPage: abs(`/learn/${g.slug}/`), ...(g.image ? { image: abs(g.image.replace('.webp', '.jpg')) } : {}) },
+    ],
+    body: `
+<section class="page-hero"><div class="wrap split">
+  <div class="stack-sm" style="gap:16px">
+    <p class="eyebrow"><a href="/learn/" style="text-decoration:none">Learn</a> · Mushroom guide</p>
+    <h1 class="h1" style="font-size:clamp(44px,6vw,76px)">${esc(g.name)}</h1>
+    <p class="latin" style="font-size:20px">${esc(g.latin)}</p>
+    <p class="lead">${esc(g.intro)}</p>
+    <p class="small muted">${esc(g.aka)}</p>
+    <div class="row"><a class="btn btn-dark" href="/shop/${prod.slug}/">Shop ${esc(prod.name)}</a><a class="btn btn-outline" href="/lab-results/">See lab results</a></div>
+  </div>
+  <div>${guideImg(g)}</div>
+</div></section>
+<section class="section"><div class="narrow prose" style="max-width:760px">
+  ${g.sections.map(([h, ps]) => `<h2>${esc(h)}</h2>${ps.map((t) => `<p>${esc(t)}</p>`).join('')}`).join('')}
+  <h2>How ours is grown</h2>
+  <dl class="spec">${GROWN.map(([a, b]) => `<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join('')}</dl>
+</div></section>
+<section class="section stone"><div class="wrap grid-3">
+  <div class="stack-sm">
+    <h2 class="h3">What we test for</h2>
+    <p class="muted small">Release standards every lot has to meet before it ships.</p>
+    ${tbl(g.compounds)}
+    ${lab ? `<p class="small">Latest lot (${esc(lab.lot)}): ${lab.results.slice(0, 2).map((r) => `${esc(r[0].replace(/ \(.*\)/, ''))} ${esc(r[2])}`).join(', ')}. <a class="link" href="/lab-results/">Full results</a></p>` : ''}
+  </div>
+  <div class="stack-sm">
+    <h2 class="h3">Clean by design</h2>
+    <ul class="checklist">${CLEAN.map((c) => `<li>${esc(c)}</li>`).join('')}</ul>
+    <p class="small muted">${esc(MICRO)} No pesticides are used during production.</p>
+  </div>
+  <div class="stack-sm">
+    ${g.heavy ? `<h2 class="h3">Heavy metals</h2><p class="muted small">Every lot must test under these limits.</p>${tbl(HEAVY)}` : `<h2 class="h3">Purity</h2><p class="muted small">Every lot is DNA verified, tested for gluten and water activity, and screened for microbes before release.</p>`}
+  </div>
+</div></section>
+<section class="section"><div class="wrap split">
+  <div class="stack">
+    <p class="eyebrow">Taste and use</p>
+    <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">What it's like.</h2>
+    <dl class="spec"><dt>Colour</dt><dd>${esc(g.sensory.colour)}</dd><dt>Aroma</dt><dd>${esc(g.sensory.aroma)}</dd><dt>Flavour</dt><dd>${esc(g.sensory.flavour)}</dd></dl>
+    <p>${esc(g.tips)}</p>
+  </div>
+  <div style="max-width:420px">${productCard(prod)}</div>
+</div></section>
+<section class="section stone"><div class="narrow prose" style="max-width:760px">
+  <h2 style="margin-top:0">Go deeper</h2>
+  <p>If you want to fall all the way down the rabbit hole, start with mycologist Paul Stamets. His book <em>Mycelium Running</em> and the 2019 documentary <em>Fantastic Fungi</em> are two of the best introductions to how fungi shape the living world, from forest soil to the food on your plate.</p>
+  <p>Or keep reading here: ${others.map((o) => `<a href="/learn/${o.slug}/">${esc(o.name)}</a>`).join(', ')}, or the <a href="/journal/">journal</a>.</p>
+  <p class="small muted">This guide is for education only and is not medical advice.</p>
+</div></section>
+${signupBanner('guide-' + g.slug)}`,
+  };
+}
+
 /* ---------------- ORDER CONFIRMED / 404 ---------------- */
 const confirmed = {
   path: '/order-confirmed/',
@@ -760,6 +870,8 @@ export const PAGES = [
   lab,
   story,
   manifesto,
+  learnIndex,
+  ...GUIDES.map(guidePage),
   journalIndex,
   ...POSTS.map(postPage),
   shipping,

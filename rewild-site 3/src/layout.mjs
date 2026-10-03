@@ -1,4 +1,6 @@
 import { SITE } from './site.mjs';
+import { POSTS } from './journal.mjs';
+const JOURNAL_PATHS = new Set(POSTS.map((p) => `/${p.slug}/`));
 import { SHIPPING } from '../netlify/functions/_shared/catalog.mjs';
 
 export const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -7,10 +9,17 @@ const NAV = [
   ['/', 'Home'],
   ['/shop/', 'Shop'],
   ['/build-your-stack/', 'Build Your Stack'],
+  ['LEARN'],
   ['/lab-results/', 'Lab Results'],
   ['/our-story/', 'Our Story'],
-  ['/journal/', 'Journal'],
 ];
+const LEARN_LINKS = [
+  ['/learn/cordyceps/', 'Cordyceps'],
+  ["/learn/lions-mane/", "Lion's Mane"],
+  ['/learn/reishi/', 'Reishi'],
+  ['/learn/chaga/', 'Chaga'],
+];
+const isLearnPath = (p) => p.startsWith('/learn/') || p.startsWith('/journal/') || JOURNAL_PATHS.has(p);
 
 export const icons = {
   cart: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>',
@@ -56,7 +65,9 @@ export function layout(page) {
   const desc = page.description;
   const image = SITE.url + (page.image || '/img/og-default.jpg');
   const ld = [].concat(page.jsonld || []);
-  const navHtml = NAV.map(([href, label]) => `<a href="${href}"${(href === '/' ? page.path === '/' : page.path.startsWith(href)) ? ' aria-current="page"' : ''}>${label}</a>`).join('');
+  const cur = (href) => (href === '/' ? page.path === '/' : page.path === href || page.path.startsWith(href)) ? ' aria-current="page"' : '';
+  const learnMenu = `<div class="nav-group"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="learn-menu"${isLearnPath(page.path) ? ' aria-current="page"' : ''}>Learn <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button><div class="nav-sub" id="learn-menu"><span class="sub-label">Mushroom guides</span>${LEARN_LINKS.map(([h, l]) => `<a href="${h}"${cur(h)}>${l}</a>`).join('')}<hr><a href="/journal/"${page.path === '/journal/' ? ' aria-current="page"' : ''}>Journal</a><a href="/learn/"${page.path === '/learn/' ? ' aria-current="page"' : ''}>All guides</a></div></div>`;
+  const navHtml = NAV.map(([href, label]) => href === 'LEARN' ? learnMenu : `<a href="${href}"${cur(href)}>${label}</a>`).join('');
   return `<!doctype html>
 <html lang="en-CA">
 <head>
@@ -119,6 +130,10 @@ ${page.body}
         <a href="/shop/reishi-powder/">Peace · Reishi</a>
       </nav>
       <nav class="footer-col" aria-label="Learn"><h2>Learn</h2>
+        <a href="/learn/cordyceps/">Cordyceps</a>
+        <a href="/learn/lions-mane/">Lion's Mane</a>
+        <a href="/learn/reishi/">Reishi</a>
+        <a href="/learn/chaga/">Chaga</a>
         <a href="/build-your-stack/">Build Your Stack</a>
         <a href="/lab-results/">Lab Results</a>
         <a href="/manifesto/">The Manifesto</a>
