@@ -17,7 +17,7 @@ export default async (req) => {
   try {
     const fields = { source: body.source === 'quiz' ? 'quiz' : 'website' };
     const q = body.quiz && typeof body.quiz === 'object' ? body.quiz : null;
-    if (q) for (const k of ['stack', 'why', 'want', 'day', 'when', 'coffee', 'how', 'start']) if (q[k]) fields['quiz_' + k] = String(q[k]).slice(0, 60);
+    if (q) for (const k of ['stack', 'stack_names', 'how_to', 'why', 'want', 'day', 'when', 'coffee', 'how', 'format', 'start']) if (q[k]) fields['quiz_' + k] = String(q[k]).slice(0, k === 'how_to' ? 250 : 80);
     const groups = [process.env.MAILERLITE_GROUP_ID, q && process.env.MAILERLITE_QUIZ_GROUP_ID].filter(Boolean);
     try {
       await addSubscriber(email, fields, { groups });
