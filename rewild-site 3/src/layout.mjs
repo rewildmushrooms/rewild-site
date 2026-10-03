@@ -147,11 +147,18 @@ ${page.body}
       <div class="dest"><label><input type="radio" name="dest" value="CA" checked> Canada</label><label><input type="radio" name="dest" value="US"> United States</label></div>
     </fieldset>
     <div id="cart-progress" hidden><p class="small" style="margin-bottom:6px"></p><div class="progress"><span style="width:0"></span></div></div>
-    <div class="totals"><span>Subtotal</span><span id="cart-subtotal">$0</span><span>Shipping</span><span id="cart-shipping">n/a</span><span class="grand">Total</span><span class="grand" id="cart-total">$0</span></div>
+    <form class="promo" id="promo-form" novalidate>
+      <label for="promo-code" class="sr-only">Promo code</label>
+      <input id="promo-code" name="code" placeholder="Promo code" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button type="submit" class="btn btn-outline">Apply</button>
+    </form>
+    <p class="small" id="promo-msg" role="status"></p>
+    <div class="totals" id="cart-totals"></div>
     <p class="small muted" id="cart-ship-note"></p>
+    <label class="small news-opt"><input type="checkbox" id="cart-news"> Email me new products and offers. Unsubscribe anytime.</label>
     <button type="button" class="btn btn-yellow btn-block" id="checkout-btn">Checkout</button>
     <p class="error-msg" id="cart-error" role="alert"></p>
-    <p class="small muted" style="text-align:center">Secure payment by Stripe. Cards, Apple Pay and Google Pay.</p>
+    <p class="small muted" style="text-align:center">Secure payment by Square. Cards, Apple Pay and Google Pay.</p>
   </div>
 </aside>
 <div id="toast" class="toast" role="status"></div>

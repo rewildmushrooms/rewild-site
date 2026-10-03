@@ -201,7 +201,7 @@ ${CORDYFUEL_SECTION}
 <section class="section tight"><div class="wrap grid-3">
   <div class="stack-sm"><h2 class="h3" style="font-size:22px">Free shipping over $175</h2><p class="muted">Anywhere in Canada. $20 flat rate under that. Nelson hand delivery Monday and Tuesday.</p></div>
   <div class="stack-sm"><h2 class="h3" style="font-size:22px">Shipping to the US</h2><p class="muted">Yes. US shipping and duties are calculated for each parcel. After you order, we email a quote you can pay online before it ships.</p></div>
-  <div class="stack-sm"><h2 class="h3" style="font-size:22px">Promo codes</h2><p class="muted">Have a code? Add it on the secure checkout page.</p></div>
+  <div class="stack-sm"><h2 class="h3" style="font-size:22px">Promo codes</h2><p class="muted">Have a code? Add it in your cart before checkout.</p></div>
 </div></section>`,
 };
 
@@ -648,7 +648,7 @@ const FAQS = [
   ['Can I see the lab report?', 'Yes. Full certificates of analysis are sent on request. <a href="/lab-results/#request">Request one here</a> and we\u2019ll email it, usually within one business day.'],
   ['How much is shipping?', `$20 flat rate in Canada, free on orders of $175 or more. US shipping and duties are quoted per order by email after you check out.`],
   ['Do you ship to the United States?', 'Yes. Choose United States in your cart. After you order, we email a quote for shipping and duties that you can pay online before it ships.'],
-  ['I have a promo code. Where do I enter it?', 'On the secure checkout page, under the order summary, click "Add promotion code".'],
+  ['I have a promo code. Where do I enter it?', 'Open your cart and type it in the promo code box, then tap Apply. You will see the discount before you check out.'],
   ['Is CordyFuel™ caffeinated?', 'No. CordyFuel™ is pure Cordyceps militaris with no caffeine or stimulants added.'],
   ['Is this medical advice?', 'No. Our products are foods and are not intended to diagnose, treat, cure or prevent any disease. Talk to your healthcare practitioner before use if you are pregnant, nursing or taking medication.'],
 ];
@@ -676,11 +676,11 @@ const privacy = simple('/privacy/', 'Privacy Policy | REWILD Mushrooms', 'How RE
 <p><em>Last updated: October 2026</em></p>
 <p>REWILD Mushrooms ("we") respects your privacy and handles personal information in line with Canada's Personal Information Protection and Electronic Documents Act (PIPEDA).</p>
 <h2>What we collect</h2>
-<ul><li><strong>Orders:</strong> your name, email, phone, shipping and billing address, and what you bought. Payments are processed by Stripe. We never see or store your full card number.</li><li><strong>Email list:</strong> your email address if you join the Rewilders, through MailerLite. You can unsubscribe any time from any email.</li><li><strong>Contact form:</strong> what you send us, through Netlify Forms.</li><li><strong>Your cart:</strong> stored in your own browser (local storage) so it is still there when you come back. It is not sent to us until you check out.</li></ul>
+<ul><li><strong>Orders:</strong> your name, email, phone, shipping and billing address, and what you bought. Payments are processed by Square. We never see or store your full card number.</li><li><strong>Email list:</strong> your email address if you join the Rewilders, through MailerLite. You can unsubscribe any time from any email.</li><li><strong>Contact form:</strong> what you send us, through Netlify Forms.</li><li><strong>Your cart:</strong> stored in your own browser (local storage) so it is still there when you come back. It is not sent to us until you check out.</li></ul>
 <h2>How we use it</h2>
 <p>To fulfil and ship your order, answer your questions, send emails you signed up for, and meet our legal and accounting obligations. We do not sell your information.</p>
 <h2>Who we share it with</h2>
-<p>Only the services we need to run the shop: Stripe (payments), MailerLite (email), Netlify (website hosting and forms), and shipping carriers (to deliver your order). These providers may store data outside Canada, including in the United States.</p>
+<p>Only the services we need to run the shop: Square (payments), MailerLite (email), Netlify (website hosting and forms), and shipping carriers (to deliver your order). These providers may store data outside Canada, including in the United States.</p>
 <h2>Your choices</h2>
 <p>You can ask to see, correct or delete your personal information by emailing <a href="mailto:${SITE.email}">${SITE.email}</a>.</p>`);
 
@@ -689,7 +689,7 @@ const terms = simple('/terms/', 'Terms of Service | REWILD Mushrooms', 'Terms of
 <h2>Products</h2>
 <p>Our mushroom powders and tinctures are sold as foods. Information on this site is for educational purposes only and is not medical advice. Our products are not intended to diagnose, treat, cure or prevent any disease. Speak with a healthcare practitioner before use if you are pregnant, nursing or taking medication.</p>
 <h2>Pricing and payment</h2>
-<p>Prices are in Canadian dollars. Payment is taken securely by Stripe when you place your order. We may correct pricing errors and cancel affected orders with a full refund.</p>
+<p>Prices are in Canadian dollars. Payment is taken securely by Square when you place your order. We may correct pricing errors and cancel affected orders with a full refund.</p>
 <h2>Promo codes</h2>
 <p>One promo code per order. Codes have no cash value, may expire, and may be limited in number of uses.</p>
 <h2>Shipping and returns</h2>
@@ -718,8 +718,11 @@ const confirmed = {
 (function(){
   function clear(){ if(window.RewildCart){window.RewildCart.clear();} else { try{localStorage.removeItem('rewild_cart_v1')}catch(e){} } }
   window.addEventListener('DOMContentLoaded', clear);
-  var id=new URLSearchParams(location.search).get('session_id'); if(!id) return;
-  fetch('/api/order?session_id='+encodeURIComponent(id)).then(function(r){return r.ok?r.json():null}).then(function(o){
+  var qs=new URLSearchParams(location.search), id=qs.get('orderId')||qs.get('order_id');
+  if(!id){ try{ id=localStorage.getItem('rewild_last_order'); }catch(e){} }
+  if(!id) return;
+  try{ localStorage.removeItem('rewild_last_order'); }catch(e){}
+  fetch('/api/order?order_id='+encodeURIComponent(id)).then(function(r){return r.ok?r.json():null}).then(function(o){
     if(!o) return;
     if(o.firstName) document.getElementById('oc-title').textContent='Thank you, '+o.firstName+'.';
     var items=(o.items||[]).map(function(i){return i.qty+' × '+i.name}).join(', ');
