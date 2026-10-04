@@ -28,3 +28,12 @@ export async function groupStats({ fetchImpl = fetch } = {}) {
 }
 
 export const isEmail = (s) => typeof s === 'string' && s.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s);
+
+export async function groupCount(id, { fetchImpl = fetch } = {}) {
+  const key = process.env.MAILERLITE_API_KEY;
+  if (!key || !id) return null;
+  const res = await fetchImpl(`https://connect.mailerlite.com/api/groups/${id}`, { headers: { Authorization: `Bearer ${key}`, Accept: 'application/json' } });
+  if (!res.ok) return null;
+  const { data } = await res.json();
+  return data?.active_count ?? null;
+}

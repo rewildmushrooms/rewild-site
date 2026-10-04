@@ -9,21 +9,26 @@ export const _setTransport = (fn) => { transport = fn; };
 
 export const mailConfigured = () => !!(process.env.SMTP_USER && process.env.SMTP_PASSWORD);
 
-export function buildMessage({ from, to, subject, text }) {
+export function buildMessage({ from, to, subject, text, html, fromName = 'REWILD HQ', replyTo }) {
   const domain = String(from).split('@')[1] || 'rewildmushrooms.com';
-  const body = String(text).replace(/\r?\n/g, '\r\n').replace(/^\./gm, '..');
-  return [
-    `From: REWILD HQ <${from}>`,
+  const dot = (t) => String(t).replace(/\r?\n/g, '\r\n').replace(/^\./gm, '..');
+  const subj = /^[\x20-\x7e]*$/.test(subject) ? subject : `=?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`;
+  const head = [
+    `From: ${fromName} <${from}>`,
     `To: <${to}>`,
-    `Subject: ${subject}`,
+    ...(replyTo ? [`Reply-To: <${replyTo}>`] : []),
+    `Subject: ${subj}`,
     `Date: ${new Date().toUTCString()}`,
     `Message-ID: <${crypto.randomUUID()}@${domain}>`,
     'MIME-Version: 1.0',
-    'Content-Type: text/plain; charset=utf-8',
-    'Content-Transfer-Encoding: 8bit',
-    '',
-    body,
-  ].join('\r\n');
+  ];
+  if (!html) return [...head, 'Content-Type: text/plain; charset=utf-8', 'Content-Transfer-Encoding: 8bit', '', dot(text)].join('\r\n');
+  const b = 'rw' + crypto.randomUUID().replace(/-/g, '');
+  const b64 = (t) => Buffer.from(t).toString('base64').replace(/(.{76})/g, '$1\r\n');
+  return [...head, `Content-Type: multipart/alternative; boundary="${b}"`, '',
+    `--${b}`, 'Content-Type: text/plain; charset=utf-8', 'Content-Transfer-Encoding: base64', '', b64(text),
+    `--${b}`, 'Content-Type: text/html; charset=utf-8', 'Content-Transfer-Encoding: base64', '', b64(html),
+    `--${b}--`, ''].join('\r\n');
 }
 
 function smtp({ host, port, user, pass, from, to, data }) {
@@ -67,9 +72,9 @@ function smtp({ host, port, user, pass, from, to, data }) {
   });
 }
 
-export async function sendMail({ to, subject, text }) {
+export async function sendMail({ to, subject, text, html, fromName, replyTo }) {
   const user = process.env.SMTP_USER, pass = process.env.SMTP_PASSWORD;
   if (!user || !pass) throw Object.assign(new Error('Email is not set up yet (SMTP_USER / SMTP_PASSWORD).'), { status: 503 });
-  const msg = { host: process.env.SMTP_HOST || 'mail.rewildmushrooms.com', port: Number(process.env.SMTP_PORT) || 465, user, pass, from: user, to, data: buildMessage({ from: user, to, subject, text }) };
+  const msg = { host: process.env.SMTP_HOST || 'mail.rewildmushrooms.com', port: Number(process.env.SMTP_PORT) || 465, user, pass, from: user, to, data: buildMessage({ from: user, to, subject, text, html, fromName, replyTo }) };
   return (transport || smtp)(msg);
 }

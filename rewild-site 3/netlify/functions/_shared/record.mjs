@@ -11,6 +11,8 @@ import { checkLowStock } from './lowstock.mjs';
 import { addSubscriber, isEmail } from './mailerlite.mjs';
 import { getJSON, setJSON } from './store.mjs';
 import { orderCode, partnerForOrder } from './team.mjs';
+import { putIndex, appendLedger, customerSummary, orderSummary } from './data.mjs';
+import { markPurchased, useRecoveryCode, RECOVERY_RE } from './carts.mjs';
 
 const amt = (m) => Number(m?.amount || 0);
 export const emailKey = (e) => String(e || '').trim().toLowerCase();
@@ -77,6 +79,7 @@ export async function recordPaidOrder(order, opts, deps = {}) {
   if (!steps.inventory) {
     try { await (deps.syncWebOrders || syncWebOrders)([order], opts); steps.inventory = true; } catch (e) { console.error('stock update failed', order.id, e.message); }
     if (steps.inventory) {
+      try { await appendLedger(Object.entries(rec.units).map(([product, n]) => ({ at: order.created_at, product, change: -n, source: 'online_sale', reason: 'Website order', by: 'website', note: null, order: order.id }))); } catch (e) { console.error('ledger failed', e.message); }
       try { await checkLowStock(await (deps.stockLevels || stockLevels)(opts), deps); } catch (e) { console.error('low stock check failed', e.message); }
     }
   }
@@ -89,12 +92,25 @@ export async function recordPaidOrder(order, opts, deps = {}) {
       steps.newsletter = true;
     } catch (e) { console.error('newsletter add failed', e.message); }
   }
+  if (!steps.cart && order.metadata?.cart) {
+    try { await markPurchased(order.metadata.cart, order.id); steps.cart = true; } catch (e) { console.error('cart mark failed', e.message); }
+  }
+  if (!steps.code && rec.code && RECOVERY_RE.test(rec.code)) {
+    try { await useRecoveryCode(rec.code, order.id); steps.code = true; } catch (e) { console.error('code mark failed', e.message); }
+  }
+  let customer = null;
   if (email) {
-    const c = await getJSON('customers', email);
-    await setJSON('customers', email, mergeCustomer(c, rec));
+    customer = mergeCustomer(await getJSON('customers', email), rec);
+    if (order.metadata?.cart) customer.openCart = false;
+    await setJSON('customers', email, customer);
+    await putIndex('customers', email, customerSummary(customer));
   }
   rec.recordedAt = prev?.recordedAt || new Date().toISOString();
   await setJSON('orders', order.id, rec);
+  await putIndex('orders', order.id, orderSummary(rec));
+  if (customer?.marketingConsent && !steps.mlsync) {
+    try { await (deps.syncCustomer || syncCustomer)(customer); steps.mlsync = true; await setJSON('orders', order.id, rec); } catch (e) { console.error('mailerlite sync failed', e.message); }
+  }
   return rec;
 }
 
@@ -108,9 +124,29 @@ export async function recordRefund(order) {
   await setJSON('orders', order.id, rec);
   if (rec.email) {
     const c = await getJSON('customers', rec.email);
-    if (c) await setJSON('customers', rec.email, mergeCustomer(c, rec));
+    if (c) { const m = mergeCustomer(c, rec); await setJSON('customers', rec.email, m); await putIndex('customers', rec.email, customerSummary(m)); }
   }
+  await putIndex('orders', order.id, orderSummary(rec));
   return rec;
+}
+
+// Copies purchase facts into MailerLite fields (only for people who said yes to emails).
+const NAMES = { energy: 'Energy', clarity: "Lion's Mane", strength: 'Chaga', peace: 'Reishi', tincture: 'Energy Tincture' };
+export function mailerliteFields(c) {
+  const last = Object.entries(c.orders || {}).sort((a, b) => String(b[1].at).localeCompare(String(a[1].at)))[0]?.[1];
+  return {
+    customer_status: (c.orderCount || 0) >= 2 ? 'repeat customer' : (c.orderCount || 0) === 1 ? 'customer' : 'prospect',
+    lifetime_value: Math.round(c.lifetimeValue || 0) / 100,
+    order_count: c.orderCount || 0,
+    last_purchase_date: (c.lastOrderAt || '').slice(0, 10),
+    last_product_purchased: last ? Object.keys(last.items || {}).map((k) => NAMES[k] || k).join(', ') : '',
+    products_purchased: Object.keys(c.products || {}).map((k) => NAMES[k] || k).join(', '),
+    customer_since: (c.firstOrderAt || '').slice(0, 10),
+  };
+}
+export async function syncCustomer(c) {
+  try { await addSubscriber(c.email, mailerliteFields(c), { groups: [] }); }
+  catch (e) { if (!/422/.test(e.message)) throw e; } // fields not created yet in MailerLite
 }
 
 export async function fetchOrder(id, opts) {

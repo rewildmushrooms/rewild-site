@@ -6,6 +6,7 @@
 // Older codes may still carry rules in a "rewild_rules" custom attribute; those are read as a fallback.
 import { square, idem, pages } from './square.mjs';
 import { getJSON, setJSON } from './store.mjs';
+import { getRecoveryCode, RECOVERY_RE } from './carts.mjs';
 
 const RULES_KEY = 'rewild_rules';
 export const CODE_RE = /^[A-Z0-9_-]{3,30}$/;
@@ -83,6 +84,15 @@ export async function validatePromo(code, subtotal, opts, now = Date.now()) {
   code = normCode(code);
   const bad = (m) => Object.assign(new Error(m), { status: 400 });
   if (!CODE_RE.test(code)) throw bad('That code does not look right.');
+  if (RECOVERY_RE.test(code)) {
+    // One-time cart recovery code from a reminder email.
+    const r = await getRecoveryCode(code);
+    if (!r) throw bad(`${code} is not a valid code.`);
+    if (r.used) throw bad(`${code} has already been used.`);
+    if (now / 1000 > r.expiresAt) throw bad(`${code} has expired.`);
+    const promo = { id: null, code, percentOff: r.percentOff, amountOff: null, active: true, expiresAt: r.expiresAt, minimumAmount: null, oneTime: true };
+    return { promo, discount: discountFor(promo, subtotal) };
+  }
   const promo = (await listPromos(opts)).find((p) => p.code === code);
   if (!promo || !promo.active) throw bad(`${code} is not a valid code.`);
   if (promo.expiresAt && now / 1000 > promo.expiresAt) throw bad(`${code} has expired.`);
