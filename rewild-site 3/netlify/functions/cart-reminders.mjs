@@ -33,7 +33,7 @@ export async function runReminders(now = Date.now(), deps = {}) {
     let code = null;
     if (step === 3) { code = await createRecoveryCode(fresh, now); fresh.code = code.code; }
     const msg = reminderEmail(step, fresh, { site, code });
-    await send({ to: fresh.email, subject: msg.subject, text: msg.text, html: msg.html, fromName: 'REWILD Mushrooms', replyTo: 'hello@rewildmushrooms.com' });
+    await send({ to: fresh.email, subject: msg.subject, text: msg.text, html: msg.html, fromName: 'REWILD Mushrooms', replyTo: 'hello@rewildmushrooms.com', unsubscribe: msg.unsubscribe });
     fresh.sent.push({ step, at: new Date(now).toISOString() });
     await saveCart(fresh);
     report.sent.push({ cart: fresh.id, step });
