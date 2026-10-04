@@ -299,7 +299,7 @@
         if (!res.ok) throw new Error(d.error || 'Something went wrong. Please try again.');
         save('joined'); try { localStorage.setItem('rewild_email', email); } catch (x) {}
         f.querySelector('h2').textContent = "You're in. Welcome, Rewilder.";
-        f.querySelector('p:not(.eyebrow)').textContent = 'Check your inbox. Your first field note is on its way.';
+        f.querySelector('p:not(.eyebrow)').textContent = 'Check your inbox. Your 20% off code is on its way.';
         f.email.hidden = true; btn.hidden = true; f.querySelector('.pop-fine').hidden = true;
         if (window.gtag) window.gtag('event', 'sign_up', { method: 'popup' });
         setTimeout(() => hide(false), 3500);
