@@ -200,10 +200,10 @@
       <div class="stat" style="background:var(--stone);margin-top:8px">
         <h3 style="font-size:20px;margin-bottom:10px">How to take it</h3>
         <ul class="ticks">
-          ${howLine ? `<li>${cf(esc(howLine))}</li>` : ''}
-          ${pickIds.map((id) => `<li><strong>${cf(esc(id === 'tincture' ? 'Energy Tincture' : WORD[id]))}:</strong> ${esc(TIMING[id === 'tincture' ? 'energy' : id])}</li>`).join('')}
-          ${coffeeLine ? `<li>${cf(esc(coffeeLine))}</li>` : ''}
-          ${fmtNote ? `<li>${esc(fmtNote)}</li>` : ''}
+          ${howLine ? `<li><span>${cf(esc(howLine))}</span></li>` : ''}
+          ${pickIds.map((id) => `<li><span><strong>${cf(esc(id === 'tincture' ? 'Energy Tincture' : WORD[id]))}:</strong> ${esc(TIMING[id === 'tincture' ? 'energy' : id])}</span></li>`).join('')}
+          ${coffeeLine ? `<li><span>${cf(esc(coffeeLine))}</span></li>` : ''}
+          ${fmtNote ? `<li><span>${esc(fmtNote)}</span></li>` : ''}
         </ul>
       </div>
       ${duo ? `<p class="small muted">${cf('Your Energy comes as the Rewild Energy Duo: powder at home, tincture on the go. You save $20.')}</p>` : ''}
@@ -236,7 +236,7 @@
     const p = byId[id];
     const url = id === 'duo' ? '/shop/cordyceps-militaris-powder/' : `/shop/${p.slug}/`;
     return `<article class="card"><a class="img-link" href="${url}"><img src="${p.image}" alt="" width="600" height="600" loading="lazy"></a>
-      <div class="meta"><div class="dot-label"><span class="dot" style="background:${p.color}"></span>${cf(esc(p.mushroom))}</div><h3 style="font-size:24px"><a href="${url}">${cf(esc(p.name))}</a></h3><div class="price-line">${esc(p.format)} · <span class="price">${money(p.price)}</span></div></div></article>`;
+      <div class="meta"><div class="dot-label"><span class="dot" style="background:${p.color}"></span><span>${cf(esc(p.mushroom))}</span></div><h3 style="font-size:24px"><a href="${url}">${cf(esc(p.name))}</a></h3><div class="price-line">${esc(p.format)} · <span class="price">${money(p.price)}</span></div></div></article>`;
   }
 
   // Restore a shared result link (?why=..&want=..)
