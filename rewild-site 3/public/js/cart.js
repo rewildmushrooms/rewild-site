@@ -24,16 +24,12 @@
   let state = store.read();
   state.items = state.items.filter((i) => byId[i.id]);
 
+  // Prices come from /js/pricing.js, the same engine the checkout uses.
+  const P = window.REWILD_PRICING;
+  const catalog = { byId, shipping: C.shipping };
   function quote() {
-    const ship = C.shipping[state.country] || C.shipping.CA;
-    let subtotal = 0;
-    for (const i of state.items) subtotal += byId[i.id].price * i.qty;
-    const free = ship.freeOver != null && subtotal >= ship.freeOver;
-    const shipping = state.items.length === 0 ? 0 : free ? 0 : ship.flatRate;
-    const p = state.promo && !state.promo.pending ? state.promo : null;
-    const discount = !p || (p.minimumAmount && subtotal < p.minimumAmount) ? 0
-      : p.percentOff ? Math.round(subtotal * p.percentOff / 100) : Math.min(subtotal, p.amountOff || 0);
-    return { subtotal, shipping, free, discount, total: subtotal - discount + shipping, ship };
+    const promo = state.promo && !state.promo.pending ? state.promo : null;
+    return P.priceCart(state.items, state.country, catalog, promo, !!state.addon);
   }
 
   function save() { store.write(state); render(); }
@@ -78,42 +74,54 @@
     if (state.items.length === 0) {
       body.innerHTML = '<div class="empty"><p>Your cart is empty.</p><p style="margin-top:16px"><a class="btn btn-outline" href="/shop/">Shop mushrooms</a></p></div>';
     } else {
-      body.innerHTML = state.items.map((i) => {
-        const p = byId[i.id];
-        return `<div class="line"><img src="${p.image}" alt="" width="72" height="72">
+      const lineHtml = (p, i) => `<div class="line"><img src="${p.image}" alt="" width="72" height="72">
           <div><div class="name">${esc(p.name)}</div><div class="sub">${esc(p.format)}</div>
           <div class="row" style="gap:12px;margin-top:6px"><div class="qty" role="group" aria-label="Quantity for ${esc(p.name)}">
           <button type="button" data-dec="${p.id}" aria-label="Decrease">&minus;</button><input type="number" min="0" max="20" value="${i.qty}" data-qty="${p.id}" aria-label="Quantity"><button type="button" data-inc="${p.id}" aria-label="Increase">+</button></div>
           <button type="button" class="remove" data-remove="${p.id}">Remove</button></div></div>
           <div class="price">${money(p.price * i.qty)}</div></div>`;
-      }).join('');
+      const gift = byId[P.OFFERS.freeGift.id];
+      const sg = P.suggestion(state.items, catalog);
+      body.innerHTML = state.items.map((i) => lineHtml(byId[i.id], i)).join('') +
+        (q.gift ? `<div class="line gift-line"><img src="${gift.image}" alt="" width="72" height="72"><div><div class="name">Free gift: ${esc(gift.name)}</div><div class="sub">Yours free on orders of $200 or more</div></div><div class="price">Free</div></div>` : '') +
+        (sg ? `<div class="sugg"><div><b>${esc(sg.text)}</b><span>${esc(sg.sub)}</span></div><button type="button" class="btn btn-outline small" data-sugg="${esc(sg.kind)}" data-sugg-add="${esc(sg.add)}" data-sugg-swap="${esc((sg.swap || []).join(','))}">${esc(sg.cta)}</button></div>` : '');
     }
     document.querySelectorAll('input[name=dest]').forEach((r) => { r.checked = r.value === state.country; });
     const prog = $('#cart-progress');
     if (prog) {
-      if (q.ship.freeOver && state.items.length) {
-        const pct = Math.min(100, Math.round((q.subtotal / q.ship.freeOver) * 100));
+      if (state.items.length) {
         prog.hidden = false;
-        prog.querySelector('p').textContent = q.free ? 'You have free shipping.' : `${money(q.ship.freeOver - q.subtotal)} away from free shipping in Canada.`;
-        prog.querySelector('.progress span').style.width = pct + '%';
+        const done = q.quoted ? 'You get a free tincture with this order.' : 'You get free shipping and a free tincture.';
+        prog.querySelector('p').textContent = !q.next ? done : q.next.kind === 'shipping' ? `${money(q.next.short)} away from free shipping in Canada.` : `${money(q.next.short)} away from a free Rewild Energy Tincture.`;
+        prog.querySelector('.progress span').style.width = (q.next ? q.next.pct : 100) + '%';
       } else prog.hidden = true;
     }
-    const shipTxt = !state.items.length ? 'n/a' : q.ship.quoted ? 'Quoted by email' : (q.free ? 'Free' : money(q.shipping));
+    const shipTxt = !state.items.length ? 'n/a' : q.quoted ? 'Quoted by email' : (q.free ? 'Free' : money(q.shipping));
     const p = state.promo;
-    $('#cart-totals').innerHTML = `<span>Subtotal</span><span>${money(q.subtotal)}</span>` +
-      (p && !p.pending && q.discount ? `<span class="disc">${esc(p.code)}</span><span class="disc">&minus;${money(q.discount)}</span>` : '') +
+    $('#cart-totals').innerHTML = `<span>Subtotal</span><span>${money(q.itemsTotal)}</span>` +
+      (q.discount ? `<span class="disc">${esc(q.discountName)}</span><span class="disc">&minus;${money(q.discount)}</span>` : '') +
+      (q.addonApplied ? `<span>Tincture add-on (15% off)</span><span>${money(q.addonUnit)}</span>` : '') +
+      (q.gift ? `<span class="disc">Free tincture</span><span class="disc">Free</span>` : '') +
       `<span>Shipping</span><span>${shipTxt}</span>` +
-      `<span class="grand">Total</span><span class="grand">${money(q.total)}${q.ship.quoted && state.items.length ? ' + shipping' : ''}</span>`;
+      `<span class="grand">Total</span><span class="grand">${money(q.total)}${q.quoted && state.items.length ? ' + shipping' : ''}</span>` +
+      (q.savings > 0 ? `<span class="saved">You save</span><span class="saved">${money(q.savings)}</span>` : '');
     const pm = $('#promo-msg');
     if (pm) {
       pm.className = 'small';
       if (!p) pm.innerHTML = '';
       else if (p.pending) pm.innerHTML = `${esc(p.code)} will be checked at checkout. <button type="button" class="link-btn" data-promo-remove>Remove</button>`;
-      else if (p.minimumAmount && q.subtotal < p.minimumAmount) { pm.className = 'small err'; pm.innerHTML = `${esc(p.code)} needs an order of ${money(p.minimumAmount)} or more. <button type="button" class="link-btn" data-promo-remove>Remove</button>`; }
+      else if (q.codeNote === 'minimum') { pm.className = 'small err'; pm.innerHTML = `${esc(p.code)} needs an order of ${money(p.minimumAmount)} or more. <button type="button" class="link-btn" data-promo-remove>Remove</button>`; }
+      else if (q.codeBeaten) pm.innerHTML = `Your bundle and stock-up savings beat ${esc(p.code)}, so we kept those. <button type="button" class="link-btn" data-promo-remove>Remove code</button>`;
       else pm.innerHTML = `${esc(p.code)} applied: ${p.percentOff ? p.percentOff + '% off' : money(p.amountOff) + ' off'}. <button type="button" class="link-btn" data-promo-remove>Remove</button>`;
     }
     const news = $('#cart-news'); if (news) news.checked = !!state.newsletter;
-    const ct = $('#co-total'); if (ct) ct.textContent = `${count()} item${count() === 1 ? '' : 's'} · ${money(q.total)} CAD${q.discount ? ' after your code' : ''}`;
+    const aw = $('#addon-wrap');
+    if (aw) {
+      aw.hidden = !q.addonEligible;
+      const cb = $('#co-addon'); if (cb) cb.checked = !!state.addon && q.addonEligible;
+      const lt = $('#addon-text'); if (lt) lt.innerHTML = `<b>Add a Rewild Energy Tincture for ${money(q.addonUnit)}</b> <s>${money(q.addonFull)}</s><br>Save 15%. Alcohol-free CordyFuel™ Cordyceps, for on the go.`;
+    }
+    const ct = $('#co-total'); if (ct) ct.textContent = `${count() + (q.addonApplied ? 1 : 0) + (q.gift ? 1 : 0)} item${count() === 1 && !q.addonApplied && !q.gift ? '' : 's'} · ${money(q.total)} CAD${q.quoted ? ' + shipping' : ''}${q.savings > 0 ? ` · you save ${money(q.savings)}` : ''}`;
     if (!state.items.length) $('#cart-drawer').classList.remove('step-email');
     $('#cart-ship-note').textContent = state.country === 'US' ? 'US shipping and duties vary by parcel. After you order, we email a quote you can pay online before we ship.' : '';
     $('#checkout-btn').disabled = state.items.length === 0;
@@ -133,7 +141,7 @@
     try { localStorage.setItem('rewild_email', email); } catch (x) {}
     btn.disabled = true; const label = btn.textContent; btn.textContent = 'Opening secure checkout…';
     try {
-      const res = await fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, items: state.items, country: state.country, code: state.promo && !state.promo.pending ? state.promo.code : undefined, ref: partnerRef(), newsletter: !!state.newsletter }) });
+      const res = await fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, items: state.items, country: state.country, code: state.promo && !state.promo.pending ? state.promo.code : undefined, ref: partnerRef(), newsletter: !!state.newsletter, addon: !!state.addon && quote().addonEligible }) });
       let data = {};
       try { data = await res.json(); } catch (x) {}
       if (!res.ok || !data.url) throw new Error(data.error || 'Checkout is unavailable right now. Please try again in a minute.');
@@ -193,11 +201,18 @@
     else if (t.id === 'checkout-btn') emailStep();
     else if (t.id === 'co-back') $('#cart-drawer').classList.remove('step-email');
     else if (t.matches('[data-promo-remove]')) { state.promo = null; save(); }
+    else if (t.dataset.sugg) {
+      if (t.dataset.sugg === 'all4') {
+        (t.dataset.suggSwap || '').split(',').filter(Boolean).forEach((id) => setQty(id, (state.items.find((i) => i.id === id)?.qty || 0) - 1));
+      }
+      add(t.dataset.suggAdd, 1); ga('add_to_cart', [gaItem(t.dataset.suggAdd, 1)], { promotion_name: t.dataset.sugg === 'all4' ? 'cart_upgrade_all4' : 'cart_pairs_well' });
+    }
   });
   document.addEventListener('click', (e) => { if (e.target.classList && e.target.classList.contains('drawer-backdrop')) close(); });
   document.addEventListener('change', (e) => {
     if (e.target.dataset && e.target.dataset.qty) setQty(e.target.dataset.qty, e.target.value);
     if (e.target.name === 'dest') { state.country = e.target.value === 'US' ? 'US' : 'CA'; save(); }
+    if (e.target.id === 'co-addon') { state.addon = !!e.target.checked; save(); if (state.addon) ga('add_to_cart', [gaItem('tincture', 1)], { promotion_name: 'checkout_addon' }); }
     if (e.target.id === 'cart-news') { state.newsletter = e.target.checked; save(); }
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drawer().classList.contains('drawer-open')) close(); });
