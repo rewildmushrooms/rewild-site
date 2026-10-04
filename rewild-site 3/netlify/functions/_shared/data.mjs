@@ -87,6 +87,8 @@ export function orderSummary(r) {
     restocked: !!r.restocked,
     notes: (r.notes || []).slice(-20),
     paidOnline: r.source !== 'offline',
+    partner: r.partner || null,
+    by: r.by || null,
     source: r.source || 'online',
     country: r.country || null,
     shipment: r.shipment ? { at: r.shipment.at, carrier: r.shipment.carrier, tracking: r.shipment.tracking, emailed: !!r.shipment.emailed } : null,

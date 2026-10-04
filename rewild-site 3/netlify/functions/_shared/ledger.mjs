@@ -8,6 +8,7 @@ import { BUNDLES, STOCKED, ensureVariations, stockLevels } from './inventory.mjs
 import { appendLedger, putIndex, orderSummary } from './data.mjs';
 import { setJSON } from './store.mjs';
 import { checkLowStock } from './lowstock.mjs';
+import { PARTNERS } from './team.mjs';
 
 const bad = (m) => Object.assign(new Error(m), { status: 400 });
 const note = (n) => String(n || '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, 200);
@@ -56,6 +57,9 @@ export async function recordOfflineSale(b, member, opts) {
   const units = cleanItems(sold);
   const amount = b.amount === '' || b.amount == null ? null : Math.round(Number(b.amount) * 100);
   if (amount != null && !(amount >= 0 && amount < 10000000)) throw bad('Enter the amount received in dollars, or leave it blank.');
+  // Whose sale: a partner's own sale always counts for them; Jade can record one for a partner.
+  const partner = member.role === 'partner' ? member.id : PARTNERS.some((p) => p.id === b.partner) ? b.partner : null;
+  if (partner && !(amount > 0)) throw bad('Enter the amount received, so the commission can be worked out.');
   const id = 'OFF-' + crypto.randomBytes(5).toString('hex').toUpperCase();
   const at = await move(units, 'IN_STOCK', 'SOLD', `offline:${id}`, opts);
   const n = note(b.note);
@@ -63,7 +67,7 @@ export async function recordOfflineSale(b, member, opts) {
   const rec = {
     id, createdAt: at, email: null, name: n || 'Offline sale', source: 'offline', by: member.id, note: n || null,
     items: sold.map((i) => ({ id: i.id, name: PRODUCTS.find((p) => p.id === i.id)?.name || i.id, qty: Math.floor(Number(i.qty)) })),
-    units, total: amount || 0, discount: 0, refunded: 0, code: null,
+    units, total: amount || 0, discount: 0, refunded: 0, code: null, partner,
   };
   await setJSON('orders', id, rec);
   await putIndex('orders', id, orderSummary(rec));
