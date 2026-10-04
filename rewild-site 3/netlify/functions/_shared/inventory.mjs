@@ -16,7 +16,8 @@ const REF = 'web:';
 const SYNC_DAYS = 120;
 
 let varCache = null; // { productId: variationId }
-export const _resetInventoryCache = () => { varCache = null; };
+let bundleVars = {}; // { bundleId: variationId } for Duo / All Four Set items in Square
+export const _resetInventoryCache = () => { varCache = null; bundleVars = {}; };
 
 // Find (or create) the Square item variation for every stocked product.
 export async function ensureVariations(opts, { create = true } = {}) {
@@ -29,6 +30,8 @@ export async function ensureVariations(opts, { create = true } = {}) {
     for (const v of it.item_data?.variations || []) {
       const sku = v.item_variation_data?.sku;
       if (sku) skus.add(sku);
+      const bp = PRODUCTS.find((x) => BUNDLES[x.id] && skuFor(x.id) === sku);
+      if (bp && !bundleVars[bp.id]) bundleVars[bp.id] = v.id;
       const p = STOCKED.find((x) => skuFor(x.id) === sku);
       if (p && !found[p.id]) found[p.id] = v.id;
     }
@@ -68,6 +71,7 @@ export async function ensureVariations(opts, { create = true } = {}) {
     for (const m of res.id_mappings || []) {
       const hit = /^#var-(.+)$/.exec(m.client_object_id || '');
       if (hit && STOCKED.some((x) => x.id === hit[1])) found[hit[1]] = m.object_id;
+      else if (hit && BUNDLES[hit[1]]) bundleVars[hit[1]] = m.object_id;
     }
   }
   varCache = found;
@@ -97,7 +101,24 @@ export function unitsInOrder(o) {
   return out;
 }
 
-// Deduct paid website orders that have not been deducted yet. Returns how many orders were applied.
+// Bundles rung up in the Square app: Square doesn't know what is inside them, so their parts are
+// taken out of stock here (single products sold in the Square app already lower their own count).
+export function bundleUnitsInPosOrder(o) {
+  const byVar = Object.fromEntries(Object.entries(bundleVars).map(([pid, vid]) => [vid, pid]));
+  const out = {};
+  for (const li of o.line_items || []) {
+    const pid = byVar[li.catalog_object_id];
+    const qty = Math.round(Number(li.quantity) || 0);
+    if (!pid || !qty) continue;
+    for (const [k, n] of Object.entries(BUNDLES[pid])) out[k] = (out[k] || 0) + n * qty;
+  }
+  return out;
+}
+const isWeb = (o) => o.metadata?.source === 'rewildmushrooms.com';
+const unitsToDeduct = (o) => (isWeb(o) ? unitsInOrder(o) : bundleUnitsInPosOrder(o));
+
+// Deduct paid website orders (and Square app orders with bundles) that have not been deducted yet.
+// Returns how many orders were applied.
 export async function syncWebOrders(orders, opts, now = Date.now()) {
   const vars = await ensureVariations(opts, { create: false });
   const ids = Object.values(vars);
@@ -110,10 +131,10 @@ export async function syncWebOrders(orders, opts, now = Date.now()) {
     const ref = c.adjustment?.reference_id || '';
     if (ref.startsWith(REF)) done.add(ref.slice(REF.length));
   }
-  const todo = orders.filter((o) => o.metadata?.source === 'rewildmushrooms.com' && isPaid(o) && o.created_at >= since && !done.has(o.id));
+  const todo = orders.filter((o) => isPaid(o) && o.created_at >= since && !done.has(o.id) && (isWeb(o) || Object.keys(bundleUnitsInPosOrder(o)).length));
   let applied = 0;
   for (const o of todo) {
-    const lines = Object.entries(unitsInOrder(o)).filter(([pid]) => vars[pid]);
+    const lines = Object.entries(unitsToDeduct(o)).filter(([pid]) => vars[pid]);
     if (!lines.length) continue;
     await square('POST', '/inventory/changes/batch-create', {
       idempotency_key: `rw-${o.id}`.slice(0, 128),
