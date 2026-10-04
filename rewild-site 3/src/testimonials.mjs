@@ -19,7 +19,7 @@ export const TESTIMONIALS = [
     name: 'Krystal J.',
     detail: "Takes Lion's Mane, Reishi, Chaga + the Energy Tincture",
     head: 'Such an easy, grounding part of my routine',
-    quote: "I love having something simple I can incorporate into my morning ritual... Starting my morning with coffee and functional mushrooms has become such an easy and grounding part of my routine. If you've been curious about exploring functional mushrooms, Rewild Mushrooms has definitely become a favourite in my wellness toolkit.",
+    quote: "...Starting my morning with coffee and functional mushrooms has become such an easy and grounding part of my routine. If you've been curious about exploring functional mushrooms, Rewild Mushrooms has definitely become a favourite in my wellness toolkit.",
     products: ['clarity', 'strength', 'peace', 'tincture'],
   },
   {
@@ -49,7 +49,7 @@ const card = (t) => t.youtube ? video(t) : `<figure class="review">
 </figure>`;
 
 // Full section (homepage, CordyFuel page).
-export function reviewsSection({ eyebrow = 'What Rewilders are saying', title = 'Real people. Real rituals.', ids, tone = 'stone' } = {}) {
+export function reviewsSection({ eyebrow = 'What Rewilders are saying', title = 'Real people. Real routines.', ids, tone = 'stone' } = {}) {
   const list = ids ? ids.map((id) => TESTIMONIALS.find((t) => t.id === id)).filter(Boolean) : TESTIMONIALS;
   if (!list.length) return '';
   return `<section class="section ${tone} reviews-band" aria-label="Customer reviews"><div class="wrap">

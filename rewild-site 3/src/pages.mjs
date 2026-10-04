@@ -89,7 +89,7 @@ const home = {
   path: '/',
   title: 'REWILD | Organic Mushroom Powder Grown in BC, Canada',
   description:
-    "Organic, full-spectrum Cordyceps, Lion's Mane, Chaga and Reishi powders grown in British Columbia. One mushroom per product. Every batch third-party tested.",
+    "Organic, full-spectrum Cordyceps, Lion's Mane, Chaga and Reishi powders grown in British Columbia. Every batch third-party tested.",
   preload: '/img/hero-tincture-mountains.webp',
   jsonld: [
     { '@context': 'https://schema.org', ...org },
@@ -137,7 +137,7 @@ ${reviewsSection()}
   </div>
   <ol class="steps">
     <li><span class="n">01</span><div><b>Answer three questions</b><span>About your day, your rhythm and how you like to take things.</span></div></li>
-    <li><span class="n">02</span><div><b>Get your stack</b><span>One mushroom or a few, matched to your day.</span></div></li>
+    <li><span class="n">02</span><div><b>Get your stack</b><span>The mushrooms that fit your day, matched in a minute.</span></div></li>
     <li><span class="n">03</span><div><b>Make it part of your day</b><span>Small daily choices compound.</span></div></li>
   </ol>
 </div></section>
@@ -156,7 +156,7 @@ ${reviewsSection()}
   <div class="stack-sm" style="max-width:720px;gap:16px">
     <p class="eyebrow">How to take mushroom powder</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,46px)">Mushrooms that fit<br>real life.</h2>
-    <p class="lead">Coffee. Cacao. Smoothies. Food. Or whatever is already part of your day. Returning to your natural state doesn't have to be complicated.</p>
+    <p class="lead">Coffee. Cacao. Tea. Smoothies. Food. Or honey and hot water. Add it to what's already part of your day. Returning to your natural state doesn't have to be complicated.</p>
   </div>
   <div class="grid-4">${USES.map(([k, t, s]) => `<div class="use-tile"><img src="/img/use-${k}.webp" alt="${t} with REWILD mushroom powder" width="477" height="489" loading="lazy"><b>${t}</b><span class="muted" style="font-size:16px;margin-top:-8px">${s}</span></div>`).join('')}</div>
 </div></section>
@@ -230,7 +230,7 @@ ${CORDYFUEL_SECTION}
 
 /* ---------------- PRODUCT PAGES ---------------- */
 const USE_TEXT = {
-  powder: 'Add ½ teaspoon to your favourite smoothie, elixir, soup, tea, coffee, or hot water and honey.',
+  powder: 'Add ½ teaspoon to your favourite smoothie, elixir, soup, tea, coffee, or hot water and honey. Tip for warm drinks: add a little coconut oil or butter and blend it. The fat helps the powder mix in smooth, so your drink doesn\'t get muddy.',
   tincture: 'Take 10 to 20 ml per serving, straight or added to a drink. A 100 ml bottle holds 5 to 10 servings.',
 };
 const PRODUCT_DETAILS = {
@@ -503,7 +503,7 @@ const lab = {
 const story = {
   path: '/our-story/',
   title: 'Our Story | Canadian Mushroom Company, Slocan Valley BC | REWILD',
-  description: 'REWILD is a small Canadian mushroom company from the Slocan Valley, BC. Meet the team, our grower and the idea behind single-mushroom powders.',
+  description: 'REWILD is a small Canadian mushroom company from the Slocan Valley, BC. Meet the team, our grower and the idea behind our full-spectrum mushroom powders.',
   jsonld: [crumbs([['Home', '/'], ['Our Story', '/our-story/']]), { '@context': 'https://schema.org', '@type': 'AboutPage', name: 'Our Story', about: { '@id': SITE.url + '/#org' } }],
   body: `
 <section class="page-hero"><div class="wrap split">
@@ -552,7 +552,7 @@ const story = {
   <p>We don't grow our own mushrooms. We work with a specialist grower in British Columbia that cultivates them from DNA-verified strains, on certified organic sorghum, in a solar-powered facility. We chose them for their science, their testing and their award-winning CordyFuel™. The whole organism is harvested together: fruiting body, mycelium and the compounds the mycelium releases as it grows. Then it's dried, milled and lab tested before it ever reaches a pouch or a bottle. <a href="/lab-results/">See how it's grown and tested</a>.</p>
   <p>Our job is choosing what goes into every REWILD pouch and bottle, and making sure you can know exactly where it came from.</p>
   <h2>What we believe</h2>
-  <ul><li>Mushrooms are tools. Not miracles. Not shortcuts.</li><li>You should know exactly what's inside. One mushroom per product, clearly labelled.</li><li>Trust comes from transparency, not hype. That's why every lot is lab tested and <a href="/lab-results/">the numbers are public</a>.</li><li>Small daily choices compound.</li></ul>
+  <ul><li>Mushrooms are tools. Not miracles. Not shortcuts.</li><li>You should know exactly what's inside, clearly labelled.</li><li>Trust comes from transparency, not hype. That's why every lot is lab tested and <a href="/lab-results/">the numbers are public</a>.</li><li>Small daily choices compound.</li></ul>
 </div></section>
 <section class="section"><div class="wrap split">
   <div><img class="cover portrait" src="/img/rewild-bear-cordyfuel-tincture.webp" alt="A bear at a summer festival with a bottle of Rewild Energy tincture in its teeth" width="960" height="1280" loading="lazy"></div>
@@ -658,7 +658,7 @@ function postPage(post) {
 <section class="section tight"><div class="narrow"><div class="prose">${post.body}</div></div></section>
 </article>
 <section class="section tight stone"><div class="wrap">
-  <div class="stack-sm" style="margin-bottom:32px;gap:12px"><p class="eyebrow">Explore Rewild Mushrooms</p><h2 class="h3">Canadian-grown. Full spectrum. One mushroom per product.</h2></div>
+  <div class="stack-sm" style="margin-bottom:32px;gap:12px"><p class="eyebrow">Explore Rewild Mushrooms</p><h2 class="h3">Canadian-grown. Full spectrum. Third-party tested.</h2></div>
   <div class="grid-4">${powders.map((p) => productCard(p)).join('')}</div>
 </div></section>`,
   };
@@ -689,7 +689,7 @@ const FAQS = [
   ['Where are your mushrooms grown?', 'In British Columbia, Canada, on certified organic sorghum, from DNA-verified strains.'],
   ['Who grows your mushrooms?', 'REWILD is not the grower. Our mushrooms are grown by <a href="https://nucelium.com" rel="noopener" target="_blank">NuCelium</a>, a certified organic cultivator in British Columbia and the maker of CordyFuel™. We choose the products, brand them, pack them and share the lab results for every lot.'],
   ['What does full spectrum mean?', 'Our powders contain the whole organism: fruiting body and mycelium together. <a href="/fruiting-body-vs-mycelium-whats-the-difference-in-functional-mushroom-products/">Read the full explainer</a>.'],
-  ['How do I take the powder?', 'Our labels suggest ½ teaspoon a day in a smoothie, elixir, soup, tea, coffee, or hot water and honey.'],
+  ['How do I take the powder?', 'Our labels suggest ½ teaspoon a day in a smoothie, elixir, soup, tea, coffee, or hot water and honey. Tip for warm drinks: add a little coconut oil or butter and blend it. The fat helps the powder mix in smooth, so your drink doesn\'t get muddy.'],
   ['How do I take the tincture?', '10 to 20 ml per serving, straight or in a drink. Each 100 ml bottle holds 5 to 10 servings.'],
   ['Are your products tested?', 'Yes. Every lot is tested for species identity, potency (polysaccharides, beta-glucans, and cordycepin for CordyFuel™), a seven-test microbial panel, gluten and water activity. See the numbers on our <a href="/lab-results/">lab results</a> page.'],
   ['Can I see the lab report?', 'Yes. Full certificates of analysis are sent on request. <a href="/lab-results/#request">Request one here</a> and we\u2019ll email it, usually within one business day.'],

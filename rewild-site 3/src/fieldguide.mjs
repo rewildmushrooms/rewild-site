@@ -11,7 +11,7 @@ const PICKS = [
 ];
 
 const STACKS = [
-  ['The morning ritual', 'Rewild Energy + Rewild Clarity', '½ teaspoon of each, stirred into your coffee.'],
+  ['The morning coffee', 'Rewild Energy + Rewild Clarity', '½ teaspoon of each, stirred into your coffee.'],
   ['The full day', 'Energy in the morning, Peace at night', 'Energy in your morning cup. Peace in a hot cacao after dinner.'],
   ['The one-bag start', 'Pick the one that fits your day', 'Take it daily for a few weeks before adding a second. Small daily choices compound.'],
 ];
@@ -58,14 +58,14 @@ export const fieldGuide = {
 <section class="page-hero"><div class="wrap narrow stack">
   <p class="eyebrow">Free guide · for Rewilders</p>
   <h1 class="h1" style="font-size:clamp(38px,5vw,62px)">The Rewild Field Guide</h1>
-  <p class="lead">Four mushrooms. One job each. Here's how to pick yours, when to take it, and what to look for in any mushroom product. Two minutes, start to finish.</p>
+  <p class="lead">Four mushrooms. Here's how to pick yours, how to add it to what you already drink and eat, and what to look for in any mushroom product. Two minutes, start to finish.</p>
   <p class="no-print"><button type="button" class="btn btn-outline" onclick="window.print()">Save as PDF</button></p>
 </div></section>
 
 <section class="section stone"><div class="wrap narrow fg-sec">
   <p class="eyebrow">Step 1</p>
   <h2 class="h2" style="font-size:clamp(28px,3.4vw,42px)">Pick by your day</h2>
-  <p style="max-width:640px">Each REWILD bag is one mushroom, so you always know what you're taking. Start with the moment of the day you want to build a ritual around.</p>
+  <p style="max-width:640px">Start with the part of your day you want to add it to.</p>
   <div class="fg-picks">${PICKS.map(pick).join('')}</div>
   <p class="small" style="margin-top:16px">Prefer a liquid? <a href="/shop/cordyceps-tincture/">Rewild Energy Tincture</a> is the same CordyFuel™ Cordyceps, alcohol-free. Take 10 to 20 ml per serving, straight or in a drink.</p>
 </div></section>
@@ -73,28 +73,30 @@ export const fieldGuide = {
 <section class="section"><div class="wrap narrow fg-sec">
   <p class="eyebrow">Step 2</p>
   <h2 class="h2" style="font-size:clamp(28px,3.4vw,42px)">How to take it</h2>
-  <p style="max-width:640px"><b>½ teaspoon a day</b>, added to food or drink. That's it. A 100g bag holds roughly 70 to 100 servings, so about two to three months of daily use.</p>
+  <p style="max-width:640px"><b>½ teaspoon a day</b>, added to something you already eat or drink. That's it. A 100g bag holds roughly 70 to 100 servings, so about two to three months of daily use.</p>
   <div class="fg-grid">
     <div class="fg-card"><b>Coffee</b><p>Stir it into your morning cup.</p></div>
     <div class="fg-card"><b>Cacao</b><p>Whisk it into an afternoon or evening cacao.</p></div>
+    <div class="fg-card"><b>Tea</b><p>Stir it into any tea, hot or iced.</p></div>
+    <div class="fg-card"><b>Honey + hot water</b><p>A spoon of honey, hot water, ½ teaspoon of powder.</p></div>
     <div class="fg-card"><b>Smoothies</b><p>Blend it with everything else.</p></div>
     <div class="fg-card"><b>Food</b><p>Soups, sauces, oats. Whatever you cook.</p></div>
   </div>
+  <p style="margin-top:18px;max-width:640px"><b>Tip for warm drinks:</b> add a little coconut oil or butter and blend it. The fat helps the powder mix in smooth, so your drink doesn't get muddy.</p>
 </div></section>
 
 <section class="section stone"><div class="wrap narrow fg-sec">
   <p class="eyebrow">Step 3</p>
   <h2 class="h2" style="font-size:clamp(28px,3.4vw,42px)">Three simple stacks</h2>
   <div class="fg-grid">${STACKS.map(([t, w, h]) => `<div class="fg-card"><b>${esc(t)}</b><p style="font-weight:700;margin-bottom:6px">${esc(w)}</p><p>${esc(h)}</p></div>`).join('')}</div>
-  <p style="margin-top:18px">The secret isn't the mushroom. It's the ritual. Same time, same cup, every day.</p>
+  <p style="margin-top:18px">The secret is consistency. Add it to something you already do every day.</p>
 </div></section>
 
 <section class="section"><div class="wrap narrow fg-sec">
   <p class="eyebrow">Before you buy any mushroom product</p>
-  <h2 class="h2" style="font-size:clamp(28px,3.4vw,42px)">The 5-point checklist</h2>
-  <p style="max-width:640px">Whoever you buy from, ask these five questions. If a brand can't answer them, keep looking.</p>
+  <h2 class="h2" style="font-size:clamp(28px,3.4vw,42px)">The 4-point checklist</h2>
+  <p style="max-width:640px">Whoever you buy from, ask these four questions. If a brand can't answer them, keep looking.</p>
   <ol class="fg-check">
-    <li><b>Is it one mushroom, clearly labelled?</b> Blends make it hard to know what you're actually getting, or how much.</li>
     <li><b>Is it third-party lab tested, and can you see the results?</b> Every REWILD lot is tested before release, and <a href="/lab-results/">the numbers are public</a>.</li>
     <li><b>Do you know where it was grown?</b> Ours comes from a specialist grower in British Columbia, from DNA-verified strains, on certified organic sorghum.</li>
     <li><b>Is it organic?</b> Look for it on the label, not just in the ads.</li>

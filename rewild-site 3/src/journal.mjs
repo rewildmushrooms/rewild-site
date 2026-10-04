@@ -33,7 +33,7 @@ export const POSTS = [
 <p>For many Canadians, local sourcing matters. Not because local is always better. But because transparency builds trust.</p>
 <h2>Why Rewild Takes A Different Approach</h2>
 <p>There are many good mushroom products on the market. We simply believe consumers deserve complete transparency about what they're buying. That's why every Rewild product is built around a few simple principles:</p>
-<ul><li>Grown in British Columbia, Canada</li><li>Full spectrum mushrooms (fruiting body + mycelium)</li><li>Third-party tested</li><li>No fillers or unnecessary additives</li><li>One mushroom per bag so you can <a href="/build-your-stack/">build your own stack</a></li></ul>
+<ul><li>Grown in British Columbia, Canada</li><li>Full spectrum mushrooms (fruiting body + mycelium)</li><li>Third-party tested</li><li>No fillers or unnecessary additives</li><li>Clear labels, so you can <a href="/build-your-stack/">build your own stack</a></li></ul>
 <p>Our goal isn't to overwhelm you with complicated formulas. Our goal is to help you understand exactly what's in the package.</p>
 <h2>Look Beyond Marketing Claims</h2>
 <p>The front of a package is designed to attract attention. The back of the package is where the real information lives. When comparing mushroom products, spend less time focusing on bold marketing promises. Spend more time evaluating:</p>
@@ -42,8 +42,8 @@ export const POSTS = [
 <h2>Why Third-Party Testing Matters</h2>
 <p>Independent testing helps verify that products contain what the company says they contain. While testing standards vary between manufacturers, third-party verification is one of the strongest signals that a company values transparency. Consumers shouldn't have to rely solely on marketing. Verification matters. (See our <a href="/lab-results/">lab results</a>.)</p>
 <h2>Single Mushroom Or Mushroom Blend?</h2>
-<p>Many brands sell mushroom blends. Others focus on individual mushroom powders. Neither approach is automatically right or wrong. However, single mushroom products offer one significant advantage. You always know exactly what you're getting.</p>
-<p>If you're interested in Lion's Mane, you can purchase Lion's Mane. If you're interested in Reishi, you can purchase Reishi. If you're interested in Cordyceps or Chaga, you can choose those individually as well. This allows consumers to build their own mushroom routine instead of relying on a pre-made blend.</p>
+<p>Many brands sell mushroom blends. Others focus on individual mushroom powders. Neither approach is automatically right or wrong. What matters is that the label tells you exactly which mushrooms are inside, and how much of each.</p>
+<p>If you're interested in Lion's Mane, you can purchase Lion's Mane. If you're interested in Reishi, you can purchase Reishi. If you're interested in Cordyceps or Chaga, you can choose those individually as well. Either way, you should be able to see exactly what you're getting.</p>
 <h2>What We Look For In A Mushroom Product</h2>
 <p>When evaluating mushroom products in Canada, here are the five things we believe matter most:</p>
 <ol><li>Clearly identified mushroom species</li><li>Transparent sourcing</li><li>Simple ingredient lists</li><li>Third-party testing</li><li>A company willing to answer questions openly</li></ol>

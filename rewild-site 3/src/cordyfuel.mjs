@@ -19,7 +19,7 @@ const pull = (text, by = '') =>
 const FAQ = [
   ['What is CordyFuel™?', 'CordyFuel™ is a full-spectrum Cordyceps militaris (fruiting body and mycelium) grown in Coldstream, British Columbia, and standardized to a minimum of 3 mg/g cordycepin in every batch. It won Best Fruiting Body / Full Spectrum at the 2025 Cordy Cup. Rewild Energy and Rewild Energy Tincture are powered by CordyFuel™.'],
   ['Is CordyFuel™ a blend?', 'No. It is 100% Cordyceps militaris. No fillers, no proprietary blend, nothing else in the bag.'],
-  ['How do I take Rewild Energy?', 'Powder: ½ teaspoon in a smoothie, elixir, soup, tea, coffee, or hot water and honey. Tincture: 10 to 20 ml per serving, straight or added to a drink.'],
+  ['How do I take Rewild Energy?', 'Powder: ½ teaspoon in a smoothie, elixir, soup, tea, coffee, or hot water and honey. In a warm drink, add a little coconut oil or butter and blend it so the powder mixes in smooth. Tincture: 10 to 20 ml per serving, straight or added to a drink.'],
 ];
 
 export const cordyfuelPage = {
@@ -180,10 +180,11 @@ ${reviewsSection({ eyebrow: 'What people are saying', title: 'Rewilders, in thei
 
 <section class="section lp"><div class="lp-col">
   <p class="eyebrow">How to take it</p>
-  <h2 class="h2">No complicated ritual required.</h2>
+  <h2 class="h2">Nothing complicated required.</h2>
   <p>CordyFuel™ is easy to work into what you're already doing. Add it to:</p>
-  <ul class="lp-tags"><li>Coffee</li><li>Smoothies</li><li>Cacao</li><li>Protein shakes</li><li>Hot water + honey</li><li>Or find your own way</li></ul>
-  <p>Consistency matters more to us than turning it into another complicated wellness ritual.</p>
+  <ul class="lp-tags"><li>Coffee</li><li>Tea</li><li>Smoothies</li><li>Cacao</li><li>Protein shakes</li><li>Hot water + honey</li><li>Or find your own way</li></ul>
+  <p>Consistency matters more than complexity. Just add it to something you already do every day.</p>
+  <p>Tip for warm drinks: add a little coconut oil or butter and blend it. The fat helps the powder mix in smooth, so your drink doesn't get muddy.</p>
   <div class="lp-dose">
     <div><b>Powder</b><span>Add ½ teaspoon to your favourite smoothie, elixir, soup, tea, coffee, or hot water and honey.</span></div>
     <div><b>Tincture</b><span>Take 10 to 20 ml per serving, straight or added to a drink. A 100 ml bottle holds 5 to 10 servings.</span></div>
