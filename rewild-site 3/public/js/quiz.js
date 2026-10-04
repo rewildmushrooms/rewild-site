@@ -224,6 +224,7 @@
         const d = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(d.error || 'Something went wrong. Please try again.');
         msg.textContent = 'Done. Check your inbox shortly. Welcome, Rewilder.'; f.email.value = '';
+        if (window.gtag) window.gtag('event', 'sign_up', { method: 'quiz' });
       } catch (err) { msg.textContent = err.message; }
       btn.disabled = false;
     });

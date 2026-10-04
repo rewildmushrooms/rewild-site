@@ -6,6 +6,13 @@
   function partnerRef() { try { const r = JSON.parse(localStorage.getItem('rewild_ref')); if (r && r.ref && Date.now() - r.at < 30 * 86400000) return r.ref; } catch (e) {} return undefined; }
   const byId = Object.fromEntries(C.products.map((p) => [p.id, p]));
   const money = (c) => '$' + (c / 100).toFixed(c % 100 === 0 ? 0 : 2);
+  // GA4 ecommerce events (CAD). Does nothing if Google Analytics is not on the page.
+  const gaItem = (id, qty) => ({ item_id: id, item_name: byId[id] ? byId[id].name : id, price: byId[id] ? byId[id].price / 100 : 0, quantity: qty || 1 });
+  function ga(name, items, extra) {
+    if (!window.gtag) return;
+    const value = items.reduce((a, i) => a + i.price * i.quantity, 0);
+    window.gtag('event', name, Object.assign({ currency: 'CAD', value: Math.round(value * 100) / 100, items }, extra || {}));
+  }
 
   const store = {
     read() {
@@ -40,6 +47,8 @@
   }
   function setQty(id, qty) {
     qty = parseInt(qty, 10) || 0;
+    const before = (state.items.find((i) => i.id === id) || {}).qty || 0;
+    if (qty < before) ga('remove_from_cart', [gaItem(id, before - Math.max(0, qty))]);
     if (qty <= 0) state.items = state.items.filter((i) => i.id !== id);
     else { const ex = state.items.find((i) => i.id === id); if (ex) ex.qty = Math.min(20, qty); }
     save();
@@ -50,6 +59,7 @@
 
   function open() {
     drawer().classList.add('drawer-open');
+    if (state.items.length) ga('view_cart', state.items.map((i) => gaItem(i.id, i.qty)));
     $('#cart-drawer').setAttribute('aria-hidden', 'false');
     setTimeout(() => $('#cart-close') && $('#cart-close').focus(), 50);
   }
@@ -115,7 +125,7 @@
       try { data = await res.json(); } catch (x) {}
       if (!res.ok || !data.url) throw new Error(data.error || 'Checkout is unavailable right now. Please try again in a minute.');
       try { localStorage.setItem('rewild_last_order', data.orderId || ''); } catch (x) {}
-      if (window.gtag) window.gtag('event', 'begin_checkout', { currency: 'CAD', items: state.items.map((i) => ({ item_id: i.id, quantity: i.qty })) });
+      ga('begin_checkout', state.items.map((i) => gaItem(i.id, i.qty)), state.promo && !state.promo.pending ? { coupon: state.promo.code } : {});
       window.location.href = data.url;
     } catch (e) {
       err.textContent = e.message; btn.disabled = false; btn.textContent = label;
@@ -154,12 +164,14 @@
     else if (t.matches('#cart-close') || t.matches('.drawer-backdrop')) close();
     else if (t.dataset.add) {
       const qtyEl = t.dataset.qtyFrom ? document.querySelector(t.dataset.qtyFrom) : null;
-      add(t.dataset.add, qtyEl ? qtyEl.value : 1);
+      const q = Math.max(1, Math.min(20, parseInt(qtyEl ? qtyEl.value : 1, 10) || 1));
+      add(t.dataset.add, q);
+      ga('add_to_cart', [gaItem(t.dataset.add, q)]);
       open();
-      if (window.gtag) window.gtag('event', 'add_to_cart', { items: [{ item_id: t.dataset.add }] });
     }
     else if (t.dataset.addMany) {
-      t.dataset.addMany.split(',').forEach((id) => byId[id] && add(id, 1)); open();
+      const ids = t.dataset.addMany.split(',').filter((id) => byId[id]);
+      ids.forEach((id) => add(id, 1)); ga('add_to_cart', ids.map((id) => gaItem(id, 1))); open();
     }
     else if (t.dataset.inc) setQty(t.dataset.inc, (state.items.find((i) => i.id === t.dataset.inc)?.qty || 0) + 1);
     else if (t.dataset.dec) setQty(t.dataset.dec, (state.items.find((i) => i.id === t.dataset.dec)?.qty || 0) - 1);
@@ -202,6 +214,7 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       f.reset(); msg.textContent = 'Welcome, Rewilder. Check your inbox.';
+      if (window.gtag) window.gtag('event', 'sign_up', { method: 'footer' });
     } catch (err) { msg.textContent = err.message || 'Something went wrong. Please try again.'; }
     btn.disabled = false;
   }));
@@ -230,6 +243,10 @@
   document.addEventListener('click', (e) => { if (e.target.closest('[data-add],[data-add-many],[data-open-cart]')) setTimeout(recheck, 50); });
 
   if (new URLSearchParams(location.search).get('checkout') === 'cancelled') setTimeout(() => toast('Checkout cancelled. Your cart is saved.'), 300);
+
+  // Product page: view_item
+  const pageAdd = document.querySelector('[data-add][data-qty-from]');
+  if (pageAdd && byId[pageAdd.dataset.add]) ga('view_item', [gaItem(pageAdd.dataset.add, 1)]);
 
   window.RewildCart = { add, setQty, open, close, clear() { state.items = []; save(); }, state: () => state };
   render();
