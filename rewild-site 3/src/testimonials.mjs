@@ -8,7 +8,7 @@ import { esc } from './layout.mjs';
 export const TESTIMONIALS = [
   {
     id: 'michelle',
-    name: 'Michelle D.',
+    name: 'Michelle Dillard',
     detail: 'Video review · Rewild Energy with CordyFuel™',
     head: "Watch Michelle's review",
     youtube: '2L9vHQUFAqc',

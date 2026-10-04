@@ -5,6 +5,7 @@ import { PRODUCTS, PRODUCT_BY_ID, SHIPPING, money } from '../netlify/functions/_
 import { POSTS } from './journal.mjs';
 import { LAB, TESTS, PROCESS } from './lab.mjs';
 import { cordyfuelPage } from './cordyfuel.mjs';
+import { fieldGuide } from './fieldguide.mjs';
 import { GUIDES, GUIDE_BY_PRODUCT, GROWN, CLEAN, MICRO, HEAVY } from './learn.mjs';
 
 const powders = PRODUCTS.filter((p) => !p.isTincture && !p.isBundle);
@@ -911,5 +912,6 @@ export const PAGES = [
   privacy,
   terms,
   confirmed,
+  fieldGuide,
   notFound,
 ];
