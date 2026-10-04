@@ -25,7 +25,7 @@ import { groupStats, groupCount } from './_shared/mailerlite.mjs';
 import { readIndex, readLedger, HIGH_VALUE } from './_shared/data.mjs';
 import { recordOfflineSale, recordRestock, recordAdjustment, logCount } from './_shared/ledger.mjs';
 import { cartStats } from './_shared/carts.mjs';
-import { getJSON } from './_shared/store.mjs';
+import { getJSON, dataStartsAt } from './_shared/store.mjs';
 import { stockLevels } from './_shared/inventory.mjs';
 import { PRODUCTS } from './_shared/catalog.mjs';
 import { listPromos, createPromo, setPromoActive, setPromoArchived, setPromoOnce, setPromoNote } from './_shared/promos.mjs';
@@ -130,8 +130,11 @@ export function summarize(orders, days, now = Date.now(), invoices = [], emails 
   };
 }
 
-async function searchOrders(sinceIso, opts) {
+// Square orders for HQ's numbers. Starts at the last test-data reset (or go-live), so test orders never show.
+async function searchOrders(sinceIso, opts, { all = false } = {}) {
   const loc = await locationId(opts);
+  const from = all ? null : await dataStartsAt().catch(() => null);
+  if (from && from > sinceIso) sinceIso = from;
   return pages((cursor) => square('POST', '/orders/search', {
     location_ids: [loc],
     cursor,
@@ -258,7 +261,7 @@ async function alerts(opts) {
     listPromos(opts, { fresh: true }).catch(() => []),
     listInvoices(opts).catch(() => []),
     traffic(7).catch(() => null),
-    Promise.resolve(commissionReport(orders, monthOf(new Date(now).toISOString()))),
+    readIndex('orders').then((ix) => commissionReport(orders, monthOf(new Date(now).toISOString()), null, Object.values(ix))).catch(() => commissionReport(orders, monthOf(new Date(now).toISOString()))),
   ]);
   return { alerts: buildAlerts({ inv, promos, orders, invoices, traffic: tr, commission: com }, now), checkedAt: Math.floor(now / 1000) };
 }
@@ -328,7 +331,8 @@ export async function sendShippingInvoice(b, opts) {
 
 const monthOf = (iso) => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Vancouver', year: 'numeric', month: '2-digit' }).format(new Date(iso)).slice(0, 7);
 
-export function commissionReport(orders, month, onlyPartnerId = null) {
+// offline: HQ order summaries (source "offline") with a partner. Commission on the amount received, less refunds.
+export function commissionReport(orders, month, onlyPartnerId = null, offline = []) {
   const rows = {};
   for (const p of PARTNERS) if (!onlyPartnerId || p.id === onlyPartnerId) rows[p.id] = { id: p.id, name: p.name, codePrefix: p.codePrefix, ref: p.ref, orders: 0, sales: 0, commission: 0, lines: [] };
   for (const o of orders) {
@@ -341,6 +345,14 @@ export function commissionReport(orders, month, onlyPartnerId = null) {
     r.lines.push({ ref: orderRef(o.id), created: ts(o.created_at), via: hit.via, code: hit.code, paid: base, commission: c,
       items: (o.line_items || []).map((li) => `${li.quantity}x ${li.name}`).join(', ') });
   }
+  for (const o of offline) {
+    if (o.source !== 'offline' || !o.partner || !rows[o.partner] || monthOf(o.at) !== month || ['cancelled', 'refunded'].includes(o.status)) continue;
+    const r = rows[o.partner];
+    const base = Math.max(0, (o.total || 0) - (o.refunded || 0)), c = Math.round(base * COMMISSION_RATE);
+    r.orders += 1; r.sales += base; r.commission += c;
+    r.lines.push({ ref: String(o.id).slice(-8).toUpperCase(), created: ts(o.at), via: 'offline', code: '', paid: base, commission: c, items: o.items });
+  }
+  for (const r of Object.values(rows)) r.lines.sort((a, b) => b.created - a.created);
   return { month, rate: COMMISSION_RATE, partners: Object.values(rows) };
 }
 
@@ -348,11 +360,12 @@ async function commissions(month, member, opts) {
   const [y, m] = month.split('-').map(Number);
   const since = new Date(Date.UTC(y, m - 1, 1) - 86400000).toISOString();
   const orders = (await searchOrders(since, opts)).filter((o) => Date.parse(o.created_at) < Date.UTC(y, m, 2));
-  return commissionReport(orders, month, member.role === 'owner' ? null : member.id);
+  const offline = Object.values(await readIndex('orders')).filter((o) => o.source === 'offline');
+  return commissionReport(orders, month, member.role === 'owner' ? null : member.id, offline);
 }
 
 async function stock(opts) {
-  const orders = await searchOrders(new Date(Date.now() - 120 * 86400000).toISOString(), opts).catch(() => []);
+  const orders = await searchOrders(new Date(Date.now() - 120 * 86400000).toISOString(), opts, { all: true }).catch(() => []);
   const inv = await inventory(opts, { orders });
   // Sends any due low-stock email, and clears the flag for products restocked above the line.
   try { await checkLowStock(Object.fromEntries(inv.items.filter((i) => i.tracked).map((i) => [i.id, i.onHand]))); } catch (e) { console.error('low stock check failed', e.message); }
