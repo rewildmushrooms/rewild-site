@@ -1,28 +1,25 @@
 // GET /api/order?order_id=...  Used by the order-confirmed page.
 // Returns only what the thank-you page needs (no addresses, no emails).
-// Also adds the buyer to MailerLite if they ticked the newsletter box in the cart.
-import { square, json } from './_shared/square.mjs';
-import { isPaid, orderRef, buyerEmail, buyerName } from './_shared/orders.mjs';
-import { addSubscriber, isEmail } from './_shared/mailerlite.mjs';
+// Also records the paid order (stock, newsletter if ticked, customer record) in case the
+// Square webhook has not arrived yet. Recording is safe to repeat.
+import { json } from './_shared/square.mjs';
+import { isPaid, orderRef, buyerName } from './_shared/orders.mjs';
+import { fetchOrder, recordPaidOrder } from './_shared/record.mjs';
+import { orderCode } from './_shared/team.mjs';
 
 export async function handleOrder(id, deps = {}, opts) {
-  const { order } = await square('GET', `/orders/${id}`, null, opts);
+  const order = await (deps.fetchOrder || fetchOrder)(id, opts);
   if (!isPaid(order)) return null;
+  try { await recordPaidOrder(order, opts, deps); } catch (err) { console.error('record order failed', err.message); }
   const name = buyerName(order);
-  if (order.metadata?.newsletter === 'yes') {
-    try {
-      const email = await buyerEmail(order, opts);
-      if (isEmail(email)) {
-        const groups = [process.env.MAILERLITE_GROUP_ID, process.env.MAILERLITE_CUSTOMERS_GROUP_ID].filter(Boolean);
-        await (deps.addSubscriber || addSubscriber)(email, { name: name.split(' ')[0], signup_source: 'checkout' }, { groups });
-      }
-    } catch (err) { console.error('newsletter add failed', err.message); }
-  }
   return {
+    orderId: order.id,
     firstName: name.split(' ')[0] || null,
     total: Number(order.total_money?.amount || 0),
+    shipping: Number(order.total_service_charge_money?.amount || 0),
     currency: order.total_money?.currency || 'CAD',
-    items: (order.line_items || []).map((li) => ({ name: li.name, qty: Number(li.quantity) })),
+    code: orderCode(order) || null,
+    items: (order.line_items || []).map((li) => ({ id: li.metadata?.rewild_id || null, name: li.name, qty: Number(li.quantity), price: Number(li.base_price_money?.amount || 0) })),
     orderRef: orderRef(order.id),
   };
 }

@@ -19,6 +19,7 @@ import { listPromos, createPromo, setPromoActive } from './_shared/promos.mjs';
 import { isPaid, orderRef, buyerName } from './_shared/orders.mjs';
 import { TEAM, PARTNERS, COMMISSION_RATE, memberById, partnerForOrder, commissionBase, commissionFor } from './_shared/team.mjs';
 import { inventory, setStock } from './_shared/inventory.mjs';
+import { checkLowStock, lowStockThreshold } from './_shared/lowstock.mjs';
 import { checkPassword } from './_shared/auth.mjs';
 import { traffic } from './_shared/ga.mjs';
 
@@ -191,7 +192,7 @@ export function buildAlerts({ inv, promos = [], orders = [], invoices = [], traf
   if (inv?.items) {
     for (const i of inv.items) {
       if (i.onHand <= 0) add('urgent', `${i.name} is sold out`, 'Restock, or enter the real count in Inventory if this is wrong.', 'inventory');
-      else if (i.onHand <= 5) add('watch', `${i.name} is running low`, `${i.onHand} left.`, 'inventory');
+      else if (i.onHand <= lowStockThreshold()) add('watch', `${i.name} is running low`, `${i.onHand} left.`, 'inventory');
     }
     for (const b of inv.bundles || []) if (b.canMake <= 0) add('urgent', `${b.name} can't be made`, 'One of its parts is out of stock, so the Duo will oversell.', 'inventory');
   }
@@ -337,7 +338,11 @@ async function commissions(month, member, opts) {
 
 async function stock(opts) {
   const orders = await searchOrders(new Date(Date.now() - 120 * 86400000).toISOString(), opts).catch(() => []);
-  return inventory(opts, { orders });
+  const inv = await inventory(opts, { orders });
+  // Sends any due low-stock email, and clears the flag for products restocked above the line.
+  try { await checkLowStock(Object.fromEntries(inv.items.filter((i) => i.tracked).map((i) => [i.id, i.onHand]))); } catch (e) { console.error('low stock check failed', e.message); }
+  inv.lowStockAt = lowStockThreshold();
+  return inv;
 }
 
 const denied = () => json(403, { error: 'Only Jade can do that.' });
@@ -375,6 +380,7 @@ export default async (req) => {
       if (b.action === 'setStock') {
         const r = await setStock(b.id, b.quantity);
         console.log('stock set', member.id, r.id, r.onHand);
+        try { await checkLowStock({ [r.id]: r.onHand }); } catch (e) { console.error('low stock check failed', e.message); }
         return json(200, { ok: true, ...r });
       }
       if (!owner) return denied();
