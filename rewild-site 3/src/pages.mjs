@@ -204,7 +204,7 @@ const shop = {
       <h2 class="h3" style="font-size:clamp(26px,3vw,36px)">The All Four Set</h2>
       <p>Energy, Clarity, Strength and Peace. One of each 100g bag, for ${money(PRODUCT_BY_ID.all4.price)} instead of $230. Ships free in Canada.</p>
       <div class="row" style="gap:12px;align-items:center"><span class="offer-price"><s>$230</s> ${money(PRODUCT_BY_ID.all4.price)}</span><button type="button" class="btn btn-yellow" data-add="all4">Add the set</button></div>
-      <p class="small muted">Buying single bags? Any 2 or more save 10% automatically. Orders of $200+ get a free Rewild Energy Tincture.</p>
+      <p class="small muted">Buying single bags? Any 2 or more save 10% automatically. Orders of $200+ get a free Rewild Energy Tincture. Have a promo code? We always apply whichever saves you more.</p>
     </div>
   </div>
 </div></section>
@@ -707,6 +707,7 @@ const FAQS = [
   ['Do you ship to the United States?', 'Yes. Choose United States in your cart. After you order, we email a quote for shipping and duties that you can pay online before it ships.'],
   ['What if I don\u2019t like it?', `Every order comes with our 100% Risk-Free Guarantee. ${GUARANTEE_TEXT} <a href="/shipping/#guarantee">How it works</a>.`],
   ['I have a promo code. Where do I enter it?', 'Open your cart and type it in the promo code box, then tap Apply. You will see the discount before you check out.'],
+  ['Can I use a promo code with bundle or stock-up savings?', 'Codes don\u2019t combine with the All Four Set price or the 10% stock-up saving. You never have to work it out: your cart checks both and always applies whichever saves you more, and tells you which one it used. The tincture add-on and the free tincture on orders of $200+ still apply either way.'],
   ['Is CordyFuel™ caffeinated?', 'No. CordyFuel™ is pure Cordyceps militaris with no caffeine or stimulants added.'],
   ['Is this medical advice?', 'No. Our products are foods and are not intended to diagnose, treat, cure or prevent any disease. Talk to your healthcare practitioner before use if you are pregnant, nursing or taking medication.'],
 ];

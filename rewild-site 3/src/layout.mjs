@@ -174,6 +174,7 @@ ${page.body}
       <button type="submit" class="btn btn-outline">Apply</button>
     </form>
     <p class="small" id="promo-msg" role="status"></p>
+    <p class="small muted promo-rule">Codes don't combine with bundle or stock-up savings. We always apply whichever saves you more.</p>
     <div class="totals" id="cart-totals"></div>
     <p class="small muted" id="cart-ship-note"></p>
     <button type="button" class="btn btn-yellow btn-block" id="checkout-btn">Checkout</button>
