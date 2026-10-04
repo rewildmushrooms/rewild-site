@@ -2,11 +2,12 @@
 // The email step saves the cart first (for order confirmation and, if they said yes, cart reminders).
 // Creates a Square payment link. Prices, shipping and promo codes are all checked server-side
 // (the browser is never trusted for amounts).
-import { PRODUCTS, PRODUCT_BY_ID, SHIPPING, quote } from './_shared/catalog.mjs';
+import { PRODUCTS, PRODUCT_BY_ID, SHIPPING } from './_shared/catalog.mjs';
+import { priceCart, OFFERS } from './_shared/pricing.mjs';
 import { square, idem, locationId, json } from './_shared/square.mjs';
 import { validatePromo, orderDiscount, discountFor } from './_shared/promos.mjs';
 import { SITE_EMAIL } from './_shared/config.mjs';
-import { partnerByRef } from './_shared/team.mjs';
+import { partnerByRef, partnerByCode } from './_shared/team.mjs';
 import { isEmail, addSubscriber } from './_shared/mailerlite.mjs';
 import { newCart, saveCart, touchCustomer, setOpenCart } from './_shared/carts.mjs';
 import { emailKey } from './_shared/record.mjs';
@@ -15,37 +16,38 @@ const CUR = 'CAD';
 
 export async function buildPaymentLink(body, siteUrl, opts) {
   const country = body?.country === 'US' ? 'US' : 'CA';
-  const q = quote(body?.items, country);
-  if (q.lines.length === 0) throw Object.assign(new Error('Your cart is empty.'), { status: 400 });
+  const catalog = { byId: PRODUCT_BY_ID, shipping: Object.fromEntries(Object.entries(SHIPPING).map(([k, v]) => [k, { flatRate: v.flatRate, freeOver: v.freeOver, quoted: !!v.quotedAfterOrder }])) };
+  const base = priceCart(body?.items, country, catalog);
+  if (base.lines.length === 0) throw Object.assign(new Error('Your cart is empty.'), { status: 400 });
   let promo = null;
-  if (body?.code) promo = (await validatePromo(body.code, q.subtotal, opts, Date.now(), body?.email || '')).promo;
+  if (body?.code) promo = (await validatePromo(body.code, base.listTotal, opts, Date.now(), body?.email || '')).promo;
+  const q = priceCart(body?.items, country, catalog, promo, !!body?.addon); // best deal wins, add-on, free gift
+  const partnerCode = promo && partnerByCode(promo.code) ? promo.code : null; // partner keeps credit even if the offers beat their code
   const ship = SHIPPING[country];
+  const lineItem = (id, qty, amount, name, note) => ({ name, quantity: String(qty), base_price_money: { amount, currency: CUR }, metadata: { rewild_id: id, ...(note ? { offer: note } : {}) } });
   const ref = partnerByRef(body?.ref)?.ref; // partner share link (?ref=sean), for commission
   const summary = q.lines.map((l) => `${l.qty}x ${l.id}`).join(', ');
   const email = body?.email ? emailKey(body.email) : '';
   if (email && !isEmail(email)) throw Object.assign(new Error('Please check your email address.'), { status: 400 });
   const order = {
     location_id: await locationId(opts),
-    line_items: q.lines.map((l) => {
-      const p = PRODUCT_BY_ID[l.id];
-      return {
-        name: `${p.name} (${p.size})`,
-        quantity: String(l.qty),
-        base_price_money: { amount: p.price, currency: CUR },
-        metadata: { rewild_id: p.id },
-      };
-    }),
+    line_items: [
+      ...q.lines.map((l) => { const p = PRODUCT_BY_ID[l.id]; return lineItem(p.id, l.qty, p.price, `${p.name} (${p.size})`); }),
+      ...(q.addonApplied ? [lineItem(OFFERS.addon.id, 1, q.addonUnit, `${PRODUCT_BY_ID[OFFERS.addon.id].name} (add-on, ${OFFERS.addon.percent}% off)`, 'addon')] : []),
+      ...(q.gift ? [lineItem(OFFERS.freeGift.id, 1, 0, OFFERS.freeGift.name, 'gift')] : []),
+    ],
     metadata: {
       source: 'rewildmushrooms.com',
       destination: country,
       cart: summary.slice(0, 255),
       newsletter: body?.newsletter ? 'yes' : 'no',
       ...(body?.cartId ? { cart: body.cartId } : {}),
-      ...(promo ? { promo: promo.code } : {}),
+      ...(q.codeApplied ? { promo: q.codeApplied } : {}),
+      ...(partnerCode && !q.codeApplied ? { partner_code: partnerCode } : {}),
       ...(ref ? { ref } : {}),
     },
   };
-  if (promo) order.discounts = [orderDiscount(promo)];
+  if (q.discount > 0) order.discounts = [{ uid: 'offers', name: q.discountName, scope: 'ORDER', type: 'FIXED_AMOUNT', amount_money: { amount: q.discount, currency: CUR } }];
   const checkout_options = {
     ask_for_shipping_address: true,
     redirect_url: `${siteUrl}/order-confirmed/`,
@@ -55,7 +57,7 @@ export async function buildPaymentLink(body, siteUrl, opts) {
     enable_loyalty: false,
     accepted_payment_methods: { apple_pay: true, google_pay: true },
   };
-  if (!ship.quotedAfterOrder && !q.free) {
+  if (!ship.quotedAfterOrder && q.shipping > 0) {
     checkout_options.shipping_fee = { name: ship.standardName, charge: { amount: ship.flatRate, currency: CUR } };
   }
   if (country === 'CA' && ship.localDelivery?.enabled) {
@@ -68,7 +70,7 @@ export async function buildPaymentLink(body, siteUrl, opts) {
     checkout_options,
     pre_populated_data: { buyer_address: { country }, ...(email ? { buyer_email: email } : {}) },
   }, opts);
-  return { url: res.payment_link.url, orderId: res.payment_link.order_id, subtotal: q.subtotal, lines: q.lines, promo };
+  return { url: res.payment_link.url, orderId: res.payment_link.order_id, subtotal: q.itemsTotal, lines: q.lines, promo: q.codeApplied ? promo : null, paid: q.paid };
 }
 
 export default async (req) => {
@@ -83,7 +85,7 @@ export default async (req) => {
     const cart = newCart({ email, consent, country: body?.country === 'US' ? 'US' : 'CA', code: body?.code ? String(body.code).toUpperCase().slice(0, 30) : null, ref: body?.ref || null });
     const out = await buildPaymentLink({ ...body, email, cartId: cart.id }, siteUrl);
     cart.items = out.lines.map((l) => ({ id: l.id, qty: l.qty }));
-    cart.value = out.subtotal - (out.promo ? discountFor(out.promo, out.subtotal) : 0);
+    cart.value = out.paid;
     cart.orderId = out.orderId;
     // Saving the cart and customer must never block checkout.
     try {

@@ -1,6 +1,7 @@
 // POST /api/promo  { code, items, country }  ->  { code, percentOff, amountOff, minimumAmount, discount }
 // Lets the cart show the discount before checkout. Checkout re-checks the code server-side.
-import { quote } from './_shared/catalog.mjs';
+import { PRODUCT_BY_ID, SHIPPING } from './_shared/catalog.mjs';
+import { priceCart } from './_shared/pricing.mjs';
 import { validatePromo } from './_shared/promos.mjs';
 import { json } from './_shared/square.mjs';
 
@@ -9,8 +10,9 @@ export default async (req) => {
   let b;
   try { b = await req.json(); } catch { return json(400, { error: 'Invalid request' }); }
   try {
-    const q = quote(b?.items, b?.country === 'US' ? 'US' : 'CA');
-    const { promo, discount } = await validatePromo(b?.code, q.subtotal);
+    const catalog = { byId: PRODUCT_BY_ID, shipping: Object.fromEntries(Object.entries(SHIPPING).map(([k, v]) => [k, { flatRate: v.flatRate, freeOver: v.freeOver, quoted: !!v.quotedAfterOrder }])) };
+    const q = priceCart(b?.items, b?.country === 'US' ? 'US' : 'CA', catalog);
+    const { promo, discount } = await validatePromo(b?.code, q.listTotal, undefined, Date.now(), b?.email || '');
     return json(200, { code: promo.code, percentOff: promo.percentOff, amountOff: promo.amountOff, minimumAmount: promo.minimumAmount, discount });
   } catch (err) {
     if (err.status !== 400) console.error('promo error', err.message);
