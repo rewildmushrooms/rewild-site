@@ -53,7 +53,7 @@ function go(){{
  if(p.quiz)new Function(QUIZ)();if(p.inline)try{{new Function(p.inline)();}}catch(e){{}}
 }}
 window.addEventListener('hashchange',go);go();
-document.getElementById('checkout-btn').addEventListener('click',function(e){{e.stopImmediatePropagation();document.getElementById('cart-error').textContent='Preview only: checkout opens Stripe on the live site.';}},true);
+document.getElementById('checkout-btn').addEventListener('click',function(e){{e.stopImmediatePropagation();document.getElementById('cart-error').textContent='Preview only: checkout opens Square on the live site.';}},true);
 }})();</script>'''
 open(OUT,'w').write(shell.replace('</body>',router+'</body>'))
 print(OUT, round(os.path.getsize(OUT)/1e6,1),'MB')
