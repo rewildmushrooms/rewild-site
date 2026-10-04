@@ -201,8 +201,8 @@ ${page.body}
     <div class="pop-img" role="img" aria-label="Cordyceps, Lion's Mane, Reishi and Chaga on a mossy forest floor"></div>
     <form class="pop-body" id="pop-form" novalidate>
       <p class="eyebrow">Join the Rewilders</p>
-      <h2 id="pop-h">Get first dibs on every new lot.</h2>
-      <p>Field notes on Cordyceps, Lion's Mane, Chaga and Reishi. New tested lots before anyone else. Members-only offers. A few emails a month, no fluff.</p>
+      <h2 id="pop-h">Get 20% off your first order when you sign up.</h2>
+      <p>Field notes on Cordyceps, Lion's Mane, Chaga and Reishi. Members-only offers. Be first to know when new products launch. A few emails a month.</p>
       <label for="pop-email" class="sr-only">Email address</label>
       <input id="pop-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
       <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
