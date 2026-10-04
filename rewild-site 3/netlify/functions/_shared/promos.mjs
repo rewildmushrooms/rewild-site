@@ -1,45 +1,29 @@
-// Promo codes live in Square as catalog Discounts (Items > Discounts in the Square dashboard).
-// The discount's name is the code customers type (e.g. SEAN20).
-// Extra web rules (on/off, expiry date, minimum order, one use per customer, archived) are managed
-// from REWILD HQ and saved in Netlify Blobs (store "promo-rules", key "all" =
-// { [squareDiscountId]: { on, exp, min, once, archived } }).
-// Archived codes are never deleted (old orders, reports and commissions still point at them);
-// they stop working and are hidden in HQ until restored.
-// Square does not allow custom attributes on discounts, so rules live on our side.
-// Older codes may still carry rules in a "rewild_rules" custom attribute; those are read as a fallback.
+// Promo codes. The website keeps its own list in Netlify Blobs (store "promo-codes", key "all"),
+// keyed by the code itself, so codes carry over unchanged when Square moves from sandbox to live.
+// Each code: { code, percentOff | amountOff, on, exp, min, once, archived, archivedAt, note, createdAt, squareId }
+//   on: switched on      exp: last day it works (YYYY-MM-DD, Pacific)     min: minimum order in cents
+//   once: one use per customer (checked by email against paid orders)
+//   archived: switched off and hidden in HQ. Never deleted, so old orders, reports and commissions keep their history.
+// Discounts made in the Square app (Items > Discounts) are picked up automatically the next time HQ lists codes.
+// Square only needs the code at checkout: the order gets an ad hoc discount with the code as its name.
 import { square, idem, pages } from './square.mjs';
 import { getJSON, setJSON } from './store.mjs';
 import { getRecoveryCode, RECOVERY_RE } from './carts.mjs';
 
-const RULES_KEY = 'rewild_rules';
 export const CODE_RE = /^[A-Z0-9_-]{3,30}$/;
 export const normCode = (c) => String(c || '').trim().toUpperCase();
+const STORE = 'promo-codes';
+const KEY = 'all';
+const bad = (m) => Object.assign(new Error(m), { status: 400 });
 
 let cache = { at: 0, list: null };
 export const _resetPromoCache = () => { cache = { at: 0, list: null }; };
 
-export function readRules(obj) {
-  const cav = obj.custom_attribute_values || {};
-  const hit = Object.entries(cav).find(([k, v]) => k === RULES_KEY || v?.key === RULES_KEY || k.endsWith(':' + RULES_KEY));
-  if (!hit) return null;
-  try { return JSON.parse(hit[1].string_value || '{}'); } catch { return null; }
-}
-
-// Built-in rules for codes made before rules were saved in Blobs. Saved rules win over these.
+// Codes made before rules were saved. Only used once, when old Square codes are first copied in.
 export const DEFAULT_RULES = {
   SEAN30WW: { on: true, exp: '2026-10-15' },
   PETEMOSS30WW: { on: true, exp: '2026-10-15' },
 };
-
-const RULES_STORE = 'promo-rules';
-export async function loadRules() {
-  try { return (await getJSON(RULES_STORE, 'all')) || {}; } catch (e) { console.error('promo rules load failed', e.message); return {}; }
-}
-async function saveRule(id, rules) {
-  const all = (await getJSON(RULES_STORE, 'all')) || {}; // throws if storage is down, so we never wipe saved rules
-  all[id] = rules;
-  await setJSON(RULES_STORE, 'all', all);
-}
 
 // End of the expiry day in Pacific time (handles PDT/PST).
 export function endOfDayPacific(ymd) {
@@ -49,49 +33,84 @@ export function endOfDayPacific(ymd) {
   return Math.floor((offset ? pdt : guess) / 1000);
 }
 
-// Square discount object -> plain promo
-export function toPromo(obj, saved) {
-  const d = obj.discount_data || {};
-  const name = normCode(d.name);
-  const rules = saved || readRules(obj) || DEFAULT_RULES[name] || {};
-  const pct = d.discount_type === 'FIXED_PERCENTAGE' ? Number(d.percentage) : null;
-  const amt = d.discount_type === 'FIXED_AMOUNT' ? Number(d.amount_money?.amount || 0) : null;
+export function toPromo(r) {
   return {
-    id: obj.id,
-    version: obj.version,
-    code: normCode(d.name),
-    percentOff: pct,
-    amountOff: amt,
-    active: rules.on !== false && !rules.archived,
-    archived: !!rules.archived,
-    oncePerCustomer: !!rules.once,
-    expiresAt: rules.exp ? endOfDayPacific(rules.exp) : null,
-    expiresOn: rules.exp || null,
-    minimumAmount: rules.min || null,
-    hasRules: !!(saved || readRules(obj) || DEFAULT_RULES[name]),
+    id: r.code,
+    code: r.code,
+    percentOff: r.percentOff || null,
+    amountOff: r.amountOff || null,
+    active: r.on !== false && !r.archived,
+    archived: !!r.archived,
+    archivedAt: r.archivedAt || null,
+    oncePerCustomer: !!r.once,
+    expiresAt: r.exp ? endOfDayPacific(r.exp) : null,
+    expiresOn: r.exp || null,
+    minimumAmount: r.min || null,
+    note: r.note || '',
+    createdAt: r.createdAt || null,
   };
+}
+
+// Square catalog discount -> our record (used when copying codes in from Square).
+function fromSquare(obj, rules = {}) {
+  const d = obj.discount_data || {};
+  const code = normCode(d.name);
+  const r = { code, on: true, createdAt: (obj.updated_at || new Date().toISOString()).slice(0, 10), squareId: obj.id, ...(DEFAULT_RULES[code] || {}), ...rules };
+  if (d.discount_type === 'FIXED_PERCENTAGE') r.percentOff = Number(d.percentage);
+  else r.amountOff = Number(d.amount_money?.amount || 0);
+  return r;
+}
+
+async function squareDiscounts(opts) {
+  const objs = await pages((cursor) => square('GET', `/catalog/list?types=DISCOUNT${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`, null, opts), 'objects', 2000);
+  return objs.filter((o) => !o.is_deleted && ['FIXED_PERCENTAGE', 'FIXED_AMOUNT'].includes(o.discount_data?.discount_type) && CODE_RE.test(normCode(o.discount_data?.name)));
+}
+
+async function loadDoc() { return (await getJSON(STORE, KEY)) || { codes: {} }; }
+async function saveDoc(doc) { doc.updatedAt = new Date().toISOString(); await setJSON(STORE, KEY, doc); _resetPromoCache(); }
+
+// Copy in any Square discounts we do not have yet (first run, or codes made in the Square app).
+// Never overwrites a code we already keep. If Square is unreachable, our own list is used as is.
+async function syncFromSquare(doc, opts) {
+  let objs;
+  try { objs = await squareDiscounts(opts); } catch (e) { console.error('square discounts list failed', e.message); return false; }
+  const oldRules = doc.importedAt ? {} : ((await getJSON('promo-rules', 'all').catch(() => null)) || {});
+  let added = 0;
+  for (const o of objs) {
+    const code = normCode(o.discount_data.name);
+    if (doc.codes[code]) continue;
+    const r = oldRules[o.id] || {};
+    doc.codes[code] = fromSquare(o, { ...(r.on === false ? { on: false } : {}), ...(r.exp ? { exp: r.exp } : {}), ...(r.min ? { min: r.min } : {}), ...(r.once ? { once: true } : {}), ...(r.archived ? { archived: true, archivedAt: r.archivedAt || null } : {}) });
+    added += 1;
+  }
+  if (added || !doc.importedAt) { doc.importedAt = doc.importedAt || new Date().toISOString(); await saveDoc(doc); }
+  return true;
 }
 
 export async function listPromos(opts, { fresh = false } = {}) {
   if (!fresh && cache.list && Date.now() - cache.at < 60000) return cache.list;
-  const objs = await pages((cursor) => square('GET', `/catalog/list?types=DISCOUNT${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`, null, opts), 'objects', 2000);
-  const saved = await loadRules();
-  const list = objs
-    .filter((o) => !o.is_deleted && (o.discount_data?.discount_type === 'FIXED_PERCENTAGE' || o.discount_data?.discount_type === 'FIXED_AMOUNT'))
-    .map((o) => toPromo(o, saved[o.id]))
-    .filter((p) => CODE_RE.test(p.code));
+  const doc = await loadDoc();
+  if (fresh || !doc.importedAt) await syncFromSquare(doc, opts);
+  const list = Object.values(doc.codes).map(toPromo).sort((a, b) => a.code.localeCompare(b.code));
   cache = { at: Date.now(), list };
   return list;
+}
+
+// Customer records (store "customers", key = lowercased email) keep codesUsed from paid orders.
+export async function usedByCustomer(code, email) {
+  const key = String(email || '').trim().toLowerCase();
+  if (!key) return false;
+  const c = await getJSON('customers', key);
+  return (c?.codesUsed || []).map(normCode).includes(normCode(code));
 }
 
 // Returns { promo, discount } or throws a friendly 400.
 // email (optional): when given, one-use-per-customer codes are checked against that customer's paid orders.
 export async function validatePromo(code, subtotal, opts, now = Date.now(), email = '') {
   code = normCode(code);
-  const bad = (m) => Object.assign(new Error(m), { status: 400 });
   if (!CODE_RE.test(code)) throw bad('That code does not look right.');
   if (RECOVERY_RE.test(code)) {
-    // One-time cart recovery code from a reminder email.
+    // One-time code from a cart reminder or win-back email.
     const r = await getRecoveryCode(code);
     if (!r) throw bad(`${code} is not a valid code.`);
     if (r.used) throw bad(`${code} has already been used.`);
@@ -107,14 +126,6 @@ export async function validatePromo(code, subtotal, opts, now = Date.now(), emai
   return { promo, discount: discountFor(promo, subtotal) };
 }
 
-// Customer records (store "customers", key = lowercased email) keep codesUsed from paid orders.
-export async function usedByCustomer(code, email) {
-  const key = String(email || '').trim().toLowerCase();
-  if (!key) return false;
-  const c = await getJSON('customers', key);
-  return (c?.codesUsed || []).map(normCode).includes(normCode(code));
-}
-
 export function discountFor(promo, subtotal) {
   if (promo.percentOff) return Math.round((subtotal * promo.percentOff) / 100);
   return Math.min(subtotal, promo.amountOff || 0);
@@ -128,57 +139,56 @@ export function orderDiscount(promo) {
     : { ...base, type: 'FIXED_AMOUNT', amount_money: { amount: promo.amountOff, currency: 'CAD' } };
 }
 
-export const _resetDef = () => {};
+const cleanNote = (n) => String(n || '').replace(/\s+/g, ' ').trim().slice(0, 300);
 
 export async function createPromo(b, opts) {
   const code = normCode(b.code);
-  const bad = (m) => Object.assign(new Error(m), { status: 400 });
   if (!CODE_RE.test(code)) throw bad('Code must be 3 to 30 letters, numbers, - or _.');
+  if (RECOVERY_RE.test(code)) throw bad('Codes starting with COMEBACK- are reserved for reminder emails.');
   const pct = b.percentOff ? Number(b.percentOff) : null;
   const amt = b.amountOff ? Math.round(Number(b.amountOff) * 100) : null;
   if (!(pct > 0 && pct <= 100) && !(amt > 0)) throw bad('Enter a percent off (1 to 100) or a dollar amount off.');
-  if ((await listPromos(opts, { fresh: true })).some((p) => p.code === code)) throw bad(`${code} already exists.`);
-  const rules = { on: true };
-  if (b.expiresAt && /^\d{4}-\d{2}-\d{2}$/.test(b.expiresAt)) rules.exp = b.expiresAt;
-  if (b.minimumAmount) rules.min = Math.round(Number(b.minimumAmount) * 100);
-  if (b.oncePerCustomer) rules.once = true;
-  const object = {
-    type: 'DISCOUNT',
-    id: '#new',
-    present_at_all_locations: true,
-    discount_data: pct
-      ? { name: code, discount_type: 'FIXED_PERCENTAGE', percentage: String(pct) }
-      : { name: code, discount_type: 'FIXED_AMOUNT', amount_money: { amount: amt, currency: 'CAD' } },
-  };
-  const res = await square('POST', '/catalog/object', { idempotency_key: idem(), object }, opts);
-  _resetPromoCache();
-  let saved = true;
-  try { await saveRule(res.catalog_object.id, rules); } catch (e) { saved = false; console.error('promo rules save failed', e.message); }
-  const p = toPromo(res.catalog_object, saved ? rules : undefined);
-  if (!saved && (rules.exp || rules.min)) p.warning = 'Created, but the expiry or minimum could not be saved.';
-  return p;
+  const doc = await loadDoc();
+  if (!doc.importedAt) await syncFromSquare(doc, opts);
+  if (doc.codes[code]) throw bad(`${code} already exists${doc.codes[code].archived ? ' (archived). Restore it instead' : ''}.`);
+  const r = { code, on: true, createdAt: new Date().toISOString().slice(0, 10) };
+  if (pct) r.percentOff = pct; else r.amountOff = amt;
+  if (b.expiresAt && /^\d{4}-\d{2}-\d{2}$/.test(b.expiresAt)) r.exp = b.expiresAt;
+  if (b.minimumAmount) r.min = Math.round(Number(b.minimumAmount) * 100);
+  if (b.oncePerCustomer) r.once = true;
+  if (cleanNote(b.note)) r.note = cleanNote(b.note);
+  // Also add it to Square (Items > Discounts) so it can be used in the Square app. Optional: the website does not need it.
+  try {
+    const object = { type: 'DISCOUNT', id: '#new', present_at_all_locations: true,
+      discount_data: pct ? { name: code, discount_type: 'FIXED_PERCENTAGE', percentage: String(pct) } : { name: code, discount_type: 'FIXED_AMOUNT', amount_money: { amount: amt, currency: 'CAD' } } };
+    const res = await square('POST', '/catalog/object', { idempotency_key: idem(), object }, opts);
+    r.squareId = res.catalog_object?.id || null;
+  } catch (e) { console.error('square discount create failed (website code still works)', e.message); }
+  doc.codes[code] = r;
+  await saveDoc(doc);
+  return toPromo(r);
 }
 
-async function patchRule(id, patch, opts) {
-  if (!/^[A-Z0-9]{10,40}$/i.test(id || '')) throw Object.assign(new Error('Bad id'), { status: 400 });
-  const { object } = await square('GET', `/catalog/object/${id}`, null, opts);
-  if (object?.type !== 'DISCOUNT') throw Object.assign(new Error('Not a promo code'), { status: 400 });
-  const all = await loadRules();
-  const current = all[id] || readRules(object) || DEFAULT_RULES[normCode(object.discount_data?.name)] || {};
-  const next = typeof patch === 'function' ? patch(current) : { ...current, ...patch };
-  await saveRule(id, next);
-  _resetPromoCache();
-  return { ok: true };
+async function patch(code, fn) {
+  code = normCode(code);
+  if (!CODE_RE.test(code)) throw bad('Bad code');
+  const doc = await loadDoc();
+  const cur = doc.codes[code];
+  if (!cur) throw bad(`${code} was not found.`);
+  doc.codes[code] = fn({ ...cur });
+  await saveDoc(doc);
+  return { ok: true, promo: toPromo(doc.codes[code]) };
 }
 
-export const setPromoActive = (id, active, opts) =>
-  patchRule(id, (r) => {
-    if (active && r.archived) throw Object.assign(new Error('Restore this code before turning it on.'), { status: 400 });
-    return { ...r, on: !!active };
-  }, opts);
+export const setPromoActive = (code, active) => patch(code, (r) => {
+  if (active && r.archived) throw bad('Restore this code before turning it on.');
+  return { ...r, on: !!active };
+});
 
 // Archive = switch off and hide. Restore brings it back switched off, so nothing goes live by surprise.
-export const setPromoArchived = (id, archived, opts) =>
-  patchRule(id, (r) => (archived ? { ...r, on: false, archived: true, archivedAt: new Date().toISOString().slice(0, 10) } : { ...r, archived: false, archivedAt: null }), opts);
+export const setPromoArchived = (code, archived) => patch(code, (r) => (archived
+  ? { ...r, on: false, archived: true, archivedAt: new Date().toISOString().slice(0, 10) }
+  : { ...r, archived: false, archivedAt: null }));
 
-export const setPromoOnce = (id, once, opts) => patchRule(id, { once: !!once }, opts);
+export const setPromoOnce = (code, once) => patch(code, (r) => ({ ...r, once: !!once }));
+export const setPromoNote = (code, note) => patch(code, (r) => ({ ...r, note: cleanNote(note) }));

@@ -85,7 +85,7 @@ export async function recordPaidOrder(order, opts, deps = {}) {
   }
   if (!steps.newsletter && rec.newsletter && isEmail(email || '')) {
     try {
-      const groups = [process.env.MAILERLITE_GROUP_ID, process.env.MAILERLITE_CUSTOMERS_GROUP_ID].filter(Boolean);
+      const groups = [process.env.MAILERLITE_GROUP_ID, process.env.MAILERLITE_CUSTOMERS_GROUP_ID || '200334588365505920'].filter(Boolean); // Customers group starts the after-purchase emails
       const fields = { name: (name || '').split(' ')[0], signup_source: 'checkout', marketing_consent: 'yes', marketing_consent_source: 'checkout', marketing_consent_at: (order.created_at || '').slice(0, 10) };
       const add = deps.addSubscriber || addSubscriber;
       try { await add(email, fields, { groups }); } catch { await add(email, { name: fields.name, signup_source: 'checkout' }, { groups }); }

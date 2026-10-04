@@ -70,11 +70,11 @@ export async function markPurchased(cartId, orderId) {
 }
 
 // One-time recovery codes (not stored in Square; checkout applies them server-side).
-export async function createRecoveryCode(cart, now = Date.now()) {
+export async function createRecoveryCode(cart, now = Date.now(), hours = CODE_HOURS, source = 'cart') {
   let code;
   do code = 'COMEBACK-' + crypto.randomBytes(4).toString('hex').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6).padEnd(6, '7');
   while (await getJSON('onetime', code));
-  const rec = { code, cartId: cart.id, email: cart.email, percentOff: RECOVERY_PERCENT, createdAt: new Date(now).toISOString(), expiresAt: Math.floor((now + CODE_HOURS * 3600000) / 1000), used: false };
+  const rec = { code, cartId: cart.id || null, email: cart.email, source, percentOff: RECOVERY_PERCENT, createdAt: new Date(now).toISOString(), expiresAt: Math.floor((now + hours * 3600000) / 1000), used: false };
   await setJSON('onetime', code, rec);
   return rec;
 }
