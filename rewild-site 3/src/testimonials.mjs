@@ -2,9 +2,18 @@
 // Rules: only real people, their own words (trimmed with "..." is fine, never reworded),
 // and no excerpt that claims a health effect (Canada treats testimonials as advertising claims).
 //   products: which product pages show it (most relevant first)
+//   youtube: video id for a video testimonial (shows a thumbnail; the player only loads on click)
 import { esc } from './layout.mjs';
 
 export const TESTIMONIALS = [
+  {
+    id: 'michelle',
+    name: 'Michelle D.',
+    detail: 'Video review · Rewild Energy with CordyFuel™',
+    head: "Watch Michelle's review",
+    youtube: '2L9vHQUFAqc',
+    products: ['energy', 'tincture', 'duo'],
+  },
   {
     id: 'krystal',
     name: 'Krystal J.',
@@ -23,7 +32,16 @@ export const TESTIMONIALS = [
   },
 ];
 
-const card = (t) => `<figure class="review">
+const video = (t) => `<figure class="review review-video">
+  <button type="button" class="yt" data-yt="${esc(t.youtube)}" aria-label="Play video: ${esc(t.head)}">
+    <img src="https://i.ytimg.com/vi/${esc(t.youtube)}/hqdefault.jpg" alt="" loading="lazy" width="480" height="360">
+    <span class="yt-play" aria-hidden="true"></span>
+  </button>
+  <p class="review-head">${esc(t.head)}</p>
+  <figcaption><b>${esc(t.name)}</b><span>${esc(t.detail)}</span></figcaption>
+</figure>`;
+
+const card = (t) => t.youtube ? video(t) : `<figure class="review">
   <div class="review-stars" aria-hidden="true">★★★★★</div>
   <p class="review-head">"${esc(t.head)}"</p>
   <blockquote>${esc(t.quote)}</blockquote>
@@ -42,7 +60,7 @@ export function reviewsSection({ eyebrow = 'What Rewilders are saying', title = 
 
 // One compact review right under the buy button on a product page.
 export function productReview(productId) {
-  const t = TESTIMONIALS.find((x) => x.products.includes(productId));
+  const t = TESTIMONIALS.find((x) => x.quote && x.products.includes(productId));
   if (!t) return '';
   return `<figure class="review review-compact"><div class="review-stars" aria-hidden="true">★★★★★</div><blockquote>"${esc(t.head)}." ${esc(t.quote.length > 170 ? t.quote.slice(0, t.quote.lastIndexOf(' ', 165)) + '...' : t.quote)}</blockquote><figcaption><b>${esc(t.name)}</b><span>${esc(t.detail)}</span></figcaption></figure>`;
 }
