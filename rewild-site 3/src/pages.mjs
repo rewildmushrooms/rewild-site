@@ -404,18 +404,21 @@ const lab = {
   description: 'Every lot of REWILD mushroom powder is tested for identity, potency and purity. CordyFuel™ is standardized to 3+ mg/g cordycepin. Full COAs on request.',
   jsonld: [crumbs([['Home', '/'], ['Lab Results', '/lab-results/']]), faqLd(LAB_FAQS)],
   body: `
-<section class="page-hero dark hero-photo hero-snowpeaks"><div class="wrap split" style="align-items:center">
-  <div class="stack">
-    <p class="eyebrow">Third-party lab results</p>
-    <h1 class="h1" style="font-size:clamp(40px,5vw,64px);color:#fff">What's on the label is what's inside.</h1>
-    <p class="lead" style="color:var(--on-dark)">Every pouch and every bottle starts as a tested lot. Identity, potency and purity, checked before anything is released. Here's what every lot is tested for, and the numbers.</p>
-    <div class="row"><a class="btn btn-yellow" href="#request">Request a full report</a><a class="btn btn-ghost" href="#results">See the numbers</a></div>
+<section class="page-hero dark lab-hero"><div class="wrap">
+  <div class="split" style="align-items:center">
+    <div class="stack">
+      <p class="eyebrow">Third-party lab results</p>
+      <h1 class="h1" style="font-size:clamp(40px,5vw,64px);color:#fff">What's on the label is what's inside.</h1>
+      <p class="lead" style="color:var(--on-dark)">Every pouch and every bottle starts as a tested lot. Identity, potency and purity, checked before anything is released. Here's what every lot is tested for, and the numbers.</p>
+      <div class="row"><a class="btn btn-yellow" href="#request">Request a full report</a><a class="btn btn-ghost" href="#results">See the numbers</a></div>
+    </div>
+    <div class="lab-hero-photo"><img src="/img/banner-tincture-snow-peaks-v2.webp" srcset="/img/banner-tincture-snow-peaks-v2-800.webp 800w, /img/banner-tincture-snow-peaks-v2.webp 1600w" sizes="(max-width: 900px) 100vw, 46vw" alt="REWILD Energy CordyFuel™ tincture bottle on a rock above snowy mountain peaks" width="1600" height="1205"></div>
   </div>
-  <div class="stats lab-hero-stats" style="align-self:center">
-    <div class="stat inverse" style="background:#1E201B"><b>3+ mg/g</b><span>Cordycepin minimum in every lot of CordyFuel™</span></div>
-    <div class="stat inverse" style="background:#1E201B"><b>7.1 mg/g</b><span>Our highest result, from an independent lab</span></div>
-    <div class="stat inverse" style="background:#1E201B"><b>13+</b><span>Lab checks on every lot: identity, potency, purity, stability</span></div>
-    <div class="stat inverse" style="background:#1E201B"><b>2025</b><span>Cordy Cup winner, Sweden. Best Cordyceps militaris (Fruiting Body / Full Spectrum)</span></div>
+  <div class="stats lab-hero-stats">
+    <div class="stat inverse"><b>3+ mg/g</b><span>Cordycepin minimum in every lot of CordyFuel™</span></div>
+    <div class="stat inverse"><b>7.1 mg/g</b><span>Our highest result, from an independent lab</span></div>
+    <div class="stat inverse"><b>13+</b><span>Lab checks on every lot: identity, potency, purity, stability</span></div>
+    <div class="stat inverse"><b>2025</b><span>Cordy Cup winner, Sweden. Best Cordyceps militaris (Fruiting Body / Full Spectrum)</span></div>
   </div>
 </div></section>
 
@@ -721,7 +724,7 @@ const privacy = simple('/privacy/', 'Privacy Policy | REWILD Mushrooms', 'How RE
 <h2>How we use it</h2>
 <p>To fulfil and ship your order, answer your questions, send emails you signed up for, and meet our legal and accounting obligations. We do not sell your information.</p>
 <h2>Who we share it with</h2>
-<p>Only the services we need to run the shop: Square (payments), MailerLite (email), Netlify (website hosting and forms), Google Analytics (visit statistics), and shipping carriers (to deliver your order). These providers may store data outside Canada, including in the United States.</p>
+<p>Only the services we need to run the shop: Square (payments), MailerLite (email), Netlify (website hosting, forms and order records), Google Analytics (visit statistics), and shipping carriers (to deliver your order). These providers may store data outside Canada, including in the United States.</p>
 <h2>Your choices</h2>
 <p>You can ask to see, correct or delete your personal information by emailing <a href="mailto:${SITE.email}">${SITE.email}</a>.</p>`);
 
@@ -868,6 +871,9 @@ const confirmed = {
     var items=(o.items||[]).map(function(i){return i.qty+' × '+i.name}).join(', ');
     var el=document.getElementById('oc-details');
     el.textContent='Order '+o.orderRef+': '+items+'. Total $'+(o.total/100).toFixed(2)+' CAD. A receipt is on its way to your inbox.';
+    if(window.gtag){ var k='rewild_ga_'+o.orderId, seen=false; try{seen=!!localStorage.getItem(k);localStorage.setItem(k,'1');}catch(e){}
+      if(!seen) window.gtag('event','purchase',{transaction_id:o.orderId,currency:'CAD',value:o.total/100,shipping:(o.shipping||0)/100,coupon:o.code||undefined,
+        items:(o.items||[]).map(function(i){return {item_id:i.id||i.name,item_name:i.name,price:i.price/100,quantity:i.qty}})}); }
   }).catch(function(){});
 })();
 </script>`,

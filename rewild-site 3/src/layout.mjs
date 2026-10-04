@@ -176,7 +176,7 @@ ${page.body}
     <p class="small" id="promo-msg" role="status"></p>
     <div class="totals" id="cart-totals"></div>
     <p class="small muted" id="cart-ship-note"></p>
-    <label class="small news-opt"><input type="checkbox" id="cart-news"> Email me new products and offers. Unsubscribe anytime.</label>
+    <label class="small news-opt"><input type="checkbox" id="cart-news"> Keep me in the loop with REWILD news, product drops and occasional offers. Unsubscribe anytime.</label>
     <button type="button" class="btn btn-yellow btn-block" id="checkout-btn">Checkout</button>
     <p class="small cart-guarantee"><b>100% Risk-Free Guarantee.</b> Full refund within 14 days of delivery. No questions asked.</p>
     <p class="error-msg" id="cart-error" role="alert"></p>
