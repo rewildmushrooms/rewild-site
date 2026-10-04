@@ -2,14 +2,14 @@
 // (no x-hq-user = Jade, for older bookmarks). Owners see everything; partners see stock and their own sales.
 //   GET  /api/hq?action=me
 //   GET  /api/hq?action=summary&days=30                     (owner)
-//   GET  /api/hq?action=coupons                             (owner)
+//   GET  /api/hq?action=coupons                             (everyone; partners see active codes, read only)
 //   GET  /api/hq?action=traffic&days=30                     (owner, Google Analytics)
 //   GET  /api/hq?action=alerts                              (owner, things to look at)
 //   GET  /api/hq?action=inventory                           (everyone)
 //   GET  /api/hq?action=commissions&month=2026-10           (owner: all partners; partner: themselves)
 //   POST /api/hq  { action:'setStock', id, quantity }       (everyone)
 //   POST /api/hq  { action:'createCoupon', code, percentOff|amountOff, expiresAt, minimumAmount }   (owner)
-//   POST /api/hq  { action:'toggleCoupon', id, active }     (owner)
+//   POST /api/hq  { action:'toggleCoupon'|'archiveCoupon'|'onceCoupon'|'noteCoupon', id: CODE, ... }   (owner)
 //   POST /api/hq  { action:'shippingInvoice', orderId, amount, note? }   (owner)
 //   GET  /api/hq?action=people&days=30   customers, carts, email numbers for Overview   (owner)
 //   GET  /api/hq?action=customers&q=     GET /api/hq?action=customer&email=              (owner)
@@ -27,7 +27,7 @@ import { cartStats } from './_shared/carts.mjs';
 import { getJSON } from './_shared/store.mjs';
 import { stockLevels } from './_shared/inventory.mjs';
 import { PRODUCTS } from './_shared/catalog.mjs';
-import { listPromos, createPromo, setPromoActive, setPromoArchived, setPromoOnce } from './_shared/promos.mjs';
+import { listPromos, createPromo, setPromoActive, setPromoArchived, setPromoOnce, setPromoNote } from './_shared/promos.mjs';
 import { isPaid, orderRef, buyerName } from './_shared/orders.mjs';
 import { TEAM, PARTNERS, COMMISSION_RATE, memberById, partnerForOrder, commissionBase, commissionFor } from './_shared/team.mjs';
 import { inventory, setStock } from './_shared/inventory.mjs';
@@ -439,12 +439,15 @@ export default async (req) => {
         const month = /^\d{4}-\d{2}$/.test(url.searchParams.get('month') || '') ? url.searchParams.get('month') : monthOf(new Date().toISOString());
         return json(200, await commissions(month, member));
       }
+      if (action === 'coupons') {
+        const list = await coupons();
+        return json(200, { coupons: owner ? list : list.filter((c) => !c.archived) });
+      }
       if (!owner) return denied();
       if (action === 'summary') {
         const days = parseDays(url.searchParams.get('days'));
         return json(200, await summary(days));
       }
-      if (action === 'coupons') return json(200, { coupons: await coupons() });
       if (action === 'people') return json(200, await people(parseDays(url.searchParams.get('days'))));
       if (action === 'customers') return json(200, await customersList(url.searchParams.get('q') || ''));
       if (action === 'customer') return json(200, await customerDetail(url.searchParams.get('email')));
@@ -480,6 +483,7 @@ export default async (req) => {
       if (b.action === 'toggleCoupon') return json(200, await setPromoActive(b.id, b.active));
       if (b.action === 'archiveCoupon') return json(200, await setPromoArchived(b.id, !!b.archived));
       if (b.action === 'onceCoupon') return json(200, await setPromoOnce(b.id, !!b.once));
+      if (b.action === 'noteCoupon') return json(200, await setPromoNote(b.id, b.note));
       if (b.action === 'shippingInvoice') return json(200, { ok: true, ...(await sendShippingInvoice(b)) });
       return json(400, { error: 'Unknown action' });
     }
