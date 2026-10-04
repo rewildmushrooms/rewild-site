@@ -426,7 +426,7 @@ const lab = {
       <p class="lead" style="color:var(--on-dark)">Every pouch and every bottle starts as a tested lot. Identity, potency and purity, checked before anything is released. Here's what every lot is tested for, and the numbers.</p>
       <div class="row"><a class="btn btn-yellow" href="#request">Request a full report</a><a class="btn btn-ghost" href="#results">See the numbers</a></div>
     </div>
-    <div class="lab-hero-photo"><img src="/img/banner-tincture-snow-peaks-v2.webp" srcset="/img/banner-tincture-snow-peaks-v2-800.webp 800w, /img/banner-tincture-snow-peaks-v2.webp 1600w" sizes="(max-width: 900px) 100vw, 46vw" alt="REWILD Energy CordyFuel™ tincture bottle on a rock above snowy mountain peaks" width="1600" height="1205"></div>
+    <div class="lab-hero-photo"><img src="/img/banner-tincture-snow-peaks-v3.webp" srcset="/img/banner-tincture-snow-peaks-v3-800.webp 800w, /img/banner-tincture-snow-peaks-v3.webp 1600w" sizes="(max-width: 900px) 100vw, 46vw" alt="REWILD Energy CordyFuel™ tincture bottle on a rock above snowy mountain peaks" width="1600" height="1205"></div>
   </div>
   <div class="stats lab-hero-stats">
     <div class="stat inverse"><b>3+ mg/g</b><span>Cordycepin minimum in every lot of CordyFuel™</span></div>
