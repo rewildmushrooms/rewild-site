@@ -23,20 +23,25 @@ export async function ensureVariations(opts, { create = true } = {}) {
   if (varCache && Object.keys(varCache).length === STOCKED.length) return varCache;
   const items = await pages((cursor) => square('GET', `/catalog/list?types=ITEM${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`, null, opts), 'objects', 2000);
   const found = {};
+  const skus = new Set();
   for (const it of items) {
-    if (it.is_deleted) continue;
+    if (it.is_deleted || it.item_data?.is_archived) continue;
     for (const v of it.item_data?.variations || []) {
       const sku = v.item_variation_data?.sku;
+      if (sku) skus.add(sku);
       const p = STOCKED.find((x) => skuFor(x.id) === sku);
       if (p && !found[p.id]) found[p.id] = v.id;
     }
   }
   const missing = STOCKED.filter((p) => !found[p.id]);
-  if (missing.length && create) {
+  // Bundles (Duo, All Four Set) also get a Square item so they can be rung up in the Square app.
+  // They don't track stock in Square; HQ takes their parts out of stock.
+  const bundles = PRODUCTS.filter((p) => BUNDLES[p.id] && !skus.has(skuFor(p.id)));
+  if ((missing.length || bundles.length) && create) {
     const res = await square('POST', '/catalog/batch-upsert', {
       idempotency_key: idem(),
       batches: [{
-        objects: missing.map((p) => ({
+        objects: [...missing, ...bundles].map((p) => ({
           type: 'ITEM',
           id: `#item-${p.id}`,
           present_at_all_locations: true,
@@ -53,7 +58,7 @@ export async function ensureVariations(opts, { create = true } = {}) {
                 sku: skuFor(p.id),
                 pricing_type: 'FIXED_PRICING',
                 price_money: { amount: p.price, currency: 'CAD' },
-                track_inventory: true,
+                track_inventory: !BUNDLES[p.id],
               },
             }],
           },
@@ -62,7 +67,7 @@ export async function ensureVariations(opts, { create = true } = {}) {
     }, opts);
     for (const m of res.id_mappings || []) {
       const hit = /^#var-(.+)$/.exec(m.client_object_id || '');
-      if (hit) found[hit[1]] = m.object_id;
+      if (hit && STOCKED.some((x) => x.id === hit[1])) found[hit[1]] = m.object_id;
     }
   }
   varCache = found;
