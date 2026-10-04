@@ -1,5 +1,7 @@
 # Going live on rewildmushrooms.com
 
+**Status: LIVE since 2026-10-04.** Live Square, rewildmushrooms.com on Netlify (A records at SiteGround point to 75.2.60.5).
+
 Moving from `rewild-mushrooms.netlify.app` (Square sandbox) to `rewildmushrooms.com` (real payments).
 Steps marked **Jade** involve passwords, secret keys or account settings. Claude can do the rest.
 
