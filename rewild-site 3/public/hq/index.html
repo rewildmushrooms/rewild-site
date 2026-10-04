@@ -195,7 +195,7 @@ a{color:var(--ink)}
     <div class="toolbar"><div class="seg" role="group" aria-label="Order dates"><button data-odays="1" aria-pressed="false">Today</button><button data-odays="7" aria-pressed="false">7 days</button><button data-odays="30" aria-pressed="false">30 days</button><button data-odays="90" aria-pressed="false">90 days</button><button data-odays="all" aria-pressed="true">All time</button></div><div class="seg" role="group" aria-label="Order source"><button data-src="" aria-pressed="true">All</button><button data-src="online" aria-pressed="false">Online</button><button data-src="offline" aria-pressed="false">Offline</button></div><span class="muted" id="or-sum"></span></div>
     <section class="panel">
       <p class="msg" id="or-msg" role="status"></p>
-      <div class="scroll"><table><thead><tr><th>Date</th><th>Order</th><th>Customer</th><th>Products</th><th class="num">Total</th><th class="num">Discount</th><th>Status</th><th>Source</th></tr></thead><tbody id="or-list"></tbody></table></div>
+      <div class="scroll"><table><thead><tr><th>Date</th><th>Order</th><th>Customer</th><th>Products</th><th class="num">Total</th><th class="num">Discount</th><th>Status</th><th>Shipping</th><th>Source</th></tr></thead><tbody id="or-list"></tbody></table></div>
     </section>
   </div>
 
@@ -561,18 +561,40 @@ a{color:var(--ink)}
   let src='',odays='all';
   document.querySelectorAll('[data-odays]').forEach(b=>b.onclick=()=>{odays=b.dataset.odays;document.querySelectorAll('[data-odays]').forEach(x=>x.setAttribute('aria-pressed',x===b));loadOrders();});
   document.querySelectorAll('[data-src]').forEach(b=>b.onclick=()=>{src=b.dataset.src;document.querySelectorAll('[data-src]').forEach(x=>x.setAttribute('aria-pressed',x===b));loadOrders();});
+  const CARRIERS={canadapost:['Canada Post',n=>'https://www.canadapost-postescanada.ca/track-reperer/en#/search?searchFor='+encodeURIComponent(n)],chitchats:['Chit Chats',n=>'https://chitchats.com/tracking/'+encodeURIComponent(n)],usps:['USPS',n=>'https://tools.usps.com/go/TrackConfirmAction?tLabels='+encodeURIComponent(n)],ups:['UPS',n=>'https://www.ups.com/track?tracknum='+encodeURIComponent(n)],purolator:['Purolator',n=>'https://www.purolator.com/en/shipping/tracker?pin='+encodeURIComponent(n)],hand:['Hand delivery',null],other:['Other',null]};
+  function shipCell(o){
+    if(o.source==='offline')return '<span class="muted">–</span>';
+    if(o.shipment){const c=CARRIERS[o.shipment.carrier]||['Shipped',null];const t=o.shipment.tracking;const link=t&&c[1]?`<a href="${esc(c[1](t))}" target="_blank" rel="noopener">${esc(t)}</a>`:esc(t||'');
+      return `<span class="chip rep">Shipped ${day(o.shipment.at)}</span><br><span class="small">${esc(c[0])} ${link}</span>${o.shipment.emailed?'<br><span class="muted small">Customer emailed</span>':''}<br><button class="link-btn small" data-ship="${esc(o.id)}" data-edit="1">Change</button>`;}
+    if(o.status!=='paid')return '<span class="muted">–</span>';
+    return `<button class="btn small" data-ship="${esc(o.id)}">Mark shipped</button>`;
+  }
+  function shipForm(btn){
+    const td=btn.closest('td');const id=btn.dataset.ship;
+    td.innerHTML=`<div class="stack-sm" style="min-width:220px"><select data-f="carrier">${Object.entries(CARRIERS).map(([k,v])=>`<option value="${k}">${v[0]}</option>`).join('')}</select>
+      <input data-f="tracking" placeholder="Tracking number" autocomplete="off" style="text-transform:uppercase">
+      <label class="small" style="flex-direction:row;gap:6px;align-items:center"><input type="checkbox" data-f="notify" checked style="width:auto"> Email the customer their tracking</label>
+      <div class="row" style="gap:8px"><button class="btn small" data-f="save">Save</button><button class="link-btn small" data-f="cancel">Cancel</button></div><p class="msg small" data-f="msg"></p></div>`;
+    const f=(k)=>td.querySelector(`[data-f="${k}"]`);f('tracking').focus();
+    f('cancel').onclick=()=>loadOrders();
+    f('save').onclick=async()=>{f('save').disabled=true;f('msg').className='msg small';f('msg').textContent='Saving…';
+      try{await api('',{method:'POST',body:JSON.stringify({action:'markShipped',orderId:id,carrier:f('carrier').value,tracking:f('tracking').value,notify:f('notify').checked})});loadOrders();}
+      catch(err){f('msg').className='msg small err';f('msg').textContent=err.message;f('save').disabled=false;}};
+  }
   async function loadOrders(){
     const m=$('#or-msg');m.className='msg';m.textContent='Loading…';
     try{const r=await api('?action=orders&days='+odays+(src?'&source='+src:''));m.textContent='';
-      $('#or-sum').textContent=r.total+' orders, '+money(r.revenue);
-      $('#or-list').innerHTML=r.orders.length?r.orders.map(o=>`<tr><td>${day(o.at)}</td><td class="muted">#${esc(String(o.id).slice(-8).toUpperCase())}</td><td>${o.email?`<a href="#" data-email="${esc(o.email)}">${esc(o.name||o.email)}</a>`:esc(o.name||'–')}</td><td>${esc(o.items)}</td><td class="num">${money(o.total)}</td><td class="num">${o.discount?money(o.discount)+(o.code?'<br><span class="muted">'+esc(o.code)+'</span>':''):'–'}</td><td>${esc(o.status)}</td><td>${o.source==='offline'?'<span class="chip">Offline</span>':'<span class="chip rep">Online</span>'}</td></tr>`).join(''):'<tr><td colspan="8" class="muted">No orders in this period. Orders appear here once they are paid.</td></tr>';
+      const toShip=r.orders.filter(o=>o.source!=='offline'&&o.status==='paid'&&!o.shipment).length;
+      $('#or-sum').textContent=r.total+' orders, '+money(r.revenue)+(toShip?' · '+toShip+' to ship':'');
+      $('#or-list').innerHTML=r.orders.length?r.orders.map(o=>`<tr><td>${day(o.at)}</td><td class="muted">#${esc(String(o.id).slice(-8).toUpperCase())}</td><td>${o.email?`<a href="#" data-email="${esc(o.email)}">${esc(o.name||o.email)}</a>`:esc(o.name||'–')}</td><td>${esc(o.items)}</td><td class="num">${money(o.total)}</td><td class="num">${o.discount?money(o.discount)+(o.code?'<br><span class="muted">'+esc(o.code)+'</span>':''):'–'}</td><td>${esc(o.status)}</td><td>${shipCell(o)}</td><td>${o.source==='offline'?'<span class="chip">Offline</span>':'<span class="chip rep">Online</span>'}</td></tr>`).join(''):'<tr><td colspan="9" class="muted">No orders in this period. Orders appear here once they are paid.</td></tr>';
       $('#or-list').querySelectorAll('[data-email]').forEach(a=>a.onclick=(e)=>{e.preventDefault();show('customers');openCustomer(a.dataset.email);});
+      $('#or-list').querySelectorAll('[data-ship]').forEach(b=>b.onclick=()=>shipForm(b));
     }catch(err){m.className='msg err';m.textContent=err.message;}
   }
   // ---- Stock actions + history
   let invItems=[],mode=null;
-  const SALE_IDS=['energy','clarity','strength','peace','tincture','duo'];
-  const LABEL={energy:'Rewild Energy',clarity:'Rewild Clarity',strength:'Rewild Strength',peace:'Rewild Peace',tincture:'Energy Tincture',duo:'Energy Duo'};
+  const SALE_IDS=['energy','clarity','strength','peace','tincture','duo','all4'];
+  const LABEL={energy:'Rewild Energy',clarity:'Rewild Clarity',strength:'Rewild Strength',peace:'Rewild Peace',tincture:'Energy Tincture',duo:'Energy Duo',all4:'All Four Set'};
   document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>openStockForm(b.dataset.mode));
   function openStockForm(m){
     mode=m;document.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.mode===m));
@@ -616,7 +638,7 @@ a{color:var(--ink)}
     ['New order alert','A customer pays','You','Square','on',SQ+'/','Square: Settings > Notifications'],
     ['Refund receipt','You refund in Square','Customer','Square','on',SQ+'/sales/transactions','Square: Transactions > payment > Refund'],
     ['US shipping + duties invoice','You click Send quote in Overview','US customer','Square','on',SQ+'/invoices','Square: Invoices'],
-    ['Shipped + tracking','You ship an order','Customer','Carrier (for now)','planned','',"Canada Post / Chit Chats email tracking. A 'Mark shipped' button in HQ is planned."],
+    ['Shipped + tracking','You click Mark shipped in HQ > Orders','Customer','Website','on','','Tracking link for Canada Post, Chit Chats, USPS, UPS or Purolator'],
     ['Cart reminder 1','1 hour after an unpaid checkout','Shoppers who ticked the email box','Website','on','','Stops the moment they pay'],
     ['Cart reminder 2','24 hours after','Same','Website','on','',''],
     ['Cart reminder 3 (15% code, 24 h)','48 hours after','Same','Website','on','','One-time code, made for that cart only'],
