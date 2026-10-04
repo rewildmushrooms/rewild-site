@@ -168,6 +168,7 @@ a{color:var(--ink)}
         <div class="qtygrid" id="sf-qty"></div>
         <div class="grid" style="align-items:end">
           <label id="sf-amount-l">Amount received ($)<input id="sf-amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Optional"></label>
+          <label id="sf-who-l">Whose sale<select id="sf-who"></select></label>
           <label>Note<input id="sf-note" maxlength="200" placeholder="e.g. Shambhala, cash"></label>
           <button class="btn" type="submit" id="sf-submit">Save</button>
           <button class="btn ghost" type="button" id="sf-cancel">Cancel</button>
@@ -658,6 +659,11 @@ a{color:var(--ink)}
     $('#sf-title').textContent=m==='offline'?'Record offline sale':m==='restock'?'Restock':'Adjust stock';
     $('#sf-help').textContent=m==='offline'?'Cash or non-Square sales, e.g. at a market. Sales in the Square app already count. Enter how many of each you sold, then Save once.':m==='restock'?'Enter how many of each product came in.':'Pick one product and enter + or − (e.g. -2 for damaged). A note is required.';
     $('#sf-amount-l').hidden=m!=='offline';
+    const owner=me&&me.role==='owner';
+    $('#sf-who-l').hidden=m!=='offline'||!owner;
+    if(owner)$('#sf-who').innerHTML='<option value="">Jade (no commission)</option>'+(me.partners||[]).map(p=>`<option value="${esc(p.id)}">${esc(p.name)} (commission)</option>`).join('');
+    if(m==='offline'&&!owner)$('#sf-help').textContent='Cash, e-transfer or any sale outside the website, e.g. at a market. Enter how many of each you sold and the amount you received. It counts toward your commission.';
+    $('#sf-amount').placeholder=m==='offline'&&!owner?'Required':'Optional (required for a partner sale)';
     const ids=m==='offline'?SALE_IDS:SALE_IDS.filter(i=>i!=='duo');
     $('#sf-qty').innerHTML=m==='adjust'
       ?`<label>Product<select id="sf-prod">${ids.map(i=>`<option value="${i}">${LABEL[i]}</option>`).join('')}</select></label><label>Change (+ or −)<input id="sf-change" type="number" step="1" inputmode="numeric" placeholder="-2"></label>`
@@ -672,7 +678,7 @@ a{color:var(--ink)}
       let body;
       if(mode==='adjust')body={action:'adjust',id:$('#sf-prod').value,change:$('#sf-change').value,note:$('#sf-note').value};
       else{const items=[...document.querySelectorAll('[data-q]')].map(i=>({id:i.dataset.q,qty:Number(i.value||0)})).filter(i=>i.qty>0);
-        body={action:mode==='offline'?'offlineSale':'restock',items,note:$('#sf-note').value,...(mode==='offline'?{amount:$('#sf-amount').value}:{})};}
+        body={action:mode==='offline'?'offlineSale':'restock',items,note:$('#sf-note').value,...(mode==='offline'?{amount:$('#sf-amount').value,partner:$('#sf-who').value}:{})};}
       await api('',{method:'POST',body:JSON.stringify(body)});
       m.className='msg';m.textContent=mode==='offline'?'Offline sale saved. Stock updated.':mode==='restock'?'Restock saved.':'Adjustment saved.';
       $('#stock-form').hidden=true;document.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed','false'));
@@ -747,9 +753,9 @@ a{color:var(--ink)}
         const link=SITE+'/?ref='+p.ref;
         return `<section class="panel"><div class="panel-head"><h2>${esc(p.name)}</h2><div><span class="muted">Owed this month</span> <span class="owed">${money(p.commission)}</span></div></div>
         <div class="tiles"><div class="tile" style="background:var(--stone)"><div class="label">Orders</div><div class="value">${p.orders}</div></div><div class="tile" style="background:var(--stone)"><div class="label">Customers paid</div><div class="value">${money(p.sales)}</div></div><div class="tile" style="background:var(--stone)"><div class="label">Commission</div><div class="value">${money(p.commission)}</div></div></div>
-        <p style="margin:6px 0"><strong>Counts as ${esc(p.name.split(' ')[0])}'s sale:</strong> any code starting with <strong>${esc(p.codePrefix)}</strong> (like ${esc(p.codePrefix)}20), or anyone who shops through this link within 30 days:</p>
+        <p style="margin:6px 0"><strong>Counts as ${esc(p.name.split(' ')[0])}'s sale:</strong> any code starting with <strong>${esc(p.codePrefix)}</strong> (like ${esc(p.codePrefix)}20), anyone who shops through this link within 30 days, and offline sales recorded for ${esc(p.name.split(' ')[0])} in Inventory:</p>
         <div class="copy"><code>${esc(link)}</code><button class="btn ghost small" data-copy="${esc(link)}">Copy link</button></div>
-        <div class="scroll" style="margin-top:14px"><table><thead><tr><th>Date</th><th>Order</th><th>How</th><th>Items</th><th class="num">Paid</th><th class="num">Commission</th></tr></thead><tbody>${p.lines.length?p.lines.map(l=>`<tr><td>${fmtDate(l.created)}</td><td class="muted">#${esc(l.ref)}</td><td>${l.via==='code'?'Code '+esc(l.code):'Share link'}</td><td>${esc(l.items)}</td><td class="num">${money(l.paid)}</td><td class="num"><strong>${money(l.commission)}</strong></td></tr>`).join(''):'<tr><td colspan="6" class="muted">No sales this month yet.</td></tr>'}</tbody></table></div></section>`;
+        <div class="scroll" style="margin-top:14px"><table><thead><tr><th>Date</th><th>Order</th><th>How</th><th>Items</th><th class="num">Paid</th><th class="num">Commission</th></tr></thead><tbody>${p.lines.length?p.lines.map(l=>`<tr><td>${fmtDate(l.created)}</td><td class="muted">#${esc(l.ref)}</td><td>${l.via==='code'?'Code '+esc(l.code):l.via==='offline'?'Offline sale':'Share link'}</td><td>${esc(l.items)}</td><td class="num">${money(l.paid)}</td><td class="num"><strong>${money(l.commission)}</strong></td></tr>`).join(''):'<tr><td colspan="6" class="muted">No sales this month yet.</td></tr>'}</tbody></table></div></section>`;
       }).join('');
       document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=async()=>{try{await navigator.clipboard.writeText(b.dataset.copy);b.textContent='Copied';}catch(e){b.textContent='Select and copy';}});
     }catch(err){m.className='msg err';m.textContent=err.message;}
