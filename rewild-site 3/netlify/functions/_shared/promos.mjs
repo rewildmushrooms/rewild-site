@@ -1,7 +1,10 @@
 // Promo codes live in Square as catalog Discounts (Items > Discounts in the Square dashboard).
 // The discount's name is the code customers type (e.g. SEAN20).
-// Extra web rules (on/off, expiry date, minimum order) are managed from REWILD HQ and saved in
-// Netlify Blobs (store "promo-rules", key "all" = { [squareDiscountId]: { on, exp, min } }).
+// Extra web rules (on/off, expiry date, minimum order, one use per customer, archived) are managed
+// from REWILD HQ and saved in Netlify Blobs (store "promo-rules", key "all" =
+// { [squareDiscountId]: { on, exp, min, once, archived } }).
+// Archived codes are never deleted (old orders, reports and commissions still point at them);
+// they stop working and are hidden in HQ until restored.
 // Square does not allow custom attributes on discounts, so rules live on our side.
 // Older codes may still carry rules in a "rewild_rules" custom attribute; those are read as a fallback.
 import { square, idem, pages } from './square.mjs';
@@ -59,7 +62,9 @@ export function toPromo(obj, saved) {
     code: normCode(d.name),
     percentOff: pct,
     amountOff: amt,
-    active: rules.on !== false,
+    active: rules.on !== false && !rules.archived,
+    archived: !!rules.archived,
+    oncePerCustomer: !!rules.once,
     expiresAt: rules.exp ? endOfDayPacific(rules.exp) : null,
     expiresOn: rules.exp || null,
     minimumAmount: rules.min || null,
@@ -80,7 +85,8 @@ export async function listPromos(opts, { fresh = false } = {}) {
 }
 
 // Returns { promo, discount } or throws a friendly 400.
-export async function validatePromo(code, subtotal, opts, now = Date.now()) {
+// email (optional): when given, one-use-per-customer codes are checked against that customer's paid orders.
+export async function validatePromo(code, subtotal, opts, now = Date.now(), email = '') {
   code = normCode(code);
   const bad = (m) => Object.assign(new Error(m), { status: 400 });
   if (!CODE_RE.test(code)) throw bad('That code does not look right.');
@@ -97,7 +103,16 @@ export async function validatePromo(code, subtotal, opts, now = Date.now()) {
   if (!promo || !promo.active) throw bad(`${code} is not a valid code.`);
   if (promo.expiresAt && now / 1000 > promo.expiresAt) throw bad(`${code} has expired.`);
   if (promo.minimumAmount && subtotal < promo.minimumAmount) throw bad(`${code} needs an order of $${(promo.minimumAmount / 100).toFixed(0)} or more.`);
+  if (promo.oncePerCustomer && email && (await usedByCustomer(code, email))) throw bad(`${code} can be used once per customer, and it has already been used with this email.`);
   return { promo, discount: discountFor(promo, subtotal) };
+}
+
+// Customer records (store "customers", key = lowercased email) keep codesUsed from paid orders.
+export async function usedByCustomer(code, email) {
+  const key = String(email || '').trim().toLowerCase();
+  if (!key) return false;
+  const c = await getJSON('customers', key);
+  return (c?.codesUsed || []).map(normCode).includes(normCode(code));
 }
 
 export function discountFor(promo, subtotal) {
@@ -126,6 +141,7 @@ export async function createPromo(b, opts) {
   const rules = { on: true };
   if (b.expiresAt && /^\d{4}-\d{2}-\d{2}$/.test(b.expiresAt)) rules.exp = b.expiresAt;
   if (b.minimumAmount) rules.min = Math.round(Number(b.minimumAmount) * 100);
+  if (b.oncePerCustomer) rules.once = true;
   const object = {
     type: 'DISCOUNT',
     id: '#new',
@@ -143,13 +159,26 @@ export async function createPromo(b, opts) {
   return p;
 }
 
-export async function setPromoActive(id, active, opts) {
+async function patchRule(id, patch, opts) {
   if (!/^[A-Z0-9]{10,40}$/i.test(id || '')) throw Object.assign(new Error('Bad id'), { status: 400 });
   const { object } = await square('GET', `/catalog/object/${id}`, null, opts);
   if (object?.type !== 'DISCOUNT') throw Object.assign(new Error('Not a promo code'), { status: 400 });
   const all = await loadRules();
   const current = all[id] || readRules(object) || DEFAULT_RULES[normCode(object.discount_data?.name)] || {};
-  await saveRule(id, { ...current, on: !!active });
+  const next = typeof patch === 'function' ? patch(current) : { ...current, ...patch };
+  await saveRule(id, next);
   _resetPromoCache();
   return { ok: true };
 }
+
+export const setPromoActive = (id, active, opts) =>
+  patchRule(id, (r) => {
+    if (active && r.archived) throw Object.assign(new Error('Restore this code before turning it on.'), { status: 400 });
+    return { ...r, on: !!active };
+  }, opts);
+
+// Archive = switch off and hide. Restore brings it back switched off, so nothing goes live by surprise.
+export const setPromoArchived = (id, archived, opts) =>
+  patchRule(id, (r) => (archived ? { ...r, on: false, archived: true, archivedAt: new Date().toISOString().slice(0, 10) } : { ...r, archived: false, archivedAt: null }), opts);
+
+export const setPromoOnce = (id, once, opts) => patchRule(id, { once: !!once }, opts);
