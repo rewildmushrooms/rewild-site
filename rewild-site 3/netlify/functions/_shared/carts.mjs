@@ -101,7 +101,7 @@ export function reminderEmail(step, cart, { site, code }) {
   const optout = `${site}/api/cart-optout?c=${cart.id}&t=${cart.optout}`;
   const copy = {
     1: { subject: 'You left something in your cart', head: 'Your cart is saved.', body: 'Looks like checkout got interrupted. Your mushrooms are still waiting, right where you left them.', cta: 'Finish checkout' },
-    2: { subject: 'Still thinking it over?', head: 'Still thinking it over?', body: 'Totally fair. Every REWILD lot is third-party tested, one mushroom per bag, nothing else added. Canadian orders ship in 1 to 3 business days, and you have 14 days for a full refund if it is not for you.', cta: 'View your cart' },
+    2: { subject: 'Still thinking it over?', head: 'Still thinking it over?', body: 'Totally fair. Every REWILD lot is third-party tested, full spectrum, nothing else added. Canadian orders ship in 1 to 3 business days, and you have 14 days for a full refund if it is not for you.', cta: 'View your cart' },
     3: { subject: `${RECOVERY_PERCENT}% off your cart, for the next 24 hours`, head: `Here's ${RECOVERY_PERCENT}% off, just for you.`, body: `Use code ${code?.code} at checkout for ${RECOVERY_PERCENT}% off this cart. It works once and ends in 24 hours.`, cta: `Checkout with ${RECOVERY_PERCENT}% off` },
   }[step];
   const text = [copy.head, '', copy.body, '', 'In your cart:', ...list.map((l) => '  ' + l), `  Total: ${money(cart.value)}`, '', `${copy.cta}: ${link}`, '', 'Return to your natural state.', '~ The REWILD crew', '', '---', "You're getting this because you started a checkout at rewildmushrooms.com and said yes to emails.", `Stop cart reminders: ${optout}`, 'REWILD Mushrooms, Box 18, Crescent Valley, BC V0G 1H0'].join('\n');

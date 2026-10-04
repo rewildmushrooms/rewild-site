@@ -75,7 +75,7 @@ export const PRODUCTS = [
     alt: "REWILD Clarity Lion's Mane powder pouch beside fresh Lion's Mane mushrooms",
     seoTitle: "Lion's Mane Powder Canada | Organic, BC-Grown | REWILD",
     seoDescription:
-      "Organic, full-spectrum Lion's Mane mushroom powder grown in British Columbia. Fruiting body + mycelium, one mushroom per bag, third-party tested. $50 / 100g.",
+      "Organic, full-spectrum Lion's Mane mushroom powder grown in British Columbia. Fruiting body + mycelium, third-party tested. $50 / 100g.",
     tagline: 'Quiet, steady, and easy to take every day.',
     story:
       "Lion's Mane grows in long, cascading spines on hardwood trees. It has been a respected food in traditional kitchens for generations. Ours is grown in British Columbia as a full-spectrum powder.",
@@ -119,7 +119,7 @@ export const PRODUCTS = [
     alt: 'REWILD Peace Reishi powder pouch beside glossy Reishi on a forest log',
     seoTitle: 'Reishi Powder Canada | Organic, BC-Grown | REWILD',
     seoDescription:
-      'Organic, full-spectrum Reishi mushroom powder grown in British Columbia. A slow, grounding evening ritual. One mushroom per bag, third-party tested. $50 / 100g.',
+      'Organic, full-spectrum Reishi mushroom powder grown in British Columbia. Bitter, woody and grounding. Third-party tested. $50 / 100g.',
     tagline: 'For the quiet end of the day.',
     story:
       'Reishi has been revered for centuries as the mushroom of stillness. Bitter, woody and grounding. Ours is grown in British Columbia as a full-spectrum powder.',

@@ -56,14 +56,14 @@ export function lifecycleEmail(kind, c, { site, code, optout }) {
     ? {
         subject: 'Running low?',
         head: 'Running low?',
-        body: [hi, `If you've been taking it daily, your ${names.join(' and ')} should be running low around now. Reorder today and it arrives before you run out, so your ritual never skips a day.`, 'Canadian orders ship in 1 to 3 business days. Orders over $175 ship free.'],
+        body: [hi, `If you've been taking it daily, your ${names.join(' and ')} should be running low around now. Reorder today and it arrives before you run out, so you never miss a day.`, 'Canadian orders ship in 1 to 3 business days. Orders over $175 ship free.'],
         cta: 'Reorder in one click',
         link: `${site}/shop/?cart=${encodeURIComponent(cart)}&utm_source=email&utm_medium=lifecycle&utm_campaign=reorder`,
       }
     : {
         subject: `We saved you ${RECOVERY_PERCENT}% off`,
         head: 'We miss you around here.',
-        body: [hi, "It's been a while since your last REWILD order. If life got busy, we get it. Here's a little nudge to get your ritual back.", `Use code ${code?.code} for ${RECOVERY_PERCENT}% off your next order. It works once and ends in 7 days.`],
+        body: [hi, "It's been a while since your last REWILD order. If life got busy, we get it. Here's a little nudge to get back to it.", `Use code ${code?.code} for ${RECOVERY_PERCENT}% off your next order. It works once and ends in 7 days.`],
         cta: `Shop with ${RECOVERY_PERCENT}% off`,
         link: `${site}/shop/?${cart ? `cart=${encodeURIComponent(cart)}&` : ''}code=${encodeURIComponent(code?.code || '')}&utm_source=email&utm_medium=lifecycle&utm_campaign=winback`,
       };
