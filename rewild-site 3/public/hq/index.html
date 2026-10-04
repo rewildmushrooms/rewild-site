@@ -11,6 +11,18 @@
 <style>
 :root{--ink:#121310;--text:#3D3F38;--muted:#6B6D64;--line:#E6E5E0;--stone:#F3F2EE;--accent:#E8C800;--good:#2F6B3A;--bad:#9B1C1C}
 [hidden]{display:none!important}
+.chips{display:flex;flex-wrap:wrap;gap:4px}.chip{font-size:11px;font-weight:700;padding:2px 8px;border-radius:12px;background:var(--stone);color:var(--text);white-space:nowrap}
+.chip.hv{background:var(--accent);color:var(--ink)}.chip.rep{background:#DDEBDD;color:var(--good)}.chip.ab{background:#F6E0E0;color:var(--bad)}
+tr.click{cursor:pointer}tr.click:hover td{background:#FAFAF7}
+.search{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.search input{flex:1 1 240px}
+.detail{background:var(--stone);border-radius:4px;padding:16px;margin:10px 0 16px}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0}.kv div{background:#fff;padding:10px 12px;border-radius:3px}.kv b{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 14px}.actions .btn[aria-pressed=true]{background:var(--ink);color:#fff}
+.stockform{background:var(--stone);padding:16px;border-radius:4px;margin-bottom:14px}
+.qtygrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+.qtygrid label{background:#fff;padding:10px 12px;border-radius:3px;font-weight:600;font-size:14px}
+.qtygrid input{width:100%;margin-top:6px;font-size:18px;padding:10px;min-height:48px}
+.chg.up{color:var(--good);font-weight:700}.chg.down{color:var(--bad);font-weight:700}
 .panel{position:relative}
 *{box-sizing:border-box}body{margin:0;background:var(--stone);color:var(--ink);font-family:'Noto Sans',system-ui,sans-serif;font-size:15px;line-height:1.5}
 h1,h2{font-family:Montserrat,sans-serif;font-weight:800;text-transform:uppercase;margin:0;letter-spacing:.02em}
@@ -131,6 +143,8 @@ a{color:var(--ink)}
 <main id="app" hidden><div class="wrap">
   <nav class="tabs" role="tablist" aria-label="HQ sections">
     <button role="tab" data-tab="overview" data-owner aria-selected="false">Overview</button>
+    <button role="tab" data-tab="customers" data-owner aria-selected="false">Customers</button>
+    <button role="tab" data-tab="orders" data-owner aria-selected="false">Orders</button>
     <button role="tab" data-tab="inventory" aria-selected="false">Inventory</button>
     <button role="tab" data-tab="commissions" aria-selected="false">Commissions</button>
     <button role="tab" data-tab="codes" data-owner aria-selected="false">Promo codes</button>
@@ -139,10 +153,48 @@ a{color:var(--ink)}
   <div data-panel="inventory" hidden>
     <section class="panel">
       <div class="panel-head"><h2>Inventory</h2><span class="muted" id="inv-note"></span></div>
-      <p class="muted" style="margin-top:0">Counts update automatically when something sells on the website or in the Square app. After a stock count or a new delivery, type the real number and press Save.</p>
+      <p class="muted" style="margin-top:0">Counts update automatically when something sells on the website or in the Square app. Use the buttons for cash sales, deliveries and fixes. Every change is saved in the history below.</p>
+      <div class="actions" role="group" aria-label="Stock actions">
+        <button class="btn small" data-mode="offline" aria-pressed="false">Record offline sale</button>
+        <button class="btn ghost small" data-mode="restock" aria-pressed="false">Restock</button>
+        <button class="btn ghost small" data-mode="adjust" aria-pressed="false">Adjust</button>
+      </div>
+      <form class="stockform" id="stock-form" hidden>
+        <h2 id="sf-title" style="margin-bottom:6px">Record offline sale</h2>
+        <p class="muted small" id="sf-help" style="margin-top:0"></p>
+        <div class="qtygrid" id="sf-qty"></div>
+        <div class="grid" style="align-items:end">
+          <label id="sf-amount-l">Amount received ($)<input id="sf-amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Optional"></label>
+          <label>Note<input id="sf-note" maxlength="200" placeholder="e.g. Shambhala, cash"></label>
+          <button class="btn" type="submit" id="sf-submit">Save</button>
+          <button class="btn ghost" type="button" id="sf-cancel">Cancel</button>
+        </div>
+      </form>
       <p class="msg" id="inv-msg" role="status"></p>
       <div class="scroll"><table><thead><tr><th>Product</th><th class="num">On hand</th><th>Set count</th></tr></thead><tbody id="inv-list"><tr><td colspan="3" class="muted">Loading…</td></tr></tbody></table></div>
       <p class="muted" id="inv-bundles" style="margin-bottom:0"></p>
+    </section>
+    <section class="panel" style="margin-top:12px">
+      <div class="panel-head"><h2>Stock history</h2><span class="muted small">newest first</span></div>
+      <div class="scroll"><table><thead><tr><th>When</th><th>Product</th><th class="num">Change</th><th>What</th><th>Who</th><th>Note</th></tr></thead><tbody id="ledger"><tr><td colspan="6" class="muted">Loading…</td></tr></tbody></table></div>
+    </section>
+  </div>
+
+  <div data-panel="customers" hidden>
+    <section class="panel">
+      <div class="panel-head"><h2>Customers</h2><span class="muted" id="cu-count"></span></div>
+      <form class="search" id="cu-search"><input id="cu-q" type="search" placeholder="Search email or name" aria-label="Search customers"><button class="btn small">Search</button></form>
+      <div id="cu-detail"></div>
+      <p class="msg" id="cu-msg" role="status"></p>
+      <div class="scroll"><table><thead><tr><th>Customer</th><th>Segments</th><th class="num">Orders</th><th class="num">Lifetime value</th><th>Last order</th></tr></thead><tbody id="cu-list"></tbody></table></div>
+    </section>
+  </div>
+
+  <div data-panel="orders" hidden>
+    <div class="toolbar"><div class="seg" role="group" aria-label="Order dates"><button data-odays="1" aria-pressed="false">Today</button><button data-odays="7" aria-pressed="false">7 days</button><button data-odays="30" aria-pressed="false">30 days</button><button data-odays="90" aria-pressed="false">90 days</button><button data-odays="all" aria-pressed="true">All time</button></div><div class="seg" role="group" aria-label="Order source"><button data-src="" aria-pressed="true">All</button><button data-src="online" aria-pressed="false">Online</button><button data-src="offline" aria-pressed="false">Offline</button></div><span class="muted" id="or-sum"></span></div>
+    <section class="panel">
+      <p class="msg" id="or-msg" role="status"></p>
+      <div class="scroll"><table><thead><tr><th>Date</th><th>Order</th><th>Customer</th><th>Products</th><th class="num">Total</th><th class="num">Discount</th><th>Status</th><th>Source</th></tr></thead><tbody id="or-list"></tbody></table></div>
     </section>
   </div>
 
@@ -155,7 +207,7 @@ a{color:var(--ink)}
   <div data-panel="overview" hidden>
   <div class="toolbar">
     <div class="seg" role="group" aria-label="Date range">
-      <button data-days="7" aria-pressed="false">7 days</button><button data-days="30" aria-pressed="true">30 days</button><button data-days="90" aria-pressed="false">90 days</button><button data-days="365" aria-pressed="false">12 months</button>
+      <button data-days="1" aria-pressed="false">Today</button><button data-days="7" aria-pressed="false">7 days</button><button data-days="30" aria-pressed="true">30 days</button><button data-days="90" aria-pressed="false">90 days</button><button data-days="all" aria-pressed="false">All time</button>
     </div>
     <div class="links" data-owner>
       <a class="btn ghost small" href="https://squareup.com/dashboard/sales/transactions" target="_blank" rel="noopener">Square payments</a>
@@ -178,6 +230,22 @@ a{color:var(--ink)}
     <div class="tile"><div class="label">Discounts given</div><div class="value" id="t-disc">–</div><div class="sub" id="t-ship"></div></div>
     <div class="tile"><div class="label">Rewilders</div><div class="value" id="t-subs">–</div><div class="sub" id="t-subs-sub">email subscribers</div></div>
   </section>
+  <section class="tiles" aria-label="Customers and carts">
+    <div class="tile"><div class="label">Customers</div><div class="value" id="p-cust">–</div><div class="sub" id="p-cust-sub"></div></div>
+    <div class="tile"><div class="label">Repeat customers</div><div class="value" id="p-rep">–</div><div class="sub" id="p-rep-sub"></div></div>
+    <div class="tile"><div class="label">Lifetime value</div><div class="value" id="p-ltv">–</div><div class="sub">average per customer</div></div>
+    <div class="tile"><div class="label">Conversion</div><div class="value" id="p-conv">–</div><div class="sub">orders per visit</div></div>
+    <div class="tile"><div class="label">Abandoned carts</div><div class="value" id="p-ab">–</div><div class="sub" id="p-ab-sub"></div></div>
+    <div class="tile"><div class="label">Recovered carts</div><div class="value" id="p-rec">–</div><div class="sub" id="p-rec-sub"></div></div>
+  </section>
+  <div class="cols">
+    <section class="panel"><div class="panel-head"><h2>Recent customers</h2><a class="muted small" href="#" data-goto="customers">All customers</a></div><div class="scroll"><table><tbody id="p-recent"></tbody></table></div></section>
+    <section class="panel"><div class="panel-head"><h2>Email</h2><a class="muted small" href="https://dashboard.mailerlite.com" target="_blank" rel="noopener">MailerLite</a></div><div class="kv" id="p-email"></div></section>
+  </div>
+  <div class="cols">
+    <section class="panel"><div class="panel-head"><h2>Low stock</h2><a class="muted small" href="#" data-goto="inventory">Inventory</a></div><div id="p-low" class="muted">Loading…</div></section>
+    <section class="panel"><div class="panel-head"><h2>Recent offline sales</h2></div><div class="scroll"><table><tbody id="p-off"></tbody></table></div></section>
+  </div>
 
   <section class="panel">
     <div class="panel-head"><h2>Revenue by day</h2><span class="muted" id="chart-range"></span></div>
@@ -257,12 +325,15 @@ a{color:var(--ink)}
   $('#login-form').onsubmit=async(e)=>{e.preventDefault();key=$('#pw').value;user=$('#user').value;$('#login-msg').textContent='';$('#login-msg').className='msg err';
     try{await start();sessionStorage.setItem(KEY,key);sessionStorage.setItem(UKEY,user);$('#pw').value='';}catch(err){$('#login-msg').textContent=err.message;}};
 
-  document.querySelectorAll('[data-days]').forEach(b=>b.onclick=()=>{days=Number(b.dataset.days);document.querySelectorAll('[data-days]').forEach(x=>x.setAttribute('aria-pressed',x===b));loadSummary();});
+  document.querySelectorAll('[data-days]').forEach(b=>b.onclick=()=>{days=b.dataset.days==='all'?'all':Number(b.dataset.days);document.querySelectorAll('[data-days]').forEach(x=>x.setAttribute('aria-pressed',x===b));loadSummary();loadPeople();});
+  const prevLabel=()=>days===1?'yesterday':'previous '+days+' days';
+  const periodLabel=()=>days==='all'?'all time':days===1?'today':'last '+days+' days';
+  document.addEventListener('click',e=>{const a=e.target.closest('[data-goto]');if(a){e.preventDefault();show(a.dataset.goto);}});
 
   async function loadSummary(){
     $('#load-msg').textContent='Loading…';
     try{
-      const s=await api('?action=summary&days='+days);
+      const s=await api('?action=summary&days='+days);lastSummary=s;
       const waiting=s.recent.filter(o=>o.needsShippingQuote&&!o.shippingInvoice).length;
       $('#load-msg').className='msg'+(waiting?' err':'');
       $('#load-msg').textContent=waiting?(waiting+' US order'+(waiting===1?'':'s')+' waiting for a shipping quote. See Recent orders below.'):'';
@@ -272,7 +343,7 @@ a{color:var(--ink)}
       $('#t-orders').textContent=s.orders;
       $('#t-customers').textContent=s.customers+' customers';
       $('#t-aov').textContent=money(s.aov);
-      const delta=(id,cur,prev,fmt)=>{const el=$('#'+id);if(!prev){el.className='delta';el.textContent=cur?'New vs previous '+days+' days':'';return;}const ch=(cur-prev)/prev*100;el.className='delta '+(ch>=0?'up':'down');el.textContent=(ch>=0?'▲ ':'▼ ')+Math.abs(ch).toFixed(0)+'% vs previous '+days+' days';};
+      const delta=(id,cur,prev,fmt)=>{const el=$('#'+id);if(!prev){el.className='delta';el.textContent=cur&&days!=='all'?'New vs '+prevLabel():'';return;}const ch=(cur-prev)/prev*100;el.className='delta '+(ch>=0?'up':'down');el.textContent=(ch>=0?'▲ ':'▼ ')+Math.abs(ch).toFixed(0)+'% vs '+prevLabel();};
       delta('d-revenue',s.revenue,s.previous.revenue);delta('d-orders',s.orders,s.previous.orders);delta('d-aov',s.aov,s.previous.aov);
       const maxS=Math.max(1,...s.sources.map(x=>x.revenue));
       $('#sources').innerHTML=s.sources.length?s.sources.map(x=>`<div class="row"><span>${esc(x.name)}</span><div class="track"><div class="fill" style="width:${Math.max(2,x.revenue/maxS*100)}%"></div></div><span style="text-align:right;font-variant-numeric:tabular-nums">${money(x.revenue)}<br><span class="muted" style="font-size:12px">${x.orders} order${x.orders===1?'':'s'}</span></span></div>`).join(''):'<p class="muted">No sales in this range yet.</p>';
@@ -315,7 +386,7 @@ a{color:var(--ink)}
     const orders=s.orders;
     const m=$('#tr-msg');m.className='msg';m.textContent='Loading visitors…';$('#tr-body').hidden=true;$('#tr-tiles').innerHTML='';
     try{
-      const t=await api('?action=traffic&days='+days);
+      const t=await api('?action=traffic&days='+days);lastTraffic=t;updateConv();
       drawFunnel(s,t);
       if(!t.configured){m.textContent='Google Analytics is not connected yet. Visitor numbers will show here once it is.';return;}
       if(t.error){m.className='msg err';m.textContent='Google Analytics: '+t.error;return;}
@@ -396,12 +467,115 @@ a{color:var(--ink)}
     document.querySelectorAll('[role=tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab));
     document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==tab);
     if(loaded[tab])return; loaded[tab]=true;
-    if(tab==='overview'){loadSummary();loadAlerts();}
+    if(tab==='overview'){loadSummary();loadAlerts();loadPeople();loadLow();}
+    if(tab==='customers')loadCustomers();
+    if(tab==='orders')loadOrders();
     if(tab==='codes')loadCoupons();
-    if(tab==='inventory')loadInventory();
+    if(tab==='inventory'){loadInventory();loadLedger();}
     if(tab==='commissions')loadCommissions();
   }
   document.querySelectorAll('[role=tab]').forEach(b=>b.onclick=()=>show(b.dataset.tab));
+
+  // ---- Customers, carts, email (REWILD data layer)
+  const chip=(t)=>`<span class="chip${/High value/.test(t)?' hv':/Repeat/.test(t)?' rep':/Abandoned/.test(t)?' ab':''}">${esc(t)}</span>`;
+  const day=(iso)=>iso?new Date(iso).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'}):'–';
+  const NAMES={energy:'Energy',clarity:"Lion's Mane",strength:'Chaga',peace:'Reishi',tincture:'Tincture'};
+  let lastPeople=null;
+  async function loadPeople(){
+    try{
+      const p=await api('?action=people&days='+days);lastPeople=p;
+      $('#p-cust').textContent=p.customers;$('#p-cust-sub').textContent=p.newCustomers+' new, '+periodLabel();
+      $('#p-rep').textContent=p.repeatCustomers;$('#p-rep-sub').textContent=Math.round(p.repeatRate*100)+'% of customers';
+      $('#p-ltv').textContent=money(p.avgLifetimeValue);
+      $('#p-ab').textContent=p.carts.abandoned;$('#p-ab-sub').textContent=money(p.carts.abandonedValue)+' left in carts';
+      $('#p-rec').textContent=p.carts.recovered;$('#p-rec-sub').textContent=money(p.carts.recoveredValue)+' won back';
+      $('#p-recent').innerHTML=p.recentCustomers.length?p.recentCustomers.map(c=>`<tr class="click" data-email="${esc(c.email)}"><td><strong>${esc(c.name||c.email)}</strong><br><span class="muted">${esc(c.email)}</span></td><td><div class="chips">${c.segments.slice(0,3).map(chip).join('')}</div></td><td class="num">${money(c.ltv)}</td></tr>`).join(''):'<tr><td class="muted">No customers yet.</td></tr>';
+      $('#p-recent').querySelectorAll('[data-email]').forEach(r=>r.onclick=()=>{show('customers');openCustomer(r.dataset.email);});
+      const e=p.email;const v=(n)=>n==null?'–':n.toLocaleString('en-CA');
+      $('#p-email').innerHTML=`<div><b>Subscribers</b>${v(e.subscribers)}</div><div><b>Said yes to emails</b>${v(p.consented)}</div><div><b>Quiz leads</b>${v(e.quiz??p.quizLeads)}</div><div><b>Customers in MailerLite</b>${v(e.customers)}</div><div><b>Abandoned carts</b>${v(p.carts.abandoned)}</div><div><b>Cart reminders sent</b>${v(p.carts.reminded)}</div>`;
+      $('#p-off').innerHTML=p.recentOffline.length?p.recentOffline.map(o=>`<tr><td>${day(o.at)}</td><td>${esc(o.items)}</td><td class="num">${o.total?money(o.total):''}</td></tr>`).join(''):'<tr><td class="muted">No offline sales yet. Record them in Inventory.</td></tr>';
+      updateConv();
+    }catch(err){$('#p-email').innerHTML='<div class="muted">'+esc(err.message)+'</div>';}
+  }
+  let lastTraffic=null,lastSummary=null;
+  function updateConv(){const t=lastTraffic,s=lastSummary;$('#p-conv').textContent=t&&t.sessions&&s?((s.orders/t.sessions*100).toFixed(1)+'%'):'–';}
+  async function loadLow(){
+    try{const inv=await api('?action=inventory');const low=inv.items.filter(i=>i.tracked&&i.onHand<=(inv.lowStockAt??10));
+      $('#p-low').innerHTML=low.length?low.map(i=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)"><span>${esc(i.name)}</span><span class="low">${i.onHand} left</span></div>`).join(''):'All products are above '+(inv.lowStockAt??10)+'.';
+    }catch(err){$('#p-low').textContent=err.message;}
+  }
+  async function loadCustomers(){
+    const m=$('#cu-msg');m.className='msg';m.textContent='Loading…';
+    try{const r=await api('?action=customers&q='+encodeURIComponent($('#cu-q').value));m.textContent='';
+      $('#cu-count').textContent=r.total+' people';
+      $('#cu-list').innerHTML=r.customers.length?r.customers.map(c=>`<tr class="click" data-email="${esc(c.email)}"><td><strong>${esc(c.name||'–')}</strong><br><span class="muted">${esc(c.email)}</span></td><td><div class="chips">${c.segments.map(chip).join('')}</div></td><td class="num">${c.orders}</td><td class="num">${money(c.ltv)}</td><td>${day(c.last)}</td></tr>`).join(''):'<tr><td colspan="5" class="muted">No one yet. Customers appear here after their first signup or checkout.</td></tr>';
+      $('#cu-list').querySelectorAll('[data-email]').forEach(r=>r.onclick=()=>openCustomer(r.dataset.email));
+    }catch(err){m.className='msg err';m.textContent=err.message;}
+  }
+  $('#cu-search').onsubmit=(e)=>{e.preventDefault();loadCustomers();};
+  async function openCustomer(email){
+    const d=$('#cu-detail');d.innerHTML='<div class="detail muted">Loading…</div>';
+    try{const r=await api('?action=customer&email='+encodeURIComponent(email));const c=r.customer;
+      d.innerHTML=`<div class="detail"><div class="panel-head"><h2>${esc(c.name||c.email)}</h2><button class="btn ghost small" id="cu-close">Close</button></div>
+      <div class="muted">${esc(c.email)}</div><div class="chips" style="margin-top:8px">${c.segments.map(chip).join('')}</div>
+      <div class="kv"><div><b>Customer since</b>${day(c.since)}</div><div><b>Last order</b>${day(c.lastOrder)}</div><div><b>Orders</b>${c.orders}</div><div><b>Lifetime value</b>${money(c.ltv)}</div><div><b>Average order</b>${money(c.avg)}</div>
+      <div><b>Products</b>${Object.entries(c.products).map(([k,n])=>n+'× '+(NAMES[k]||k)).join(', ')||'–'}</div><div><b>Quiz result</b>${esc(c.quiz?.stack_names||'–')}</div>
+      <div><b>Emails</b>${c.consent?'Yes, since '+day(c.consentAt)+' ('+esc(c.consentSource||'')+')':'No marketing consent'}${c.noReminders?'<br>Stopped cart reminders':''}</div><div><b>Codes used</b>${esc(c.codes.join(', ')||'–')}</div><div><b>Found us via</b>${esc(c.source||'–')}</div></div>
+      <h2 style="font-size:13px;margin:12px 0 6px">Orders</h2><div class="scroll"><table><tbody>${r.orders.map(o=>`<tr><td>${day(o.at)}</td><td>${esc(o.items)}</td><td class="num">${money(o.total)}</td><td>${esc(o.code||'')}</td><td>${esc(o.status)}</td></tr>`).join('')||'<tr><td class="muted">No orders yet.</td></tr>'}</tbody></table></div>
+      ${r.carts.length?`<h2 style="font-size:13px;margin:12px 0 6px">Carts</h2><div class="scroll"><table><tbody>${r.carts.map(x=>`<tr><td>${day(x.at)}</td><td>${(x.items||[]).map(i=>i.qty+'× '+(NAMES[i.id]||i.id)).join(', ')}</td><td class="num">${money(x.value||0)}</td><td>${esc(x.status)}${x.sent?' · '+x.sent+' reminder'+(x.sent>1?'s':''):''}${x.recovered?' · recovered':''}</td></tr>`).join('')}</tbody></table></div>`:''}</div>`;
+      $('#cu-close').onclick=()=>{d.innerHTML='';};d.scrollIntoView({behavior:'smooth',block:'start'});
+    }catch(err){d.innerHTML='<div class="detail msg err">'+esc(err.message)+'</div>';}
+  }
+  let src='',odays='all';
+  document.querySelectorAll('[data-odays]').forEach(b=>b.onclick=()=>{odays=b.dataset.odays;document.querySelectorAll('[data-odays]').forEach(x=>x.setAttribute('aria-pressed',x===b));loadOrders();});
+  document.querySelectorAll('[data-src]').forEach(b=>b.onclick=()=>{src=b.dataset.src;document.querySelectorAll('[data-src]').forEach(x=>x.setAttribute('aria-pressed',x===b));loadOrders();});
+  async function loadOrders(){
+    const m=$('#or-msg');m.className='msg';m.textContent='Loading…';
+    try{const r=await api('?action=orders&days='+odays+(src?'&source='+src:''));m.textContent='';
+      $('#or-sum').textContent=r.total+' orders, '+money(r.revenue);
+      $('#or-list').innerHTML=r.orders.length?r.orders.map(o=>`<tr><td>${day(o.at)}</td><td class="muted">#${esc(String(o.id).slice(-8).toUpperCase())}</td><td>${o.email?`<a href="#" data-email="${esc(o.email)}">${esc(o.name||o.email)}</a>`:esc(o.name||'–')}</td><td>${esc(o.items)}</td><td class="num">${money(o.total)}</td><td class="num">${o.discount?money(o.discount)+(o.code?'<br><span class="muted">'+esc(o.code)+'</span>':''):'–'}</td><td>${esc(o.status)}</td><td>${o.source==='offline'?'<span class="chip">Offline</span>':'<span class="chip rep">Online</span>'}</td></tr>`).join(''):'<tr><td colspan="8" class="muted">No orders in this period. Orders appear here once they are paid.</td></tr>';
+      $('#or-list').querySelectorAll('[data-email]').forEach(a=>a.onclick=(e)=>{e.preventDefault();show('customers');openCustomer(a.dataset.email);});
+    }catch(err){m.className='msg err';m.textContent=err.message;}
+  }
+  // ---- Stock actions + history
+  let invItems=[],mode=null;
+  const SALE_IDS=['energy','clarity','strength','peace','tincture','duo'];
+  const LABEL={energy:'Rewild Energy',clarity:'Rewild Clarity',strength:'Rewild Strength',peace:'Rewild Peace',tincture:'Energy Tincture',duo:'Energy Duo'};
+  document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>openStockForm(b.dataset.mode));
+  function openStockForm(m){
+    mode=m;document.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.mode===m));
+    const f=$('#stock-form');f.hidden=false;
+    $('#sf-title').textContent=m==='offline'?'Record offline sale':m==='restock'?'Restock':'Adjust stock';
+    $('#sf-help').textContent=m==='offline'?'Cash or non-Square sales, e.g. at a market. Sales in the Square app already count. Enter how many of each you sold, then Save once.':m==='restock'?'Enter how many of each product came in.':'Pick one product and enter + or − (e.g. -2 for damaged). A note is required.';
+    $('#sf-amount-l').hidden=m!=='offline';
+    const ids=m==='offline'?SALE_IDS:SALE_IDS.filter(i=>i!=='duo');
+    $('#sf-qty').innerHTML=m==='adjust'
+      ?`<label>Product<select id="sf-prod">${ids.map(i=>`<option value="${i}">${LABEL[i]}</option>`).join('')}</select></label><label>Change (+ or −)<input id="sf-change" type="number" step="1" inputmode="numeric" placeholder="-2"></label>`
+      :ids.map(i=>`<label>${LABEL[i]}${i==='duo'?' <span class="muted small">(1 powder + 1 tincture)</span>':''}<input type="number" min="0" step="1" inputmode="numeric" data-q="${i}" placeholder="0"></label>`).join('');
+    $('#sf-note').value='';$('#sf-amount').value='';
+    f.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  $('#sf-cancel').onclick=()=>{$('#stock-form').hidden=true;document.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed','false'));};
+  $('#stock-form').onsubmit=async(e)=>{
+    e.preventDefault();const m=$('#inv-msg'),b=$('#sf-submit');b.disabled=true;b.textContent='Saving…';
+    try{
+      let body;
+      if(mode==='adjust')body={action:'adjust',id:$('#sf-prod').value,change:$('#sf-change').value,note:$('#sf-note').value};
+      else{const items=[...document.querySelectorAll('[data-q]')].map(i=>({id:i.dataset.q,qty:Number(i.value||0)})).filter(i=>i.qty>0);
+        body={action:mode==='offline'?'offlineSale':'restock',items,note:$('#sf-note').value,...(mode==='offline'?{amount:$('#sf-amount').value}:{})};}
+      await api('',{method:'POST',body:JSON.stringify(body)});
+      m.className='msg';m.textContent=mode==='offline'?'Offline sale saved. Stock updated.':mode==='restock'?'Restock saved.':'Adjustment saved.';
+      $('#stock-form').hidden=true;document.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed','false'));
+      loadInventory();loadLedger();delete loaded.overview;
+    }catch(err){m.className='msg err';m.textContent=err.message;}
+    b.disabled=false;b.textContent='Save';
+  };
+  const SRC={online_sale:'Website order',offline_sale:'Offline sale',restock:'Restock',manual_adjustment:'Adjustment',refund:'Refund'};
+  async function loadLedger(){
+    try{const r=await api('?action=ledger');
+      $('#ledger').innerHTML=r.ledger.length?r.ledger.slice(0,100).map(l=>`<tr><td>${new Date(l.at).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}</td><td>${esc(LABEL[l.product]||l.product)}</td><td class="num"><span class="chg ${l.change>0?'up':'down'}">${l.change>0?'+':''}${l.change}</span></td><td>${esc(l.reason||SRC[l.source]||l.source)}${l.order&&l.source==='online_sale'?' <span class="muted">#'+esc(String(l.order).slice(-8).toUpperCase())+'</span>':''}</td><td>${esc(l.by||'')}</td><td>${esc(l.note||'')}</td></tr>`).join(''):'<tr><td colspan="6" class="muted">No changes recorded yet.</td></tr>';
+    }catch(err){$('#ledger').innerHTML='<tr><td colspan="6" class="msg err">'+esc(err.message)+'</td></tr>';}
+  }
 
   // ---- Inventory
   async function loadInventory(){
@@ -421,7 +595,7 @@ a{color:var(--ink)}
   }
 
   // ---- Commissions
-  const SITE='https://rewildmushrooms.com';
+  const SITE=location.origin;
   function monthOptions(){
     const out=[];const d=new Date();d.setDate(1);
     for(let i=0;i<12;i++){const v=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');out.push(`<option value="${v}">${d.toLocaleDateString('en-CA',{month:'long',year:'numeric'})}</option>`);d.setMonth(d.getMonth()-1);}
