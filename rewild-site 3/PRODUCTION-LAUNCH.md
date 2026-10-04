@@ -13,7 +13,7 @@ Steps marked **Jade** involve passwords, secret keys or account settings. Claude
 2. Set `SQUARE_ENV` = `production`.
 3. **Jade:** Production > Webhooks > Add subscription, URL `https://rewildmushrooms.com/api/square-webhook`, same events. Put its signature key in `SQUARE_WEBHOOK_SIGNATURE_KEY` (the production key replaces the sandbox one).
 4. Deploy.
-5. In HQ (`/awesomesauce`) > Promo codes: **Add all REWILD codes** (live codes are separate from test codes; festival codes keep their Oct 15 end).
+5. Promo codes: nothing to do. The website keeps its own list of codes (with notes, 1-per-customer and archive settings), so every code made in test mode works on the live site unchanged. Optional: to use a code in the Square app at events, add it in Square > Items > Discounts with the same name.
 6. In HQ > Inventory: enter the opening counts: Energy 50, Clarity 50, Strength 50, Peace 50, Tincture 30.
 
 ## C. Point the domain
@@ -27,7 +27,8 @@ Steps marked **Jade** involve passwords, secret keys or account settings. Claude
 
 ## D. After the domain works
 - Place one small **real** order (then refund it in Square). Check thank-you page, HQ, stock, MailerLite, Square receipt.
-- MailerLite: check that buttons in the "send my stack" emails and follow-ups point to `rewildmushrooms.com`. Switch the sender to `hello@rewildmushrooms.com` once that domain is verified in MailerLite (pause, edit, resume).
+- MailerLite: turn ON **Welcome series: website signups (5 emails)** and **After purchase: thank you + check-in** (both are ready but off, because their links point to `rewildmushrooms.com`). Quiz emails already send from `hello@rewildmushrooms.com`.
+- Reorder reminders and win-back emails start on their own (daily at 10 am Pacific) once real orders exist.
 - GA4: Admin > Data streams > the web stream: update the URL to `rewildmushrooms.com` (data keeps flowing either way).
 - Google Search Console: add `rewildmushrooms.com`, submit `https://rewildmushrooms.com/sitemap.xml`.
 - **Old site:** turn off checkout on the old Stripe site, keep the Stripe account for refunds on past orders, and keep a SiteGround backup of WordPress before removing it. Old WordPress URLs already redirect (see `netlify.toml`).
