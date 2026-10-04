@@ -9,7 +9,9 @@ export const _setTransport = (fn) => { transport = fn; };
 
 export const mailConfigured = () => !!(process.env.SMTP_USER && process.env.SMTP_PASSWORD);
 
-export function buildMessage({ from, to, subject, text, html, fromName = 'REWILD HQ', replyTo }) {
+// unsubscribe: one-click opt-out URL for marketing emails. Adds the List-Unsubscribe headers that
+// Gmail and Yahoo look for (the opt-out endpoints accept GET and POST).
+export function buildMessage({ from, to, subject, text, html, fromName = 'REWILD HQ', replyTo, unsubscribe }) {
   const domain = String(from).split('@')[1] || 'rewildmushrooms.com';
   const dot = (t) => String(t).replace(/\r?\n/g, '\r\n').replace(/^\./gm, '..');
   const subj = /^[\x20-\x7e]*$/.test(subject) ? subject : `=?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`;
@@ -17,6 +19,7 @@ export function buildMessage({ from, to, subject, text, html, fromName = 'REWILD
     `From: ${fromName} <${from}>`,
     `To: <${to}>`,
     ...(replyTo ? [`Reply-To: <${replyTo}>`] : []),
+    ...(unsubscribe ? [`List-Unsubscribe: <${unsubscribe}>`, 'List-Unsubscribe-Post: List-Unsubscribe=One-Click'] : []),
     `Subject: ${subj}`,
     `Date: ${new Date().toUTCString()}`,
     `Message-ID: <${crypto.randomUUID()}@${domain}>`,
@@ -72,9 +75,9 @@ function smtp({ host, port, user, pass, from, to, data }) {
   });
 }
 
-export async function sendMail({ to, subject, text, html, fromName, replyTo }) {
+export async function sendMail({ to, subject, text, html, fromName, replyTo, unsubscribe }) {
   const user = process.env.SMTP_USER, pass = process.env.SMTP_PASSWORD;
   if (!user || !pass) throw Object.assign(new Error('Email is not set up yet (SMTP_USER / SMTP_PASSWORD).'), { status: 503 });
-  const msg = { host: process.env.SMTP_HOST || 'mail.rewildmushrooms.com', port: Number(process.env.SMTP_PORT) || 465, user, pass, from: user, to, data: buildMessage({ from: user, to, subject, text, html, fromName, replyTo }) };
+  const msg = { host: process.env.SMTP_HOST || 'mail.rewildmushrooms.com', port: Number(process.env.SMTP_PORT) || 465, user, pass, from: user, to, data: buildMessage({ from: user, to, subject, text, html, fromName, replyTo, unsubscribe }) };
   return (transport || smtp)(msg);
 }

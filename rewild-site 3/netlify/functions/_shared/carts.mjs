@@ -119,7 +119,7 @@ ${code ? `<p style="margin:0 0 18px;font-size:15px">Your code: <strong style="fo
 <p style="margin:28px 0 0;font-size:15px;line-height:1.5">Return to your natural state.<br>~ The REWILD crew</p></td></tr>
 <tr><td style="padding:24px 28px;font-size:12px;line-height:1.5;color:#6B6D64">You're getting this because you started a checkout at rewildmushrooms.com and said yes to emails. <a href="${esc(optout)}" style="color:#6B6D64">Stop cart reminders</a>.<br>REWILD Mushrooms, Box 18, Crescent Valley, BC V0G 1H0</td></tr>
 </table></td></tr></table></body></html>`;
-  return { subject: copy.subject, text, html };
+  return { subject: copy.subject, text, html, unsubscribe: optout };
 }
 
 // Which reminder (if any) is due now. Only the latest due step is sent, so a late run never sends three at once.

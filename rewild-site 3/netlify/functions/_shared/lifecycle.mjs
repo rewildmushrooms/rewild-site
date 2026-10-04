@@ -80,7 +80,7 @@ ${code ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0
 <p style="margin:28px 0 0;font-size:15px;line-height:1.5">Return to your natural state.<br>~ The REWILD crew</p></td></tr>
 <tr><td style="padding:24px 28px;font-size:12px;line-height:1.5;color:#6B6D64">${esc(foot)} <a href="${esc(optout)}" style="color:#6B6D64">Stop these emails</a>.<br>REWILD Mushrooms, Box 18, Crescent Valley, BC V0G 1H0</td></tr>
 </table></td></tr></table></body></html>`;
-  return { subject: copy.subject, text, html };
+  return { subject: copy.subject, text, html, unsubscribe: optout };
 }
 
 export async function optoutLink(site, email, c) {
@@ -101,7 +101,7 @@ export async function runLifecycle(now = Date.now(), { send, site }) {
     if (kind === 'winback') code = await createRecoveryCode({ id: null, email }, now, WINBACK_CODE_HOURS, 'winback');
     const optout = await optoutLink(site, email, c);
     const msg = lifecycleEmail(kind, c, { site, code, optout });
-    await send({ to: email, subject: msg.subject, text: msg.text, html: msg.html, fromName: 'REWILD Mushrooms', replyTo: 'hello@rewildmushrooms.com' });
+    await send({ to: email, subject: msg.subject, text: msg.text, html: msg.html, fromName: 'REWILD Mushrooms', replyTo: 'hello@rewildmushrooms.com', unsubscribe: msg.unsubscribe });
     c.lifecycle = { ...(c.lifecycle || {}), [kind === 'reorder' ? 'reorderFor' : 'winbackFor']: last.id, [kind + 'At']: new Date(now).toISOString() };
     await setJSON('customers', email, c);
     try { await putIndex('customers', email, customerSummary(c)); } catch (e) { console.error('index update failed', e.message); }
