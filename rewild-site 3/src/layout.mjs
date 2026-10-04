@@ -163,7 +163,7 @@ ${page.body}
 <aside id="cart-drawer" class="drawer" aria-label="Cart" aria-hidden="true">
   <div class="drawer-head"><h2>Your cart</h2><button type="button" class="icon-btn" id="cart-close" aria-label="Close cart">${icons.close}</button></div>
   <div class="drawer-body" id="cart-lines"></div>
-  <div class="drawer-foot">
+  <div class="drawer-foot foot-main">
     <fieldset style="border:0;padding:0;margin:0"><legend class="small" style="font-weight:700;margin-bottom:8px">Shipping to</legend>
       <div class="dest"><label><input type="radio" name="dest" value="CA" checked> Canada</label><label><input type="radio" name="dest" value="US"> United States</label></div>
     </fieldset>
@@ -176,14 +176,42 @@ ${page.body}
     <p class="small" id="promo-msg" role="status"></p>
     <div class="totals" id="cart-totals"></div>
     <p class="small muted" id="cart-ship-note"></p>
-    <label class="small news-opt"><input type="checkbox" id="cart-news"> Keep me in the loop with REWILD news, product drops and occasional offers. Unsubscribe anytime.</label>
     <button type="button" class="btn btn-yellow btn-block" id="checkout-btn">Checkout</button>
     <p class="small cart-guarantee"><b>100% Risk-Free Guarantee.</b> Full refund within 14 days of delivery. No questions asked.</p>
-    <p class="error-msg" id="cart-error" role="alert"></p>
     <p class="small muted" style="text-align:center">Secure payment by Square. Cards, Apple Pay and Google Pay.</p>
   </div>
+  <form class="email-step" id="email-step" novalidate>
+    <p class="eyebrow">Step 1 of 2</p>
+    <h3>Where should we send your order confirmation?</h3>
+    <p class="co-total" id="co-total"></p>
+    <label for="co-email" class="sr-only">Email address</label>
+    <input id="co-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
+    <label class="news-opt"><input type="checkbox" id="cart-news"> <span>Keep me in the loop with REWILD news, product drops and occasional offers. Unsubscribe anytime.</span></label>
+    <button type="submit" class="btn btn-yellow btn-block" id="co-continue">Continue to secure checkout</button>
+    <p class="error-msg" id="cart-error" role="alert"></p>
+    <button type="button" class="link-btn" id="co-back">Back to cart</button>
+    <ul class="trust"><li>Third-party tested, every lot</li><li>14-day full refund</li><li>Paid securely with Square</li></ul>
+  </form>
 </aside>
 <div id="toast" class="toast" role="status"></div>
+<div class="pop" id="join-pop" role="dialog" aria-modal="true" aria-labelledby="pop-h" hidden>
+  <div class="pop-back" data-pop-close></div>
+  <div class="pop-card">
+    <button type="button" class="pop-x" data-pop-close aria-label="Close">${icons.close}</button>
+    <div class="pop-img" role="img" aria-label="Cordyceps, Lion's Mane, Reishi and Chaga on a mossy forest floor"></div>
+    <form class="pop-body" id="pop-form" novalidate>
+      <p class="eyebrow">Join the Rewilders</p>
+      <h2 id="pop-h">Get first dibs on every new lot.</h2>
+      <p>Field notes on Cordyceps, Lion's Mane, Chaga and Reishi. New tested lots before anyone else. Members-only offers. A few emails a month, no fluff.</p>
+      <label for="pop-email" class="sr-only">Email address</label>
+      <input id="pop-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
+      <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+      <button type="submit" class="btn btn-yellow btn-block">Count me in</button>
+      <p class="pop-msg" role="status"></p>
+      <p class="pop-fine">Unsubscribe anytime. <button type="button" class="link-btn" data-pop-close>No thanks</button></p>
+    </form>
+  </div>
+</div>
 <script src="/js/catalog.js?v=${SITE.build}"></script>
 <script src="/js/cart.js?v=${SITE.build}" defer></script>
 ${page.scripts || ''}

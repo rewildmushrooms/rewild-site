@@ -1,5 +1,6 @@
 import { SITE } from './site.mjs';
 import { esc, proofStrip, signupForm } from './layout.mjs';
+import { reviewsSection, productReview } from './testimonials.mjs';
 import { PRODUCTS, PRODUCT_BY_ID, SHIPPING, money } from '../netlify/functions/_shared/catalog.mjs';
 import { POSTS } from './journal.mjs';
 import { LAB, TESTS, PROCESS } from './lab.mjs';
@@ -125,6 +126,7 @@ ${CORDYFUEL_SECTION}
   </div>
   <div class="grid-4">${powders.map((p) => productCard(p)).join('')}</div>
 </div></section>
+${reviewsSection()}
 <section class="section dark" id="stack"><div class="wrap split">
   <div class="stack">
     <p class="eyebrow">Build your stack</p>
@@ -340,6 +342,7 @@ function productPage(p) {
       <p class="small muted">Free shipping in Canada over $175 · $20 flat rate under that · <a href="/shipping/">US shipping quoted per order</a></p>
       ${guarantee(' compact')}
       <ul class="ticks">${d.ticks.map((t) => `<li><span>${esc(t)}</span></li>`).join('')}</ul>
+      ${productReview(p.id)}
     </div>
   </div>
 </div></section>

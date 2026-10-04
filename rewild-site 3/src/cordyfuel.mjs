@@ -4,6 +4,7 @@
 // The 14.87 mg/g Cordy Cup sample figure appears on this page only (Jade, 2026-10-03).
 import { SITE } from './site.mjs';
 import { PRODUCT_BY_ID, money } from '../netlify/functions/_shared/catalog.mjs';
+import { reviewsSection } from './testimonials.mjs';
 
 const energy = PRODUCT_BY_ID.energy;
 const tincture = PRODUCT_BY_ID.tincture;
@@ -175,14 +176,7 @@ export const cordyfuelPage = {
   <p class="lp-stamp">Simple. Traceable. Tested.</p>
 </div></section>
 
-<section class="section stone lp"><div class="lp-col">
-  <p class="eyebrow">What people are saying</p>
-  <figure class="lp-testimonial">
-    <p class="lp-t-head">"It gave me so much energy"</p>
-    <blockquote>It gave me so much energy, that during the first snowfall I wanted to shovel my neighbours', the entire street. If it wasn't for having to go to work, I would have.</blockquote>
-    <figcaption><b>Jesse F.</b> Men's Coach · Calgary, AB</figcaption>
-  </figure>
-</div></section>
+${reviewsSection({ eyebrow: 'What people are saying', title: 'Rewilders, in their own words.', ids: ['jesse', 'krystal'] })}
 
 <section class="section lp"><div class="lp-col">
   <p class="eyebrow">How to take it</p>
