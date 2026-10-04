@@ -13,6 +13,13 @@
 [functions]
   node_bundler = "esbuild"
 
+# The old test address sends everyone to the real domain (old email links, bookmarks).
+[[redirects]]
+  from = "https://rewild-mushrooms.netlify.app/*"
+  to = "https://rewildmushrooms.com/:splat"
+  status = 301
+  force = true
+
 # Team dashboard: rewildmushrooms.com/awesomesauce opens REWILD HQ.
 [[redirects]]
   from = "/awesomesauce"
