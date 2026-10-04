@@ -30,12 +30,14 @@ export function partnerByCode(code) {
 
 const amt = (m) => Number(m?.amount || 0);
 
-export const orderCode = (o) => o?.metadata?.promo || (o?.discounts || []).map((d) => d.name).find(Boolean) || '';
+// The promo code that was applied. Offer discounts ("Stock up 10%") are not codes.
+export const orderCode = (o) => o?.metadata?.promo || (o?.discounts || []).map((d) => d.name).find((n) => n && /^[A-Z0-9_-]{3,30}$/i.test(n)) || '';
 
 // Who gets credit for an order: a partner code beats a share link.
 export function partnerForOrder(o) {
-  const byCode = partnerByCode(orderCode(o));
-  if (byCode) return { partner: byCode, via: 'code', code: orderCode(o).toUpperCase() };
+  const code = orderCode(o) || o?.metadata?.partner_code || ''; // partner_code: entered, but the cart's offers saved more
+  const byCode = partnerByCode(code);
+  if (byCode) return { partner: byCode, via: 'code', code: code.toUpperCase() };
   const byRef = partnerByRef(o?.metadata?.ref);
   if (byRef) return { partner: byRef, via: 'link', code: '' };
   return null;

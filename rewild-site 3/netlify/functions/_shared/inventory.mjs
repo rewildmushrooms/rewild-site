@@ -8,7 +8,8 @@ import { square, idem, locationId, pages } from './square.mjs';
 import { PRODUCTS } from './catalog.mjs';
 import { isPaid } from './orders.mjs';
 
-export const BUNDLES = { duo: { energy: 1, tincture: 1 } };
+import { OFFERS } from './pricing.mjs';
+export const BUNDLES = OFFERS.bundles; // duo, all4 (what each bundle takes out of stock)
 export const STOCKED = PRODUCTS.filter((p) => !BUNDLES[p.id]);
 export const skuFor = (id) => `REWILD-${String(id).toUpperCase()}`;
 const REF = 'web:';

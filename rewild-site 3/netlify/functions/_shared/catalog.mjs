@@ -164,6 +164,23 @@ export const PRODUCTS = [
     alt: 'Rewild Energy powder pouch and tincture bottle, powered by CordyFuel™',
     isBundle: true, // sold from the home page, no product page of its own
   },
+  {
+    id: 'all4',
+    slug: 'all-four-set',
+    name: 'The All Four Set',
+    word: 'All Four',
+    mushroom: "Cordyceps, Lion's Mane, Chaga + Reishi",
+    commonName: 'All four',
+    latin: '',
+    format: '4 × 100g full-spectrum powders',
+    size: '4 × 100g',
+    price: 19500, // $230 value
+    color: '#121310',
+    image: '/img/all-four-set.webp',
+    gallery: ['/img/all-four-set.webp'],
+    alt: 'REWILD Energy, Clarity, Strength and Peace powder pouches together',
+    isBundle: true, // sold from the shop page and the cart, no product page of its own
+  },
 ];
 
 export const PRODUCT_BY_ID = Object.fromEntries(PRODUCTS.map((p) => [p.id, p]));
