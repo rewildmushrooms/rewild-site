@@ -19,7 +19,7 @@ export const SHIPPING = {
   US: {
     label: 'United States',
     // US shipping is quoted per order: Jade declares each parcel in Zonos, then sends
-    // a Stripe invoice for shipping + duties from REWILD HQ. Nothing is charged for it at checkout.
+    // a Square invoice for shipping + duties from REWILD HQ. Nothing is charged for it at checkout.
     flatRate: 0,
     freeOver: null,
     quotedAfterOrder: true,

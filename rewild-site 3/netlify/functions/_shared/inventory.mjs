@@ -130,6 +130,11 @@ export async function syncWebOrders(orders, opts, now = Date.now()) {
   return applied;
 }
 
+// Current IN_STOCK count per stocked product id (null if the product has no Square item yet).
+export async function stockLevels(opts) {
+  return counts(await ensureVariations(opts, { create: false }), opts);
+}
+
 export async function inventory(opts, { orders = [] } = {}) {
   const vars = await ensureVariations(opts);
   let synced = 0, syncError = null;
