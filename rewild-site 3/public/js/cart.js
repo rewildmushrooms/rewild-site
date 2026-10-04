@@ -65,6 +65,7 @@
   }
   function close() {
     drawer().classList.remove('drawer-open');
+    $('#cart-drawer').classList.remove('step-email');
     $('#cart-drawer').setAttribute('aria-hidden', 'true');
   }
 
@@ -112,20 +113,33 @@
       else pm.innerHTML = `${esc(p.code)} applied: ${p.percentOff ? p.percentOff + '% off' : money(p.amountOff) + ' off'}. <button type="button" class="link-btn" data-promo-remove>Remove</button>`;
     }
     const news = $('#cart-news'); if (news) news.checked = !!state.newsletter;
+    const ct = $('#co-total'); if (ct) ct.textContent = `${count()} item${count() === 1 ? '' : 's'} · ${money(q.total)} CAD${q.discount ? ' after your code' : ''}`;
+    if (!state.items.length) $('#cart-drawer').classList.remove('step-email');
     $('#cart-ship-note').textContent = state.country === 'US' ? 'US shipping and duties vary by parcel. After you order, we email a quote you can pay online before we ship.' : '';
     $('#checkout-btn').disabled = state.items.length === 0;
   }
 
+  // Step 1: email (+ optional marketing consent), then Square.
+  function emailStep() {
+    if (!state.items.length) return;
+    const d = $('#cart-drawer'); d.classList.add('step-email');
+    const e = $('#co-email'); if (e && !e.value) { try { e.value = localStorage.getItem('rewild_email') || ''; } catch (x) {} }
+    setTimeout(() => e && e.focus(), 60);
+  }
   async function checkout(btn) {
     const err = $('#cart-error'); err.textContent = '';
+    const email = ($('#co-email').value || '').trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { err.textContent = 'Please enter a valid email so we can send your confirmation.'; $('#co-email').focus(); return; }
+    try { localStorage.setItem('rewild_email', email); } catch (x) {}
     btn.disabled = true; const label = btn.textContent; btn.textContent = 'Opening secure checkout…';
     try {
-      const res = await fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: state.items, country: state.country, code: state.promo ? state.promo.code : undefined, ref: partnerRef(), newsletter: !!state.newsletter }) });
+      const res = await fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, items: state.items, country: state.country, code: state.promo && !state.promo.pending ? state.promo.code : undefined, ref: partnerRef(), newsletter: !!state.newsletter }) });
       let data = {};
       try { data = await res.json(); } catch (x) {}
       if (!res.ok || !data.url) throw new Error(data.error || 'Checkout is unavailable right now. Please try again in a minute.');
       try { localStorage.setItem('rewild_last_order', data.orderId || ''); } catch (x) {}
       ga('begin_checkout', state.items.map((i) => gaItem(i.id, i.qty)), state.promo && !state.promo.pending ? { coupon: state.promo.code } : {});
+      if (window.gtag) window.gtag('event', 'checkout_email_capture', { consent: !!state.newsletter });
       window.location.href = data.url;
     } catch (e) {
       err.textContent = e.message; btn.disabled = false; btn.textContent = label;
@@ -176,7 +190,8 @@
     else if (t.dataset.inc) setQty(t.dataset.inc, (state.items.find((i) => i.id === t.dataset.inc)?.qty || 0) + 1);
     else if (t.dataset.dec) setQty(t.dataset.dec, (state.items.find((i) => i.id === t.dataset.dec)?.qty || 0) - 1);
     else if (t.dataset.remove) setQty(t.dataset.remove, 0);
-    else if (t.id === 'checkout-btn') checkout(t);
+    else if (t.id === 'checkout-btn') emailStep();
+    else if (t.id === 'co-back') $('#cart-drawer').classList.remove('step-email');
     else if (t.matches('[data-promo-remove]')) { state.promo = null; save(); }
   });
   document.addEventListener('click', (e) => { if (e.target.classList && e.target.classList.contains('drawer-backdrop')) close(); });
@@ -227,6 +242,8 @@
     document.querySelectorAll('[data-thumb]').forEach((x) => x.setAttribute('aria-pressed', x === b));
   }));
 
+  const es = $('#email-step');
+  if (es) es.addEventListener('submit', (e) => { e.preventDefault(); checkout($('#co-continue')); });
   const pf = $('#promo-form');
   if (pf) pf.addEventListener('submit', (e) => { e.preventDefault(); applyCode($('#promo-code').value); });
   // Partner share links like /?ref=sean credit that partner for 30 days (no discount).
@@ -237,7 +254,7 @@
   if (urlCode) setTimeout(() => { applyCode(urlCode, true); toast(urlCode.toUpperCase() + ' will be applied in your cart.'); }, 200);
   // Email links like /shop/?cart=energy,tincture put that stack in the cart (if not there already) and open it.
   const urlCart = new URLSearchParams(location.search).get('cart');
-  if (urlCart) setTimeout(() => { urlCart.split(',').map((x) => x.trim()).forEach((id) => { if (byId[id] && !state.items.some((i) => i.id === id)) add(id, 1); }); open(); }, 150);
+  if (urlCart) setTimeout(() => { urlCart.split(',').map((x) => x.trim().split(':')).forEach(([id, q]) => { if (byId[id] && !state.items.some((i) => i.id === id)) add(id, q || 1); }); open(); }, 150);
   // A code saved before items were added gets checked once there is something in the cart.
   const recheck = () => { if (state.promo && state.promo.pending && state.items.length) applyCode(state.promo.code, true); };
   document.addEventListener('click', (e) => { if (e.target.closest('[data-add],[data-add-many],[data-open-cart]')) setTimeout(recheck, 50); });
@@ -247,6 +264,48 @@
   // Product page: view_item
   const pageAdd = document.querySelector('[data-add][data-qty-from]');
   if (pageAdd && byId[pageAdd.dataset.add]) ga('view_item', [gaItem(pageAdd.dataset.add, 1)]);
+
+  // Welcome popup: once per visitor (14 days after "No thanks", never after signing up).
+  (function () {
+    const pop = $('#join-pop'); if (!pop) return;
+    const KEYP = 'rewild_pop';
+    let st = {}; try { st = JSON.parse(localStorage.getItem(KEYP)) || {}; } catch (e) {}
+    const path = location.pathname;
+    const skip = st.joined || (st.closed && Date.now() - st.closed < 14 * 86400000) || /^\/(hq|order-confirmed|build-your-stack|contact|privacy|terms)\b/.test(path) || /[?&](cart|code|checkout)=/.test(location.search) || navigator.webdriver;
+    if (skip) return;
+    let shown = false, last = null;
+    const save = (k) => { st[k] = Date.now(); try { localStorage.setItem(KEYP, JSON.stringify(st)); } catch (e) {} };
+    function show() {
+      if (shown || document.documentElement.classList.contains('drawer-open')) return;
+      shown = true; last = document.activeElement; pop.hidden = false;
+      setTimeout(() => $('#pop-email').focus(), 80);
+      if (window.gtag) window.gtag('event', 'popup_view');
+    }
+    function hide(record) { pop.hidden = true; if (record) save('closed'); if (last && last.focus) last.focus(); }
+    pop.addEventListener('click', (e) => { if (e.target.closest('[data-pop-close]')) hide(true); });
+    document.addEventListener('keydown', (e) => { if (!pop.hidden && e.key === 'Escape') hide(true); });
+    const timer = setTimeout(show, 12000);
+    const onScroll = () => { if (window.scrollY > (document.body.scrollHeight - innerHeight) * 0.5) { window.removeEventListener('scroll', onScroll); clearTimeout(timer); show(); } };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    $('#pop-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = e.target, msg = f.querySelector('.pop-msg'), btn = f.querySelector('button[type=submit]');
+      const email = f.email.value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { msg.textContent = 'Please enter a valid email.'; return; }
+      btn.disabled = true; msg.textContent = '';
+      try {
+        const res = await fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, website: f.website.value, source: 'popup' }) });
+        const d = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(d.error || 'Something went wrong. Please try again.');
+        save('joined'); try { localStorage.setItem('rewild_email', email); } catch (x) {}
+        f.querySelector('h2').textContent = "You're in. Welcome, Rewilder.";
+        f.querySelector('p:not(.eyebrow)').textContent = 'Check your inbox. Your first field note is on its way.';
+        f.email.hidden = true; btn.hidden = true; f.querySelector('.pop-fine').hidden = true;
+        if (window.gtag) window.gtag('event', 'sign_up', { method: 'popup' });
+        setTimeout(() => hide(false), 3500);
+      } catch (err) { msg.textContent = err.message; btn.disabled = false; }
+    });
+  })();
 
   window.RewildCart = { add, setQty, open, close, clear() { state.items = []; save(); }, state: () => state };
   render();
