@@ -11,6 +11,7 @@
 //   POST /api/hq  { action:'createCoupon', code, percentOff|amountOff, expiresAt, minimumAmount }   (owner)
 //   POST /api/hq  { action:'toggleCoupon'|'archiveCoupon'|'onceCoupon'|'noteCoupon', id: CODE, ... }   (owner)
 //   POST /api/hq  { action:'shippingInvoice', orderId, amount, note? }   (owner)
+//   POST /api/hq  { action:'markShipped', orderId, carrier, tracking, notify }   (owner; emails the customer their tracking)
 //   GET  /api/hq?action=people&days=30   customers, carts, email numbers for Overview   (owner)
 //   GET  /api/hq?action=customers&q=     GET /api/hq?action=customer&email=              (owner)
 //   GET  /api/hq?action=orders&days=30&source=online|offline                             (owner)
@@ -34,6 +35,7 @@ import { inventory, setStock } from './_shared/inventory.mjs';
 import { checkLowStock, lowStockThreshold } from './_shared/lowstock.mjs';
 import { checkPassword } from './_shared/auth.mjs';
 import { traffic } from './_shared/ga.mjs';
+import { markShipped } from './_shared/shipping.mjs';
 
 // Returns the signed-in team member, or null.
 export async function authorized(req) {
@@ -484,6 +486,7 @@ export default async (req) => {
       if (b.action === 'archiveCoupon') return json(200, await setPromoArchived(b.id, !!b.archived));
       if (b.action === 'onceCoupon') return json(200, await setPromoOnce(b.id, !!b.once));
       if (b.action === 'noteCoupon') return json(200, await setPromoNote(b.id, b.note));
+      if (b.action === 'markShipped') return json(200, await markShipped(b, member));
       if (b.action === 'shippingInvoice') return json(200, { ok: true, ...(await sendShippingInvoice(b)) });
       return json(400, { error: 'Unknown action' });
     }
