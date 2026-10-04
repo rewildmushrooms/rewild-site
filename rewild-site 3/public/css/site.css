@@ -483,7 +483,9 @@ p{text-wrap:pretty}
 .pop-x{position:absolute;top:10px;right:10px;z-index:2;width:44px;height:44px;border:0;border-radius:50%;background:rgba(18,19,16,.6);color:#fff;display:grid;place-items:center;cursor:pointer}
 .pop-x svg{width:20px;height:20px}
 @keyframes popFade{from{opacity:0}}@keyframes popIn{from{opacity:0;transform:translateY(20px) scale(.98)}}
-@media (max-width:700px){.pop{place-items:end center;padding:0}.pop-card{border-radius:10px 10px 0 0;max-height:94vh}.pop-img{background-image:url(/img/popup-mushrooms-forest-640.webp);aspect-ratio:2/1}.pop-body{padding:4px 22px 24px}}
+/* Phones: the close button stays pinned to the top of the card even while it scrolls, and the card fits the
+   visible screen (dvh excludes the browser's address and tool bars, which vh does not). */
+@media (max-width:700px){.pop{place-items:end center;padding:0}.pop-card{border-radius:10px 10px 0 0;max-height:88vh;max-height:calc(100dvh - 16px);padding-bottom:env(safe-area-inset-bottom)}.pop-x{position:sticky;top:8px;margin:8px 8px -52px auto;background:rgba(18,19,16,.75)}.pop-img{background-image:url(/img/popup-mushrooms-forest-640.webp);aspect-ratio:2.6/1}.pop-body{padding:4px 22px 22px;gap:11px}.pop-body h2{font-size:26px}.pop-body p{font-size:14px}}
 @media (prefers-reduced-motion:reduce){.pop-card,.pop-back{animation:none}}
 
 /* Reviews */
