@@ -12,6 +12,8 @@
 :root{--ink:#121310;--text:#3D3F38;--muted:#6B6D64;--line:#E6E5E0;--stone:#F3F2EE;--accent:#E8C800;--good:#2F6B3A;--bad:#9B1C1C}
 [hidden]{display:none!important}
 .chips{display:flex;flex-wrap:wrap;gap:4px}.chip{font-size:11px;font-weight:700;padding:2px 8px;border-radius:12px;background:var(--stone);color:var(--text);white-space:nowrap}
+.link-btn{background:none;border:0;padding:0;font:inherit;color:var(--ink);text-decoration:underline;cursor:pointer;font-weight:700}.link-btn:disabled{opacity:.5}
+.stack-sm{display:flex;flex-direction:column;gap:8px}.stack-sm input,.stack-sm select,.stack-sm textarea{width:100%}
 .chip.hv{background:var(--accent);color:var(--ink)}.chip.rep{background:#DDEBDD;color:var(--good)}.chip.ab{background:#F6E0E0;color:var(--bad)}
 tr.click{cursor:pointer}tr.click:hover td{background:#FAFAF7}
 .search{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.search input{flex:1 1 240px}
@@ -566,7 +568,7 @@ a{color:var(--ink)}
     if(o.source==='offline')return '<span class="muted">–</span>';
     if(o.shipment){const c=CARRIERS[o.shipment.carrier]||['Shipped',null];const t=o.shipment.tracking;const link=t&&c[1]?`<a href="${esc(c[1](t))}" target="_blank" rel="noopener">${esc(t)}</a>`:esc(t||'');
       return `<span class="chip rep">Shipped ${day(o.shipment.at)}</span><br><span class="small">${esc(c[0])} ${link}</span>${o.shipment.emailed?'<br><span class="muted small">Customer emailed</span>':''}<br><button class="link-btn small" data-ship="${esc(o.id)}" data-edit="1">Change</button>`;}
-    if(o.status!=='paid')return '<span class="muted">–</span>';
+    if(['cancelled','refunded'].includes(o.status))return '<span class="muted">–</span>';
     return `<button class="btn small" data-ship="${esc(o.id)}">Mark shipped</button>`;
   }
   function shipForm(btn){
@@ -584,12 +586,66 @@ a{color:var(--ink)}
   async function loadOrders(){
     const m=$('#or-msg');m.className='msg';m.textContent='Loading…';
     try{const r=await api('?action=orders&days='+odays+(src?'&source='+src:''));m.textContent='';
-      const toShip=r.orders.filter(o=>o.source!=='offline'&&o.status==='paid'&&!o.shipment).length;
+      const toShip=r.orders.filter(o=>o.source!=='offline'&&['processing','on-hold'].includes(o.status)&&!o.shipment).length;
       $('#or-sum').textContent=r.total+' orders, '+money(r.revenue)+(toShip?' · '+toShip+' to ship':'');
-      $('#or-list').innerHTML=r.orders.length?r.orders.map(o=>`<tr><td>${day(o.at)}</td><td class="muted">#${esc(String(o.id).slice(-8).toUpperCase())}</td><td>${o.email?`<a href="#" data-email="${esc(o.email)}">${esc(o.name||o.email)}</a>`:esc(o.name||'–')}</td><td>${esc(o.items)}</td><td class="num">${money(o.total)}</td><td class="num">${o.discount?money(o.discount)+(o.code?'<br><span class="muted">'+esc(o.code)+'</span>':''):'–'}</td><td>${esc(o.status)}</td><td>${shipCell(o)}</td><td>${o.source==='offline'?'<span class="chip">Offline</span>':'<span class="chip rep">Online</span>'}</td></tr>`).join(''):'<tr><td colspan="9" class="muted">No orders in this period. Orders appear here once they are paid.</td></tr>';
+      $('#or-list').innerHTML=r.orders.length?r.orders.map(o=>`<tr><td>${day(o.at)}</td><td><button class="link-btn" data-manage="${esc(o.id)}" title="Status, refund, notes, delete">#${esc(String(o.id).slice(-8).toUpperCase())}</button></td><td>${o.email?`<a href="#" data-email="${esc(o.email)}">${esc(o.name||o.email)}</a>`:esc(o.name||'–')}</td><td>${esc(o.items)}</td><td class="num">${money(o.total)}</td><td class="num">${o.discount?money(o.discount)+(o.code?'<br><span class="muted">'+esc(o.code)+'</span>':''):'–'}</td><td>${statusChip(o)}</td><td>${shipCell(o)}</td><td>${o.source==='offline'?'<span class="chip">Offline</span>':'<span class="chip rep">Online</span>'}</td></tr>`).join(''):'<tr><td colspan="9" class="muted">No orders in this period. Orders appear here once they are paid.</td></tr>';
       $('#or-list').querySelectorAll('[data-email]').forEach(a=>a.onclick=(e)=>{e.preventDefault();show('customers');openCustomer(a.dataset.email);});
       $('#or-list').querySelectorAll('[data-ship]').forEach(b=>b.onclick=()=>shipForm(b));
+      orderRows=Object.fromEntries(r.orders.map(o=>[o.id,o]));
+      $('#or-list').querySelectorAll('[data-manage]').forEach(b=>b.onclick=()=>manageOrder(b));
     }catch(err){m.className='msg err';m.textContent=err.message;}
+  }
+  // ---- Order management (like WooCommerce): status, refund, notes, delete
+  const OSTATUS={processing:['Processing',''],'on-hold':['On hold','ab'],completed:['Completed','rep'],cancelled:['Cancelled','ab'],refunded:['Refunded','ab']};
+  let orderRows={};
+  function statusChip(o){const s=OSTATUS[o.status]||[o.status,''];return `<span class="chip ${s[1]}">${esc(s[0])}</span>${o.partRefunded?`<br><span class="muted small">${money(o.refunded)} refunded</span>`:''}`;}
+  function manageOrder(btn){
+    const id=btn.dataset.manage;const o=orderRows[id];if(!o)return;
+    const tr=btn.closest('tr');const open=tr.nextElementSibling;
+    if(open&&open.dataset.detail===id){open.remove();return;}
+    $('#or-list').querySelectorAll('[data-detail]').forEach(x=>x.remove());
+    const left=o.total-(o.refunded||0);const ref='#'+String(o.id).slice(-8).toUpperCase();
+    const row=document.createElement('tr');row.dataset.detail=id;
+    row.innerHTML=`<td colspan="9" style="background:var(--stone)"><div class="grid2" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;padding:8px 0">
+      <div class="stack-sm"><b>Order ${esc(ref)} status</b>
+        ${o.status==='refunded'?'<p class="small muted">Fully refunded. The status stays Refunded.</p>':`<select data-o="status">${['processing','on-hold','completed','cancelled'].map(k=>`<option value="${k}"${o.status===k?' selected':''}>${OSTATUS[k][0]}</option>`).join('')}</select>
+        <label class="small" data-o="cwrap" hidden style="flex-direction:row;gap:6px;align-items:center"><input type="checkbox" data-o="crestock" checked style="width:auto"> Put the items back in stock</label>
+        <p class="small muted">Processing: paid, not shipped yet. Completed: shipped or handed over (Mark shipped does this for you). Cancelled does not refund. Use Refund for that.</p>
+        <div><button class="btn small" data-o="ssave">Save status</button></div>`}
+        <p class="msg small" data-o="smsg"></p>
+      </div>
+      <div class="stack-sm"><b>Refund</b>
+        ${o.source==='offline'?'<p class="small muted">Offline sale. Refund the cash or e-transfer by hand, then add a note.</p>':left<=0?'<p class="small muted">Nothing left to refund.</p>':`<p class="small muted">Paid ${money(o.total)}${o.refunded?`, refunded ${money(o.refunded)}`:''}. Goes back to the customer's card through Square.</p>
+        <input data-o="amt" type="number" min="0.01" step="0.01" max="${(left/100).toFixed(2)}" placeholder="Amount (blank = all ${money(left)})">
+        <input data-o="reason" maxlength="190" placeholder="Reason (optional, shown to the customer)">
+        <label class="small" style="flex-direction:row;gap:6px;align-items:center"><input type="checkbox" data-o="rrestock"${o.restocked?' disabled':''} style="width:auto"> Put the items back in stock${o.restocked?' (already done)':''}</label>
+        <label class="small" style="flex-direction:row;gap:6px;align-items:center"><input type="checkbox" data-o="notify"${o.email?' checked':' disabled'} style="width:auto"> Email the customer</label>
+        <div><button class="btn small" data-o="refund">Refund</button></div>`}
+        <p class="msg small" data-o="rmsg"></p>
+      </div>
+      <div class="stack-sm"><b>Notes</b><span class="small muted">Private. Only HQ sees these.</span>
+        <div class="small" style="max-height:180px;overflow:auto">${(o.notes||[]).slice().reverse().map(n=>`<p style="margin:0 0 6px"><span class="muted">${day(n.at)}${n.by?' · '+esc(n.by):''}</span><br>${esc(n.text)}</p>`).join('')||'<p class="muted" style="margin:0">No notes yet.</p>'}</div>
+        <textarea data-o="note" rows="2" maxlength="500" placeholder="Add a note"></textarea>
+        <div><button class="btn small" data-o="nadd">Add note</button></div><p class="msg small" data-o="nmsg"></p>
+        <hr style="border:0;border-top:1px solid #ddd;margin:8px 0">
+        <label class="small" style="flex-direction:row;gap:6px;align-items:center"><input type="checkbox" data-o="drestock"${o.restocked?' disabled':''} style="width:auto"> Put the items back in stock when deleting${o.restocked?' (already done)':''}</label>
+        <div><button class="link-btn small" data-o="del" style="color:var(--bad)">Delete order</button></div>
+        <p class="small muted">For test orders. Removes it from HQ and the customer's history. Does not refund. Square keeps its own payment record.</p><p class="msg small" data-o="dmsg"></p>
+      </div></div></td>`;
+    tr.after(row);
+    const f=k=>row.querySelector(`[data-o="${k}"]`);
+    const run=async(msgKey,btnKey,body,okText)=>{const m=f(msgKey),b=f(btnKey);b.disabled=true;m.className='msg small';m.textContent='Working…';
+      try{const r=await api('',{method:'POST',body:JSON.stringify({...body,orderId:id})});m.textContent=okText(r);setTimeout(loadOrders,900);}
+      catch(err){m.className='msg small err';m.textContent=err.message;b.disabled=false;}};
+    if(f('status')){const sync=()=>{f('cwrap').hidden=!(f('status').value==='cancelled'&&!o.restocked);};f('status').onchange=sync;sync();
+      f('ssave').onclick=()=>run('smsg','ssave',{action:'orderStatus',status:f('status').value,restock:f('status').value==='cancelled'&&f('crestock').checked},()=>'Saved.');}
+    if(f('refund'))f('refund').onclick=()=>{const v=f('amt').value.trim();const amt=v?Math.round(Number(v)*100):left;
+      if(!(amt>0)||amt>left){f('rmsg').className='msg small err';f('rmsg').textContent='Enter an amount up to '+money(left)+'.';return;}
+      if(!confirm('Refund '+money(amt)+' to the customer\'s card for order '+ref+'? This cannot be undone.'))return;
+      run('rmsg','refund',{action:'refundOrder',amount:v,reason:f('reason').value,restock:f('rrestock').checked,notify:f('notify').checked},r=>'Refunded '+money(r.refunded)+'.');};
+    f('nadd').onclick=()=>run('nmsg','nadd',{action:'orderNote',note:f('note').value},()=>'Note added.');
+    f('del').onclick=()=>{if(!confirm('Delete order '+ref+' from HQ? Use this for test orders. It does not refund.'))return;
+      run('dmsg','del',{action:'deleteOrder',restock:f('drestock').checked},()=>'Deleted.');};
   }
   // ---- Stock actions + history
   let invItems=[],mode=null;
