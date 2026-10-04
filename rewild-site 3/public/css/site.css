@@ -186,6 +186,20 @@ details.faq .answer{padding-top:12px;color:var(--text)}
 .drawer-head h2{font-size:20px;letter-spacing:.1em}
 .drawer-body{flex:1;overflow:auto;padding:12px 24px}
 .drawer-foot{border-top:1px solid var(--line);padding:18px 24px 24px;display:flex;flex-direction:column;gap:12px}
+.email-step{display:none;flex-direction:column;gap:14px;background:var(--ink);color:#fff;padding:26px 24px 24px;border-top:4px solid var(--accent)}
+.drawer.step-email .foot-main{display:none}.drawer.step-email .email-step{display:flex;animation:stepIn .22s ease}
+@keyframes stepIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.email-step .eyebrow{color:var(--accent);margin:0}
+.email-step .co-total{margin:-4px 0 0;font-size:15px;color:rgba(255,255,255,.75);font-weight:600}
+.email-step h3{font-family:var(--display);text-transform:uppercase;font-size:22px;line-height:1.15;margin:0;color:#fff;letter-spacing:.02em}
+.email-step input[type=email]{width:100%;min-height:52px;padding:14px 16px;font-size:17px;border:2px solid transparent;border-radius:2px;background:#fff;color:var(--ink)}
+.email-step input[type=email]:focus{outline:none;border-color:var(--accent)}
+.email-step .news-opt{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45;color:var(--on-dark,#D9D8D2);cursor:pointer}
+.email-step .news-opt input{width:20px;height:20px;margin:1px 0 0;flex:none;accent-color:var(--accent)}
+.email-step .link-btn{color:#fff;opacity:.8;align-self:center;font-size:14px}
+.email-step .error-msg{color:#FFB4A8;margin:0}
+.email-step .trust{list-style:none;margin:4px 0 0;padding:14px 0 0;border-top:1px solid rgba(255,255,255,.14);display:grid;gap:6px;font-size:13px;color:rgba(255,255,255,.75)}
+.email-step .trust li::before{content:"✓";color:var(--accent);font-weight:700;margin-right:8px}
 .line{display:grid;grid-template-columns:72px 1fr auto;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);align-items:center}
 .line img{width:72px;height:72px;object-fit:cover;border-radius:var(--radius)}
 .line .name{font-weight:700;font-size:15px;line-height:1.3}
@@ -448,3 +462,38 @@ p{text-wrap:pretty}
   .page-hero.hero-photo.hero-snowpeaks{background-image:linear-gradient(180deg,rgba(10,12,9,.72),rgba(10,12,9,.92)),url(/img/banner-tincture-snow-peaks-v2-800.webp);background-size:cover;background-position:center}
   .page-hero.hero-photo.hero-valley{background-image:linear-gradient(180deg,rgba(10,12,9,.72),rgba(10,12,9,.88)),url(/img/banner-tincture-valley-v2-800.webp)}
 }
+
+/* Welcome popup */
+.pop{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:20px}
+.pop-back{position:absolute;inset:0;background:rgba(10,12,9,.62);backdrop-filter:blur(2px);animation:popFade .25s ease}
+.pop-card{position:relative;width:min(580px,100%);max-height:calc(100vh - 40px);overflow:auto;background:var(--ink);color:#fff;border-radius:4px;box-shadow:0 30px 80px rgba(0,0,0,.5);animation:popIn .3s cubic-bezier(.2,.8,.2,1)}
+.pop-img{aspect-ratio:2.15/1;background:#1b1c18 url(/img/popup-mushrooms-forest.webp) center 62%/cover no-repeat;position:relative}
+.pop-img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,19,16,0) 58%,var(--ink) 100%)}
+.pop-body{padding:6px 36px 30px;display:flex;flex-direction:column;gap:13px;text-align:center;align-items:stretch}
+.pop-body .eyebrow{color:var(--accent);margin:0}
+.pop-body h2{font-family:var(--display);text-transform:uppercase;font-size:clamp(26px,3.4vw,34px);line-height:1.05;margin:0;color:#fff;letter-spacing:.01em}
+.pop-body p{margin:0;color:rgba(255,255,255,.8);font-size:15px;line-height:1.55}
+.pop-body input[type=email]{width:100%;min-height:52px;padding:14px 16px;font-size:17px;border:2px solid transparent;border-radius:2px;background:#fff;color:var(--ink);text-align:center}
+.pop-body input[type=email]:focus{outline:none;border-color:var(--accent)}
+.pop-body .hp{position:absolute;left:-9999px;width:1px;height:1px}
+.pop-msg{min-height:0;color:var(--accent)!important;font-weight:600}
+.pop-msg:empty{display:none}
+.pop-fine{font-size:13px!important;color:rgba(255,255,255,.6)!important}
+.pop-fine .link-btn{color:rgba(255,255,255,.75);font-size:13px}
+.pop-x{position:absolute;top:10px;right:10px;z-index:2;width:44px;height:44px;border:0;border-radius:50%;background:rgba(18,19,16,.6);color:#fff;display:grid;place-items:center;cursor:pointer}
+.pop-x svg{width:20px;height:20px}
+@keyframes popFade{from{opacity:0}}@keyframes popIn{from{opacity:0;transform:translateY(20px) scale(.98)}}
+@media (max-width:700px){.pop{place-items:end center;padding:0}.pop-card{border-radius:10px 10px 0 0;max-height:94vh}.pop-img{background-image:url(/img/popup-mushrooms-forest-640.webp);aspect-ratio:2/1}.pop-body{padding:4px 22px 24px}}
+@media (prefers-reduced-motion:reduce){.pop-card,.pop-back{animation:none}}
+
+/* Reviews */
+.reviews{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:20px}
+.review{margin:0;background:#fff;border-radius:var(--radius);padding:clamp(26px,4vw,44px);border-top:5px solid var(--accent);display:flex;flex-direction:column;gap:14px}
+.review-stars{color:var(--accent);letter-spacing:4px;font-size:18px;line-height:1}
+.review-head{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(20px,2.2vw,26px);line-height:1.15;margin:0;color:var(--ink)}
+.review blockquote{margin:0;font-size:18px;line-height:1.6;color:var(--text);flex:1}
+.review figcaption{display:flex;flex-direction:column;gap:2px;font-size:14px;color:var(--soft)}
+.review figcaption b{color:var(--ink);font-size:15px}
+.review-compact{padding:18px 20px;border-top:0;border-left:4px solid var(--accent);background:var(--stone);gap:8px}
+.review-compact blockquote{font-size:15px;line-height:1.55}
+.review-compact .review-stars{font-size:14px}
