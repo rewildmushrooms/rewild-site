@@ -6,6 +6,8 @@ import crypto from 'node:crypto';
 import { json } from './_shared/square.mjs';
 import { getJSON, setJSON } from './_shared/store.mjs';
 import { fetchOrder, recordPaidOrder, recordRefund } from './_shared/record.mjs';
+import { syncWebOrders } from './_shared/inventory.mjs';
+import { isPaid } from './_shared/orders.mjs';
 
 export function webhookUrl(req) {
   if (process.env.SQUARE_WEBHOOK_URL) return process.env.SQUARE_WEBHOOK_URL;
@@ -31,6 +33,11 @@ export async function handleEvent(event, opts, deps = {}) {
   if (!orderId || !/^[A-Za-z0-9_-]{10,64}$/.test(orderId)) return { ignored: 'no order' };
   const order = await (deps.fetchOrder || fetchOrder)(orderId, opts);
   if (type.startsWith('refund.')) return { refund: await recordRefund(order) };
+  // A sale in the Square app: only bundles need us (their parts come out of stock).
+  if (order?.metadata?.source !== 'rewildmushrooms.com') {
+    if (isPaid(order)) return { pos: await (deps.syncWebOrders || syncWebOrders)([order], opts) };
+    return { ignored: 'not a website order' };
+  }
   return { order: await recordPaidOrder(order, opts, deps) };
 }
 
@@ -49,7 +56,7 @@ export default async (req) => {
     if (id && (await getJSON('square-events', id))) return json(200, { ok: true, duplicate: true });
     const out = await handleEvent(event);
     if (id) await setJSON('square-events', id, { type: event.type, at: new Date().toISOString() });
-    return json(200, { ok: true, skipped: !!(out.order?.skipped || out.refund?.skipped || out.ignored) });
+    return json(200, { ok: true, skipped: !!(out.order?.skipped || out.refund?.skipped || out.ignored || out.pos === 0) });
   } catch (err) {
     console.error('square webhook error', event.type, err.message);
     return json(500, { error: 'Try again' }); // Square retries
