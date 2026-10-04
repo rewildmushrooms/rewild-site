@@ -11,9 +11,21 @@
 //   POST /api/hq  { action:'createCoupon', code, percentOff|amountOff, expiresAt, minimumAmount }   (owner)
 //   POST /api/hq  { action:'toggleCoupon', id, active }     (owner)
 //   POST /api/hq  { action:'shippingInvoice', orderId, amount, note? }   (owner)
+//   GET  /api/hq?action=people&days=30   customers, carts, email numbers for Overview   (owner)
+//   GET  /api/hq?action=customers&q=     GET /api/hq?action=customer&email=              (owner)
+//   GET  /api/hq?action=orders&days=30&source=online|offline                             (owner)
+//   GET  /api/hq?action=ledger           stock history                                   (everyone)
+//   POST /api/hq  { action:'offlineSale', items:[{id,qty}], amount?, note? }              (everyone)
+//   POST /api/hq  { action:'restock', items:[{id,qty}], note? }                           (everyone)
+//   POST /api/hq  { action:'adjust', id, change, note }                                   (everyone)
 // Reads website orders from Square (orders tagged source = rewildmushrooms.com).
 import { square, idem, locationId, pages, isLive, json } from './_shared/square.mjs';
-import { groupStats } from './_shared/mailerlite.mjs';
+import { groupStats, groupCount } from './_shared/mailerlite.mjs';
+import { readIndex, readLedger, HIGH_VALUE } from './_shared/data.mjs';
+import { recordOfflineSale, recordRestock, recordAdjustment, logCount } from './_shared/ledger.mjs';
+import { cartStats } from './_shared/carts.mjs';
+import { getJSON } from './_shared/store.mjs';
+import { stockLevels } from './_shared/inventory.mjs';
 import { PRODUCTS } from './_shared/catalog.mjs';
 import { listPromos, createPromo, setPromoActive } from './_shared/promos.mjs';
 import { isPaid, orderRef, buyerName } from './_shared/orders.mjs';
@@ -346,6 +358,70 @@ async function stock(opts) {
 }
 
 const denied = () => json(403, { error: 'Only Jade can do that.' });
+const ALL_DAYS = 1095;
+const parseDays = (v) => (v === 'all' ? ALL_DAYS : Math.min(ALL_DAYS, Math.max(1, Number(v) || 30)));
+const sinceMs = (days, now = Date.now()) => (days >= ALL_DAYS ? 0 : now - days * 86400000);
+
+// Customers, carts and email numbers for the Overview (from the REWILD data layer + MailerLite).
+export async function people(days, now = Date.now()) {
+  const [cust, carts, orders] = await Promise.all([readIndex('customers'), readIndex('carts'), readIndex('orders')]);
+  const since = sinceMs(days, now);
+  const list = Object.values(cust);
+  const buyers = list.filter((c) => c.orders > 0);
+  const repeat = buyers.filter((c) => c.orders >= 2);
+  const ltv = buyers.reduce((a, c) => a + c.ltv, 0);
+  const newCustomers = buyers.filter((c) => c.first && Date.parse(c.first) >= since).length;
+  const groups = { main: process.env.MAILERLITE_GROUP_ID, quiz: process.env.MAILERLITE_QUIZ_GROUP_ID, customers: process.env.MAILERLITE_CUSTOMERS_GROUP_ID };
+  const counts = {};
+  await Promise.all(Object.entries(groups).map(async ([k, id]) => { counts[k] = await groupCount(id).catch(() => null); }));
+  const offline = Object.values(orders).filter((o) => o.source === 'offline').sort((a, b) => String(b.at).localeCompare(String(a.at)));
+  return {
+    customers: buyers.length,
+    newCustomers,
+    repeatCustomers: repeat.length,
+    repeatRate: buyers.length ? repeat.length / buyers.length : 0,
+    avgLifetimeValue: buyers.length ? Math.round(ltv / buyers.length) : 0,
+    highValue: buyers.filter((c) => c.ltv >= HIGH_VALUE).length,
+    prospects: list.length - buyers.length,
+    consented: list.filter((c) => c.consent).length,
+    quizLeads: list.filter((c) => c.quiz).length,
+    email: { subscribers: counts.main, quiz: counts.quiz, customers: counts.customers },
+    carts: cartStats(carts, since),
+    recentCustomers: list.filter((c) => c.lastActivity).sort((a, b) => String(b.lastActivity).localeCompare(String(a.lastActivity))).slice(0, 6),
+    recentOffline: offline.slice(0, 5),
+  };
+}
+
+export async function customersList(q = '') {
+  const s = String(q).trim().toLowerCase();
+  const list = Object.values(await readIndex('customers'))
+    .filter((c) => !s || c.email.includes(s) || String(c.name || '').toLowerCase().includes(s))
+    .sort((a, b) => String(b.lastActivity || '').localeCompare(String(a.lastActivity || '')));
+  return { total: list.length, customers: list.slice(0, 200) };
+}
+
+export async function customerDetail(email) {
+  const e = String(email || '').trim().toLowerCase();
+  const c = await getJSON('customers', e);
+  if (!c) throw Object.assign(new Error('Customer not found'), { status: 404 });
+  const [orders, carts] = await Promise.all([readIndex('orders'), readIndex('carts')]);
+  const summary = (await readIndex('customers'))[e] || null;
+  return {
+    customer: { email: c.email, name: c.name || null, since: c.firstOrderAt || c.createdAt, lastOrder: c.lastOrderAt || null, orders: c.orderCount || 0, ltv: c.lifetimeValue || 0, avg: c.averageOrder || 0,
+      products: c.products || {}, quiz: c.quiz || null, consent: !!c.marketingConsent, consentAt: c.marketingConsentAt || null, consentSource: c.marketingConsentSource || null,
+      codes: c.codesUsed || [], noReminders: !!c.noReminders, source: c.firstSource || null, segments: summary?.segments || [] },
+    orders: Object.values(orders).filter((o) => o.email === e).sort((a, b) => String(b.at).localeCompare(String(a.at))),
+    carts: Object.values(carts).filter((x) => x.email === e).sort((a, b) => String(b.at).localeCompare(String(a.at))),
+  };
+}
+
+export async function ordersList(days, source, now = Date.now()) {
+  const since = sinceMs(days, now);
+  const list = Object.values(await readIndex('orders'))
+    .filter((o) => Date.parse(o.at) >= since && (!source || o.source === source))
+    .sort((a, b) => String(b.at).localeCompare(String(a.at)));
+  return { orders: list.slice(0, 300), total: list.length, revenue: list.reduce((a, o) => a + o.total - (o.refunded || 0), 0) };
+}
 
 export default async (req) => {
   const member = await authorized(req);
@@ -358,27 +434,40 @@ export default async (req) => {
       if (action === 'me') return json(200, { id: member.id, name: member.name, role: member.role, mode: isLive() ? 'live' : 'test',
         partners: PARTNERS.filter((p) => owner || p.id === member.id).map((p) => ({ id: p.id, name: p.name, codePrefix: p.codePrefix, ref: p.ref })) });
       if (action === 'inventory') return json(200, await stock());
+      if (action === 'ledger') return json(200, { ledger: (await readLedger()).slice(0, 200) });
       if (action === 'commissions') {
         const month = /^\d{4}-\d{2}$/.test(url.searchParams.get('month') || '') ? url.searchParams.get('month') : monthOf(new Date().toISOString());
         return json(200, await commissions(month, member));
       }
       if (!owner) return denied();
       if (action === 'summary') {
-        const days = Math.min(365, Math.max(1, Number(url.searchParams.get('days')) || 30));
+        const days = parseDays(url.searchParams.get('days'));
         return json(200, await summary(days));
       }
       if (action === 'coupons') return json(200, { coupons: await coupons() });
+      if (action === 'people') return json(200, await people(parseDays(url.searchParams.get('days'))));
+      if (action === 'customers') return json(200, await customersList(url.searchParams.get('q') || ''));
+      if (action === 'customer') return json(200, await customerDetail(url.searchParams.get('email')));
+      if (action === 'orders') {
+        const src = ['online', 'offline'].includes(url.searchParams.get('source')) ? url.searchParams.get('source') : null;
+        return json(200, await ordersList(parseDays(url.searchParams.get('days')), src));
+      }
       if (action === 'alerts') return json(200, await alerts());
       if (action === 'traffic') {
-        const days = Math.min(365, Math.max(1, Number(url.searchParams.get('days')) || 30));
+        const days = Math.min(365, parseDays(url.searchParams.get('days')));
         try { return json(200, await traffic(days)); } catch (e) { return json(200, { configured: true, error: e.message }); }
       }
       return json(400, { error: 'Unknown action' });
     }
     if (req.method === 'POST') {
       const b = await req.json();
+      if (b.action === 'offlineSale') return json(200, { ok: true, ...(await recordOfflineSale(b, member)) });
+      if (b.action === 'restock') return json(200, { ok: true, ...(await recordRestock(b, member)) });
+      if (b.action === 'adjust') return json(200, { ok: true, ...(await recordAdjustment(b, member)) });
       if (b.action === 'setStock') {
+        const before = (await stockLevels().catch(() => ({})))[b.id];
         const r = await setStock(b.id, b.quantity);
+        try { await logCount(r.id, before, r.onHand, member); } catch (e) { console.error('ledger failed', e.message); }
         console.log('stock set', member.id, r.id, r.onHand);
         try { await checkLowStock({ [r.id]: r.onHand }); } catch (e) { console.error('low stock check failed', e.message); }
         return json(200, { ok: true, ...r });
