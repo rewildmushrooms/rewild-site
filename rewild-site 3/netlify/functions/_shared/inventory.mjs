@@ -41,8 +41,10 @@ export async function ensureVariations(opts, { create = true } = {}) {
   // They don't track stock in Square; HQ takes their parts out of stock.
   const bundles = PRODUCTS.filter((p) => BUNDLES[p.id] && !skus.has(skuFor(p.id)));
   if ((missing.length || bundles.length) && create) {
+    // Same key for the same missing set, so two HQ requests at once can't create the items twice
+    // (Square returns the first result for a repeated key).
     const res = await square('POST', '/catalog/batch-upsert', {
-      idempotency_key: idem(),
+      idempotency_key: `rewild-items-${[...missing, ...bundles].map((p) => p.id).join('-')}-${new Date().toISOString().slice(0, 10)}`,
       batches: [{
         objects: [...missing, ...bundles].map((p) => ({
           type: 'ITEM',
