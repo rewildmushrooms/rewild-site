@@ -18,7 +18,7 @@ export async function buildPaymentLink(body, siteUrl, opts) {
   const q = quote(body?.items, country);
   if (q.lines.length === 0) throw Object.assign(new Error('Your cart is empty.'), { status: 400 });
   let promo = null;
-  if (body?.code) promo = (await validatePromo(body.code, q.subtotal, opts)).promo;
+  if (body?.code) promo = (await validatePromo(body.code, q.subtotal, opts, Date.now(), body?.email || '')).promo;
   const ship = SHIPPING[country];
   const ref = partnerByRef(body?.ref)?.ref; // partner share link (?ref=sean), for commission
   const summary = q.lines.map((l) => `${l.qty}x ${l.id}`).join(', ');

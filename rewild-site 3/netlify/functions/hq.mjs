@@ -27,7 +27,7 @@ import { cartStats } from './_shared/carts.mjs';
 import { getJSON } from './_shared/store.mjs';
 import { stockLevels } from './_shared/inventory.mjs';
 import { PRODUCTS } from './_shared/catalog.mjs';
-import { listPromos, createPromo, setPromoActive } from './_shared/promos.mjs';
+import { listPromos, createPromo, setPromoActive, setPromoArchived, setPromoOnce } from './_shared/promos.mjs';
 import { isPaid, orderRef, buyerName } from './_shared/orders.mjs';
 import { TEAM, PARTNERS, COMMISSION_RATE, memberById, partnerForOrder, commissionBase, commissionFor } from './_shared/team.mjs';
 import { inventory, setStock } from './_shared/inventory.mjs';
@@ -478,6 +478,8 @@ export default async (req) => {
         return json(200, { ok: true, id: p.id, code: p.code, warning: p.warning });
       }
       if (b.action === 'toggleCoupon') return json(200, await setPromoActive(b.id, b.active));
+      if (b.action === 'archiveCoupon') return json(200, await setPromoArchived(b.id, !!b.archived));
+      if (b.action === 'onceCoupon') return json(200, await setPromoOnce(b.id, !!b.once));
       if (b.action === 'shippingInvoice') return json(200, { ok: true, ...(await sendShippingInvoice(b)) });
       return json(400, { error: 'Unknown action' });
     }
