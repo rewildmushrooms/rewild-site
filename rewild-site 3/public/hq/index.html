@@ -302,10 +302,12 @@ a{color:var(--ink)}
       <label>Amount<input name="value" type="number" min="1" step="1" required placeholder="15"></label>
       <label>Expires<input name="expiresAt" type="date"></label>
       <label>Min order ($)<input name="minimumAmount" type="number" min="1" placeholder="None"></label>
+      <label style="flex-direction:row;align-items:center;gap:8px"><input name="oncePerCustomer" type="checkbox" style="width:auto"> One use per customer</label>
       <button class="btn" type="submit">Create code</button>
     </form>
     <p class="msg" id="coupon-msg" role="status"></p>
     <div class="scroll"><table><thead><tr><th>Code</th><th>Discount</th><th class="num">Used (12 mo)</th><th>Expires</th><th>Status</th><th></th></tr></thead><tbody id="coupon-list"></tbody></table></div>
+    <p class="muted small" style="margin-top:10px">Archived codes stop working and are hidden, but are never deleted, so past orders and reports keep their history. <button type="button" class="btn ghost small" id="show-archived">Show archived</button></p>
   </section>
   </div>
 </div></main>
@@ -441,18 +443,27 @@ a{color:var(--ink)}
     chart.querySelectorAll('.bar').forEach(b=>{b.onmouseenter=()=>show(b);b.onfocus=()=>show(b);b.onmouseleave=b.onblur=()=>tip.style.display='none';});
   }
 
+  let showArchived=false;
+  $('#show-archived').onclick=()=>{showArchived=!showArchived;loadCoupons();};
   async function loadCoupons(){
     try{
       const {coupons}=await api('?action=coupons');
-      $('#coupon-list').innerHTML=coupons.length?coupons.map(c=>`<tr><td><strong>${esc(c.code)}</strong></td><td>${c.percentOff?c.percentOff+'%':money(c.amountOff)} off${c.minimumAmount?`<br><span class="muted">min ${money(c.minimumAmount)}</span>`:''}</td><td class="num">${c.timesRedeemed}</td><td>${c.expiresOn||'Never'}</td><td><span class="status ${c.active?'on':'off'}">${c.active?'Active':'Off'}</span></td><td><button class="btn ghost small" data-toggle="${c.id}" data-active="${c.active}">${c.active?'Turn off':'Turn on'}</button></td></tr>`).join(''):'<tr><td colspan="6" class="muted">No promo codes yet. Create one above.</td></tr>';
-      document.querySelectorAll('[data-toggle]').forEach(b=>b.onclick=async()=>{b.disabled=true;try{await api('',{method:'POST',body:JSON.stringify({action:'toggleCoupon',id:b.dataset.toggle,active:b.dataset.active!=='true'})});loadCoupons();}catch(err){alertMsg(err.message,true);b.disabled=false;}});
+      const arch=coupons.filter(c=>c.archived).length;const sa=$('#show-archived');sa.textContent=showArchived?'Hide archived':`Show archived (${arch})`;sa.hidden=!arch&&!showArchived;
+      const rows=coupons.filter(c=>showArchived?c.archived:!c.archived);
+      const status=c=>c.archived?'<span class="status off">Archived</span>':`<span class="status ${c.active?'on':'off'}">${c.active?'Active':'Off'}</span>`;
+      const btns=c=>c.archived?`<button class="btn ghost small" data-archive="${c.id}" data-val="false">Restore</button>`:`<button class="btn ghost small" data-toggle="${c.id}" data-active="${c.active}">${c.active?'Turn off':'Turn on'}</button> <button class="btn ghost small" data-once="${c.id}" data-val="${!c.oncePerCustomer}">${c.oncePerCustomer?'Allow repeat use':'Make 1 per customer'}</button> <button class="btn ghost small" data-archive="${c.id}" data-val="true">Archive</button>`;
+      $('#coupon-list').innerHTML=rows.length?rows.map(c=>`<tr><td><strong>${esc(c.code)}</strong>${c.oncePerCustomer?'<br><span class="muted">1 per customer</span>':''}</td><td>${c.percentOff?c.percentOff+'%':money(c.amountOff)} off${c.minimumAmount?`<br><span class="muted">min ${money(c.minimumAmount)}</span>`:''}</td><td class="num">${c.timesRedeemed}</td><td>${c.expiresOn||'Never'}</td><td>${status(c)}</td><td>${btns(c)}</td></tr>`).join(''):`<tr><td colspan="6" class="muted">${showArchived?'No archived codes.':'No promo codes yet. Create one above.'}</td></tr>`;
+      const post=async(b,body)=>{b.disabled=true;try{await api('',{method:'POST',body:JSON.stringify(body)});loadCoupons();}catch(err){alertMsg(err.message,true);b.disabled=false;}};
+      document.querySelectorAll('[data-toggle]').forEach(b=>b.onclick=()=>post(b,{action:'toggleCoupon',id:b.dataset.toggle,active:b.dataset.active!=='true'}));
+      document.querySelectorAll('[data-once]').forEach(b=>b.onclick=()=>post(b,{action:'onceCoupon',id:b.dataset.once,once:b.dataset.val==='true'}));
+      document.querySelectorAll('[data-archive]').forEach(b=>b.onclick=()=>post(b,{action:'archiveCoupon',id:b.dataset.archive,archived:b.dataset.val==='true'}));
     }catch(err){alertMsg(err.message,true);}
   }
   function alertMsg(t,err){const m=$('#coupon-msg');m.textContent=t;m.className='msg '+(err?'err':'ok');}
 
   $('#coupon-form').onsubmit=async(e)=>{
     e.preventDefault();const f=new FormData(e.target);const btn=e.target.querySelector('button');btn.disabled=true;
-    const body={action:'createCoupon',code:f.get('code'),expiresAt:f.get('expiresAt')||null,minimumAmount:f.get('minimumAmount')||null};
+    const body={action:'createCoupon',code:f.get('code'),expiresAt:f.get('expiresAt')||null,minimumAmount:f.get('minimumAmount')||null,oncePerCustomer:!!f.get('oncePerCustomer')};
     if(f.get('type')==='percent')body.percentOff=f.get('value');else body.amountOff=f.get('value');
     try{const r=await api('',{method:'POST',body:JSON.stringify(body)});alertMsg(r.warning||('Created '+r.code+'. It works in the cart within a minute.'));e.target.reset();loadCoupons();}catch(err){alertMsg(err.message,true);}
     btn.disabled=false;
