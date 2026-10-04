@@ -148,6 +148,7 @@ a{color:var(--ink)}
     <button role="tab" data-tab="inventory" aria-selected="false">Inventory</button>
     <button role="tab" data-tab="commissions" aria-selected="false">Commissions</button>
     <button role="tab" data-tab="codes" data-owner aria-selected="false">Promo codes</button>
+    <button role="tab" data-tab="emails" data-owner aria-selected="false">Emails</button>
   </nav>
 
   <div data-panel="inventory" hidden>
@@ -282,6 +283,14 @@ a{color:var(--ink)}
     <div class="scroll"><table><thead><tr><th>Date</th><th>Customer</th><th>Items</th><th>Ship to</th><th class="num">Total</th><th>US shipping</th><th></th></tr></thead><tbody id="recent"></tbody></table></div>
   </section>
 
+  </div>
+
+  <div data-panel="emails" hidden>
+    <section class="panel">
+      <div class="panel-head"><h2>Every email REWILD sends</h2><span class="muted small">Click Edit to open it where it lives</span></div>
+      <p class="muted" style="margin-top:0"><b>Square</b> sends money emails (receipts, refunds, invoices). <b>MailerLite</b> sends marketing (welcome, quiz, after-purchase). <b>The website</b> sends system emails (cart reminders, low stock, password resets): ask Claude to change those.</p>
+      <div class="scroll"><table><thead><tr><th>Email</th><th>Sent when</th><th>Goes to</th><th>Sent by</th><th>Status</th><th></th></tr></thead><tbody id="em-list"></tbody></table></div>
+    </section>
   </div>
 
   <div data-panel="codes" hidden>
@@ -469,6 +478,7 @@ a{color:var(--ink)}
     if(loaded[tab])return; loaded[tab]=true;
     if(tab==='overview'){loadSummary();loadAlerts();loadPeople();loadLow();}
     if(tab==='customers')loadCustomers();
+    if(tab==='emails')loadEmails();
     if(tab==='orders')loadOrders();
     if(tab==='codes')loadCoupons();
     if(tab==='inventory'){loadInventory();loadLedger();}
@@ -575,6 +585,30 @@ a{color:var(--ink)}
     try{const r=await api('?action=ledger');
       $('#ledger').innerHTML=r.ledger.length?r.ledger.slice(0,100).map(l=>`<tr><td>${new Date(l.at).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}</td><td>${esc(LABEL[l.product]||l.product)}</td><td class="num"><span class="chg ${l.change>0?'up':'down'}">${l.change>0?'+':''}${l.change}</span></td><td>${esc(l.reason||SRC[l.source]||l.source)}${l.order&&l.source==='online_sale'?' <span class="muted">#'+esc(String(l.order).slice(-8).toUpperCase())+'</span>':''}</td><td>${esc(l.by||'')}</td><td>${esc(l.note||'')}</td></tr>`).join(''):'<tr><td colspan="6" class="muted">No changes recorded yet.</td></tr>';
     }catch(err){$('#ledger').innerHTML='<tr><td colspan="6" class="msg err">'+esc(err.message)+'</td></tr>';}
+  }
+
+  // ---- Emails map (edit links)
+  const ML='https://dashboard.mailerlite.com',SQ='https://squareup.com/dashboard';
+  const EMAILS=[
+    ['Order receipt','A customer pays','Customer','Square','on',SQ+'/','Square: Settings > Receipts (logo, colours, message)'],
+    ['New order alert','A customer pays','You','Square','on',SQ+'/','Square: Settings > Notifications'],
+    ['Refund receipt','You refund in Square','Customer','Square','on',SQ+'/sales/transactions','Square: Transactions > payment > Refund'],
+    ['US shipping + duties invoice','You click Send quote in Overview','US customer','Square','on',SQ+'/invoices','Square: Invoices'],
+    ['Shipped + tracking','You ship an order','Customer','Carrier (for now)','planned','',"Canada Post / Chit Chats email tracking. A 'Mark shipped' button in HQ is planned."],
+    ['Cart reminder 1','1 hour after an unpaid checkout','Shoppers who ticked the email box','Website','on','','Stops the moment they pay'],
+    ['Cart reminder 2','24 hours after','Same','Website','on','',''],
+    ['Cart reminder 3 (15% code, 24 h)','48 hours after','Same','Website','on','','One-time code, made for that cart only'],
+    ['Send my stack','Quiz signup','Quiz takers','MailerLite','on',ML+'/automations/200334682160629341',''],
+    ['Quiz follow-ups (day 3, day 7)','After Send my stack','Quiz takers','MailerLite','on',ML+'/automations/200335962880869997',''],
+    ['Welcome sequence','Popup or footer signup','New subscribers','MailerLite','draft',ML+'/automations','Turn on in MailerLite when ready'],
+    ['After purchase (how to, review, reorder)','After a paid order','Buyers who said yes to emails','MailerLite','planned',ML+'/automations',''],
+    ['Low stock alert','A product hits 10','rewildmushrooms@protonmail.com','Website','on','','Once per product until restocked'],
+    ['HQ password reset','Forgot password in HQ','Team member','Website','on','',''],
+    ['Contact form message','Someone uses the contact form','rewildmushrooms@protonmail.com','Netlify','on','https://app.netlify.com/projects/rewild-mushrooms/forms','Netlify: Forms > notifications'],
+  ];
+  const ST={on:'<span class="chip rep">On</span>',draft:'<span class="chip hv">Draft</span>',planned:'<span class="chip">Planned</span>'};
+  function loadEmails(){
+    $('#em-list').innerHTML=EMAILS.map(([n,w,to,by,st,url,note])=>`<tr><td><strong>${esc(n)}</strong>${note?'<br><span class="muted small">'+esc(note)+'</span>':''}</td><td>${esc(w)}</td><td>${esc(to)}</td><td>${esc(by)}</td><td>${ST[st]||''}</td><td>${url?`<a class="btn ghost small" href="${esc(url)}" target="_blank" rel="noopener">Edit</a>`:by==='Website'?'<span class="muted small">Ask Claude</span>':''}</td></tr>`).join('');
   }
 
   // ---- Inventory
