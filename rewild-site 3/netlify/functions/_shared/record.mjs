@@ -74,7 +74,7 @@ export async function recordPaidOrder(order, opts, deps = {}) {
   const steps = { ...(prev?.steps || {}) };
   const email = prev?.email || emailKey(await buyerEmail(order, opts)) || null;
   const name = buyerName(order);
-  const rec = { ...orderRecord(order, email, name), steps };
+  const rec = { ...orderRecord(order, email, name), steps, ...(prev?.shipment ? { shipment: prev.shipment } : {}) };
 
   if (!steps.inventory) {
     try { await (deps.syncWebOrders || syncWebOrders)([order], opts); steps.inventory = true; } catch (e) { console.error('stock update failed', order.id, e.message); }

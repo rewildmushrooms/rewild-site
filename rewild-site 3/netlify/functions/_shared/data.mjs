@@ -75,5 +75,6 @@ export function orderSummary(r) {
     status: r.refunded && r.refunded >= r.total ? 'refunded' : r.refunded ? 'part refunded' : 'paid',
     source: r.source || 'online',
     country: r.country || null,
+    shipment: r.shipment ? { at: r.shipment.at, carrier: r.shipment.carrier, tracking: r.shipment.tracking, emailed: !!r.shipment.emailed } : null,
   };
 }
