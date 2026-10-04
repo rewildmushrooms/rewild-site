@@ -1,8 +1,11 @@
 // Promo codes live in Square as catalog Discounts (Items > Discounts in the Square dashboard).
 // The discount's name is the code customers type (e.g. SEAN20).
-// Extra web rules (on/off, expiry date, minimum order) are stored on the discount in a hidden
-// custom attribute called "rewild_rules", managed from REWILD HQ.
+// Extra web rules (on/off, expiry date, minimum order) are managed from REWILD HQ and saved in
+// Netlify Blobs (store "promo-rules", key "all" = { [squareDiscountId]: { on, exp, min } }).
+// Square does not allow custom attributes on discounts, so rules live on our side.
+// Older codes may still carry rules in a "rewild_rules" custom attribute; those are read as a fallback.
 import { square, idem, pages } from './square.mjs';
+import { getJSON, setJSON } from './store.mjs';
 
 const RULES_KEY = 'rewild_rules';
 export const CODE_RE = /^[A-Z0-9_-]{3,30}$/;
@@ -18,10 +21,35 @@ export function readRules(obj) {
   try { return JSON.parse(hit[1].string_value || '{}'); } catch { return null; }
 }
 
+// Built-in rules for codes made before rules were saved in Blobs. Saved rules win over these.
+export const DEFAULT_RULES = {
+  SEAN30WW: { on: true, exp: '2026-10-15' },
+  PETEMOSS30WW: { on: true, exp: '2026-10-15' },
+};
+
+const RULES_STORE = 'promo-rules';
+export async function loadRules() {
+  try { return (await getJSON(RULES_STORE, 'all')) || {}; } catch (e) { console.error('promo rules load failed', e.message); return {}; }
+}
+async function saveRule(id, rules) {
+  const all = (await getJSON(RULES_STORE, 'all')) || {}; // throws if storage is down, so we never wipe saved rules
+  all[id] = rules;
+  await setJSON(RULES_STORE, 'all', all);
+}
+
+// End of the expiry day in Pacific time (handles PDT/PST).
+export function endOfDayPacific(ymd) {
+  const guess = Date.parse(`${ymd}T23:59:59-08:00`);
+  const pdt = Date.parse(`${ymd}T23:59:59-07:00`);
+  const offset = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', timeZoneName: 'short' }).format(new Date(pdt)).includes('PDT');
+  return Math.floor((offset ? pdt : guess) / 1000);
+}
+
 // Square discount object -> plain promo
-export function toPromo(obj) {
+export function toPromo(obj, saved) {
   const d = obj.discount_data || {};
-  const rules = readRules(obj) || {};
+  const name = normCode(d.name);
+  const rules = saved || readRules(obj) || DEFAULT_RULES[name] || {};
   const pct = d.discount_type === 'FIXED_PERCENTAGE' ? Number(d.percentage) : null;
   const amt = d.discount_type === 'FIXED_AMOUNT' ? Number(d.amount_money?.amount || 0) : null;
   return {
@@ -31,19 +59,20 @@ export function toPromo(obj) {
     percentOff: pct,
     amountOff: amt,
     active: rules.on !== false,
-    expiresAt: rules.exp ? Math.floor(Date.parse(`${rules.exp}T23:59:00-07:00`) / 1000) : null,
+    expiresAt: rules.exp ? endOfDayPacific(rules.exp) : null,
     expiresOn: rules.exp || null,
     minimumAmount: rules.min || null,
-    hasRules: !!readRules(obj),
+    hasRules: !!(saved || readRules(obj) || DEFAULT_RULES[name]),
   };
 }
 
 export async function listPromos(opts, { fresh = false } = {}) {
   if (!fresh && cache.list && Date.now() - cache.at < 60000) return cache.list;
   const objs = await pages((cursor) => square('GET', `/catalog/list?types=DISCOUNT${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`, null, opts), 'objects', 2000);
+  const saved = await loadRules();
   const list = objs
     .filter((o) => !o.is_deleted && (o.discount_data?.discount_type === 'FIXED_PERCENTAGE' || o.discount_data?.discount_type === 'FIXED_AMOUNT'))
-    .map(toPromo)
+    .map((o) => toPromo(o, saved[o.id]))
     .filter((p) => CODE_RE.test(p.code));
   cache = { at: Date.now(), list };
   return list;
@@ -74,35 +103,7 @@ export function orderDiscount(promo) {
     : { ...base, type: 'FIXED_AMOUNT', amount_money: { amount: promo.amountOff, currency: 'CAD' } };
 }
 
-let defReady = false;
-async function ensureRulesDefinition(opts) {
-  if (defReady) return true;
-  const { objects = [] } = await square('GET', '/catalog/list?types=CUSTOM_ATTRIBUTE_DEFINITION', null, opts);
-  if (!objects.some((o) => o.custom_attribute_definition_data?.key === RULES_KEY)) {
-    await square('POST', '/catalog/object', {
-      idempotency_key: idem(),
-      object: {
-        type: 'CUSTOM_ATTRIBUTE_DEFINITION',
-        id: '#rewild_rules',
-        custom_attribute_definition_data: {
-          type: 'STRING',
-          name: 'REWILD web code rules',
-          description: 'On/off, expiry and minimum order for website promo codes. Managed by REWILD HQ.',
-          allowed_object_types: ['DISCOUNT'],
-          key: RULES_KEY,
-          seller_visibility: 'SELLER_VISIBILITY_HIDDEN',
-          app_visibility: 'APP_VISIBILITY_READ_WRITE_VALUES',
-          string_config: { enforce_uniqueness: false },
-        },
-      },
-    }, opts);
-  }
-  defReady = true;
-  return true;
-}
-export const _resetDef = () => { defReady = false; };
-
-const rulesValue = (rules) => ({ [RULES_KEY]: { string_value: JSON.stringify(rules) } });
+export const _resetDef = () => {};
 
 export async function createPromo(b, opts) {
   const code = normCode(b.code);
@@ -115,8 +116,6 @@ export async function createPromo(b, opts) {
   const rules = { on: true };
   if (b.expiresAt && /^\d{4}-\d{2}-\d{2}$/.test(b.expiresAt)) rules.exp = b.expiresAt;
   if (b.minimumAmount) rules.min = Math.round(Number(b.minimumAmount) * 100);
-  let withRules = true;
-  try { await ensureRulesDefinition(opts); } catch (e) { withRules = false; console.error('rules definition failed', e.message); }
   const object = {
     type: 'DISCOUNT',
     id: '#new',
@@ -125,26 +124,22 @@ export async function createPromo(b, opts) {
       ? { name: code, discount_type: 'FIXED_PERCENTAGE', percentage: String(pct) }
       : { name: code, discount_type: 'FIXED_AMOUNT', amount_money: { amount: amt, currency: 'CAD' } },
   };
-  if (withRules) object.custom_attribute_values = rulesValue(rules);
   const res = await square('POST', '/catalog/object', { idempotency_key: idem(), object }, opts);
   _resetPromoCache();
-  const p = toPromo(res.catalog_object);
-  if (!withRules && (rules.exp || rules.min)) p.warning = 'Created, but the expiry or minimum could not be saved.';
+  let saved = true;
+  try { await saveRule(res.catalog_object.id, rules); } catch (e) { saved = false; console.error('promo rules save failed', e.message); }
+  const p = toPromo(res.catalog_object, saved ? rules : undefined);
+  if (!saved && (rules.exp || rules.min)) p.warning = 'Created, but the expiry or minimum could not be saved.';
   return p;
 }
 
 export async function setPromoActive(id, active, opts) {
   if (!/^[A-Z0-9]{10,40}$/i.test(id || '')) throw Object.assign(new Error('Bad id'), { status: 400 });
-  await ensureRulesDefinition(opts);
   const { object } = await square('GET', `/catalog/object/${id}`, null, opts);
   if (object?.type !== 'DISCOUNT') throw Object.assign(new Error('Not a promo code'), { status: 400 });
-  const rules = { ...(readRules(object) || {}), on: !!active };
-  const others = Object.fromEntries(Object.entries(object.custom_attribute_values || {})
-    .filter(([k, v]) => !(k === RULES_KEY || v?.key === RULES_KEY || k.endsWith(':' + RULES_KEY))));
-  await square('POST', '/catalog/object', {
-    idempotency_key: idem(),
-    object: { ...object, custom_attribute_values: { ...others, ...rulesValue(rules) } },
-  }, opts);
+  const all = await loadRules();
+  const current = all[id] || readRules(object) || DEFAULT_RULES[normCode(object.discount_data?.name)] || {};
+  await saveRule(id, { ...current, on: !!active });
   _resetPromoCache();
   return { ok: true };
 }
