@@ -100,3 +100,12 @@ export async function logCount(id, before, after, member) {
   if (before == null || before === after) return;
   await appendLedger([{ at: new Date().toISOString(), product: id, change: after - before, source: 'manual_adjustment', reason: 'Stock count', by: member.id, note: `Counted ${after} (was ${before})`, order: null }]);
 }
+
+// Put an order's items back in stock (refund, cancel or deleting a test order). Never twice for the same order.
+export async function returnToStock(units, orderId, member, why, opts) {
+  if (!units || !Object.keys(units).length) return null;
+  const at = await move(units, 'NONE', 'IN_STOCK', `return:${orderId}`, opts);
+  await appendLedger(lines(units, 1, 'return', why || 'Back in stock', member?.id || null, null, orderId, at));
+  await afterMove(opts);
+  return at;
+}

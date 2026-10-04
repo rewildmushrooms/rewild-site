@@ -31,17 +31,31 @@ async function call(method, store, key, body) {
   return method === 'GET' ? res.json() : true;
 }
 
-export async function getJSON(store, key) {
-  if (memory) { const v = memory.get(`${store}/${key}`); return v === undefined ? null : JSON.parse(v); }
-  return call('GET', store, key);
-}
+const rawGet = async (store, key) => { if (memory) { const v = memory.get(`${store}/${key}`); return v === undefined ? null : JSON.parse(v); } return call('GET', store, key); };
+const rawSet = async (store, key, value) => { if (memory) { memory.set(`${store}/${key}`, JSON.stringify(value)); return true; } return call('PUT', store, key, JSON.stringify(value)); };
+const rawDel = async (store, key) => { if (memory) { memory.delete(`${store}/${key}`); return true; } return call('DELETE', store, key); };
 
-export async function setJSON(store, key, value) {
-  if (memory) { memory.set(`${store}/${key}`, JSON.stringify(value)); return true; }
-  return call('PUT', store, key, JSON.stringify(value));
+// Going live: the sandbox test orders, customers, carts and stock history are cleared once, automatically,
+// the first time the site runs on live Square (SQUARE_ENV=production), before anything in those stores is read or saved.
+// Promo codes, HQ logins and the team list are kept. Marker: store "data", key "live-since".
+const TEST_STORES = ['customers', 'orders', 'carts'];
+let liveChecked = false;
+export const _resetLiveCheck = () => { liveChecked = false; };
+export async function clearTestDataOnce() {
+  if (liveChecked || (process.env.SQUARE_ENV || '').toLowerCase() !== 'production') return null;
+  if (await rawGet('data', 'live-since')) { liveChecked = true; return null; }
+  const idx = await Promise.all(TEST_STORES.map((n) => rawGet('data', `${n}-index`)));
+  const keys = TEST_STORES.flatMap((n, i) => Object.keys(idx[i] || {}).map((k) => [n, k]));
+  for (let i = 0; i < keys.length; i += 20) await Promise.all(keys.slice(i, i + 20).map(([st, k]) => rawDel(st, k).catch(() => null)));
+  await Promise.all([...TEST_STORES.map((n) => rawDel('data', `${n}-index`)), rawDel('data', 'ledger'), rawDel('alerts', 'low-stock')].map((p) => p.catch(() => null)));
+  const cleared = Object.fromEntries(TEST_STORES.map((n, i) => [n, Object.keys(idx[i] || {}).length]));
+  await rawSet('data', 'live-since', { at: new Date().toISOString(), cleared });
+  liveChecked = true;
+  console.log('test data cleared for launch', JSON.stringify(cleared));
+  return cleared;
 }
+const guard = (store) => (TEST_STORES.includes(store) || store === 'data' || store === 'alerts' ? clearTestDataOnce() : null);
 
-export async function delKey(store, key) {
-  if (memory) { memory.delete(`${store}/${key}`); return true; }
-  return call('DELETE', store, key);
-}
+export async function getJSON(store, key) { await guard(store); return rawGet(store, key); }
+export async function setJSON(store, key, value) { await guard(store); return rawSet(store, key, value); }
+export async function delKey(store, key) { await guard(store); return rawDel(store, key); }

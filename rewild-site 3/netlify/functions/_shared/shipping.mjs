@@ -70,6 +70,7 @@ export async function markShipped(b, member, deps = {}) {
     s.emailed = true;
   }
   rec.shipment = s;
+  if (!['cancelled', 'refunded'].includes(rec.hqStatus)) rec.hqStatus = 'completed';
   await setJSON('orders', id, rec);
   await putIndex('orders', id, orderSummary(rec));
   return { ok: true, shipment: s, trackingUrl: trackingUrl(s) };

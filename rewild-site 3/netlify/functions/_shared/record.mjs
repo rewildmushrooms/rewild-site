@@ -44,11 +44,17 @@ export function orderRecord(o, email, name) {
   };
 }
 
+// What HQ adds to an order (shipping, status, notes, refunds, restock). Kept when Square sends the order again.
+export const hqFields = (prev) => Object.fromEntries(['shipment', 'hqStatus', 'notes', 'refundLog', 'restocked'].filter((k) => prev?.[k] != null).map((k) => [k, prev[k]]));
+
 // Customer totals are rebuilt from the orders map, so re-running never double counts.
 export function mergeCustomer(c, rec, now = new Date().toISOString()) {
   const out = c ? { ...c, orders: { ...(c.orders || {}) } } : { email: rec.email, createdAt: now, orders: {} };
   if (rec.name && !out.name) out.name = rec.name;
   out.orders[rec.id] = { at: rec.createdAt, total: rec.total - rec.refunded, items: rec.units, code: rec.code };
+  return recalcCustomer(out, rec, now);
+}
+export function recalcCustomer(out, rec = {}, now = new Date().toISOString()) {
   const list = Object.values(out.orders);
   out.orderCount = list.length;
   out.lifetimeValue = list.reduce((a, x) => a + x.total, 0);
@@ -58,12 +64,13 @@ export function mergeCustomer(c, rec, now = new Date().toISOString()) {
   out.products = {};
   for (const x of list) for (const [k, n] of Object.entries(x.items || {})) out.products[k] = (out.products[k] || 0) + n;
   out.codesUsed = [...new Set(list.map((x) => x.code).filter(Boolean))];
+  if (!list.length) { out.firstOrderAt = null; out.lastOrderAt = null; }
   if (rec.newsletter && !out.marketingConsent) {
     out.marketingConsent = true;
     out.marketingConsentAt = rec.createdAt || now;
     out.marketingConsentSource = 'checkout';
   }
-  out.lastActivityAt = out.lastOrderAt;
+  out.lastActivityAt = out.lastOrderAt || out.lastActivityAt || null;
   out.updatedAt = now;
   return out;
 }
@@ -71,10 +78,11 @@ export function mergeCustomer(c, rec, now = new Date().toISOString()) {
 export async function recordPaidOrder(order, opts, deps = {}) {
   if (!isWebOrder(order) || !isPaid(order)) return { skipped: true };
   const prev = (await getJSON('orders', order.id)) || null;
+  if (prev?.deleted) return { skipped: true, deleted: true }; // deleted in HQ (e.g. a test order): never bring it back
   const steps = { ...(prev?.steps || {}) };
   const email = prev?.email || emailKey(await buyerEmail(order, opts)) || null;
   const name = buyerName(order);
-  const rec = { ...orderRecord(order, email, name), steps, ...(prev?.shipment ? { shipment: prev.shipment } : {}) };
+  const rec = { ...orderRecord(order, email, name), steps, ...hqFields(prev) };
 
   if (!steps.inventory) {
     try { await (deps.syncWebOrders || syncWebOrders)([order], opts); steps.inventory = true; } catch (e) { console.error('stock update failed', order.id, e.message); }
@@ -119,7 +127,7 @@ export async function recordPaidOrder(order, opts, deps = {}) {
 export async function recordRefund(order) {
   if (!isWebOrder(order)) return { skipped: true };
   const prev = await getJSON('orders', order.id);
-  if (!prev) return { skipped: true };
+  if (!prev || prev.deleted) return { skipped: true };
   const rec = { ...prev, ...orderRecord(order, prev.email, prev.name), steps: prev.steps, recordedAt: prev.recordedAt };
   await setJSON('orders', order.id, rec);
   if (rec.email) {

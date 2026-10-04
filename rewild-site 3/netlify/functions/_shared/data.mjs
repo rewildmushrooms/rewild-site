@@ -61,6 +61,16 @@ export function segmentsFor(c, now = Date.now()) {
   return s;
 }
 
+// Order status, like WooCommerce: processing (paid, not shipped yet), on-hold, completed (shipped or handed over),
+// cancelled, refunded (set automatically when the full amount is refunded).
+export const ORDER_STATUSES = { processing: 'Processing', 'on-hold': 'On hold', completed: 'Completed', cancelled: 'Cancelled', refunded: 'Refunded' };
+export function orderStatus(r) {
+  if (r.refunded && r.total > 0 && r.refunded >= r.total) return 'refunded';
+  if (r.hqStatus && ORDER_STATUSES[r.hqStatus]) return r.hqStatus;
+  if (r.source === 'offline' || r.shipment) return 'completed';
+  return 'processing';
+}
+
 export function orderSummary(r) {
   return {
     id: r.id,
@@ -72,7 +82,11 @@ export function orderSummary(r) {
     discount: r.discount || 0,
     refunded: r.refunded || 0,
     code: r.code || null,
-    status: r.refunded && r.refunded >= r.total ? 'refunded' : r.refunded ? 'part refunded' : 'paid',
+    status: orderStatus(r),
+    partRefunded: !!r.refunded && r.refunded < r.total,
+    restocked: !!r.restocked,
+    notes: (r.notes || []).slice(-20),
+    paidOnline: r.source !== 'offline',
     source: r.source || 'online',
     country: r.country || null,
     shipment: r.shipment ? { at: r.shipment.at, carrier: r.shipment.carrier, tracking: r.shipment.tracking, emailed: !!r.shipment.emailed } : null,
