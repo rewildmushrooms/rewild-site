@@ -94,7 +94,7 @@
   };
   const WHY = {
     regular: 'You already know mushrooms. Here are ones grown in BC, full spectrum and third-party tested.',
-    switching: "One mushroom per product, so you'll always know exactly what you're getting from each one.",
+    switching: "Clearly labelled, full spectrum and lab tested, so you always know exactly what you're getting.",
     new: 'Start with one, give it a few weeks, then add another when you’re ready.',
     gift: 'A thoughtful gift for someone doing meaningful things in the world.',
   };
@@ -173,7 +173,7 @@
     const coffee = A.coffee[0];
     let coffeeLine = '';
     if (hasEnergy && (coffee === 'cutting' || coffee === 'none')) coffeeLine = 'CordyFuel™ is caffeine-free, so it fits right in whether you drink coffee or not.';
-    else if (coffee === 'lots' || coffee === 'one') coffeeLine = 'Already have a coffee ritual? Stir your mushrooms into it. Nothing new to remember.';
+    else if (coffee === 'lots' || coffee === 'one') coffeeLine = 'Already drink coffee? Stir your mushrooms into it. Nothing new to remember.';
     const hasTincture = pickIds.includes('tincture') || duo;
     const howLine = hasTincture ? (duo ? 'Powder at home: ½ teaspoon in your usual drink or food. Tincture on the go: 10 to 20 ml, straight or in a drink.' : 'Take 10 to 20 ml of the tincture straight or in a drink.' + (pickIds.length > 1 ? ' ' + (HOW[A.how[0]] || '') : '')) : HOW[A.how[0]] || '';
     const fmtNote = !pickIds.includes('energy') && !pickIds.includes('tincture') && (A.format[0] === 'go' || A.format[0] === 'taste') ? 'Our tincture currently comes in Energy only. The powders mix easily into water or a smoothie on the go.' : '';
