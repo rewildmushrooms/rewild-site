@@ -310,3 +310,15 @@
   window.RewildCart = { add, setQty, open, close, clear() { state.items = []; save(); }, state: () => state };
   render();
 })();
+
+// Video testimonials: load the YouTube player only when someone clicks play.
+document.addEventListener('click', (e) => {
+  const b = e.target.closest && e.target.closest('[data-yt]');
+  if (!b || b.querySelector('iframe')) return;
+  const f = document.createElement('iframe');
+  f.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(b.dataset.yt) + '?autoplay=1&rel=0&modestbranding=1';
+  f.title = b.getAttribute('aria-label') || 'Video';
+  f.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen';
+  f.allowFullscreen = true;
+  b.replaceChildren(f);
+});
