@@ -197,6 +197,16 @@ const shop = {
 </div></section>
 <section class="section tight"><div class="wrap">
   <div class="grid-4">${powders.map((p) => productCard(p, { headingLevel: 2 })).join('')}</div>
+  <div class="set-offer">
+    <img src="${PRODUCT_BY_ID.all4.image}" alt="${esc(PRODUCT_BY_ID.all4.alt)}" width="640" height="640" loading="lazy">
+    <div class="stack-sm">
+      <p class="eyebrow">Bundle and save</p>
+      <h2 class="h3" style="font-size:clamp(26px,3vw,36px)">The All Four Set</h2>
+      <p>Energy, Clarity, Strength and Peace. One of each 100g bag, for ${money(PRODUCT_BY_ID.all4.price)} instead of $230. Ships free in Canada.</p>
+      <div class="row" style="gap:12px;align-items:center"><span class="offer-price"><s>$230</s> ${money(PRODUCT_BY_ID.all4.price)}</span><button type="button" class="btn btn-yellow" data-add="all4">Add the set</button></div>
+      <p class="small muted">Buying single bags? Any 2 or more save 10% automatically. Orders of $200+ get a free Rewild Energy Tincture.</p>
+    </div>
+  </div>
 </div></section>
 ${CORDYFUEL_SECTION}
 <section class="section dark tincture-feature" id="tincture"><div class="wrap split">

@@ -186,6 +186,7 @@ ${page.body}
     <p class="co-total" id="co-total"></p>
     <label for="co-email" class="sr-only">Email address</label>
     <input id="co-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
+    <label class="addon-opt" id="addon-wrap" hidden><input type="checkbox" id="co-addon"> <span id="addon-text"></span></label>
     <label class="news-opt"><input type="checkbox" id="cart-news"> <span>Keep me in the loop with REWILD news, product drops and occasional offers. Unsubscribe anytime.</span></label>
     <button type="submit" class="btn btn-yellow btn-block" id="co-continue">Continue to secure checkout</button>
     <p class="error-msg" id="cart-error" role="alert"></p>
@@ -213,6 +214,7 @@ ${page.body}
   </div>
 </div>
 <script src="/js/catalog.js?v=${SITE.build}"></script>
+<script src="/js/pricing.js?v=${SITE.build}" defer></script>
 <script src="/js/cart.js?v=${SITE.build}" defer></script>
 ${page.scripts || ''}
 </body>
