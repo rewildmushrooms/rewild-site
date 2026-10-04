@@ -20,10 +20,13 @@ async function build() {
 
   // Browser copy of the catalog (only what the cart needs)
   const browserCatalog = {
-    products: PRODUCTS.map(({ id, slug, name, word, mushroom, format, price, image, color }) => ({ id, slug, name, word, mushroom, format, price, image, color })),
+    products: PRODUCTS.map(({ id, slug, name, word, mushroom, commonName, format, price, image, color, isBundle }) => ({ id, slug, name, word, mushroom, commonName, format, price, image, color, isBundle: !!isBundle })),
     shipping: Object.fromEntries(Object.entries(SHIPPING).map(([k, v]) => [k, { flatRate: v.flatRate, freeOver: v.freeOver, quoted: !!v.quotedAfterOrder }])),
   };
   await writeFile(join(dist, 'js/catalog.js'), `window.REWILD_CATALOG=${JSON.stringify(browserCatalog)};\n`);
+  // Browser copy of the pricing engine (same file the checkout uses, so prices always match).
+  const pricingSrc = (await readFile(join(root, 'netlify/functions/_shared/pricing.mjs'), 'utf8')).replace(/^export /gm, '');
+  await writeFile(join(dist, 'js/pricing.js'), `(function(){\n${pricingSrc}\nwindow.REWILD_PRICING={priceCart,suggestion,OFFERS};\n})();\n`);
 
   const imgDir = join(root, 'public/img');
   const small = new Set((await readdir(imgDir)).filter((f) => f.endsWith('-640.webp')));
