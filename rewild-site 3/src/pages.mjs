@@ -339,7 +339,7 @@ function productPage(p) {
       </div>
       <p class="small muted">Free shipping in Canada over $175 · $20 flat rate under that · <a href="/shipping/">US shipping quoted per order</a></p>
       ${guarantee(' compact')}
-      <ul class="ticks">${d.ticks.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
+      <ul class="ticks">${d.ticks.map((t) => `<li><span>${esc(t)}</span></li>`).join('')}</ul>
     </div>
   </div>
 </div></section>
@@ -530,7 +530,7 @@ const story = {
   <div class="founder-photo"><img class="cover sq" style="object-position:50% 0" src="/img/pete-moss-snowboarding.webp" alt="Pete Moss, co-founder of REWILD Mushrooms, snowboarding mid-air above a mountain event" width="800" height="800" loading="lazy"><p class="small muted" style="margin-top:10px">Pete Moss, co-founder</p></div>
 </div></section>
 <section class="section"><div class="wrap split" style="align-items:flex-start">
-  <div class="founder-photo"><img class="cover sq" src="/img/sean-turner-fire-hood-square.webp" alt="Sean Turner, co-founder of REWILD Mushrooms, in a hooded jacket surrounded by fire" width="800" height="800" loading="lazy"><p class="small muted" style="margin-top:10px">Sean Turner, co-founder</p></div>
+  <div class="founder-photo"><img class="cover sq" src="/img/sean-turner-smiling-fire.webp" alt="Sean Turner, co-founder of REWILD Mushrooms, smiling beside fire" width="558" height="558" loading="lazy"><p class="small muted" style="margin-top:10px">Sean Turner, co-founder</p></div>
   <div class="prose" style="max-width:640px">
     <p class="eyebrow" style="margin-bottom:12px">Co-founder</p>
     <h2 style="margin-top:0">Sean Turner</h2>
