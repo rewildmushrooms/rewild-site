@@ -643,7 +643,7 @@ p{text-wrap:pretty}
 @media (max-width:560px){.choices{grid-template-columns:1fr 1fr;gap:12px}.choice{padding:16px 14px 18px}.choice b{font-size:15px}.choice .sub{font-size:13.5px}}
 @media (prefers-reduced-motion:reduce){.choice,.choice::before,.quiz-q,.ck,.ck svg,.quiz-progress span{animation:none!important;transition:none!important}.choice[aria-pressed=true] .ck svg{stroke-dashoffset:0}}
 /* Energy Tincture waterfall band */
-.falls-band{position:relative;overflow:hidden;min-height:clamp(380px,52vw,620px);display:flex;align-items:flex-end;background:#13201a url(/img/energy-falls-poster.webp) center/cover no-repeat;color:#fff}
+.falls-band{position:relative;overflow:hidden;min-height:clamp(380px,52vw,620px);display:flex;align-items:flex-end;background:#13201a;color:#fff}
 .falls-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .falls-band::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.6))}
 .falls-copy{position:relative;z-index:1;padding-top:48px;padding-bottom:48px}
