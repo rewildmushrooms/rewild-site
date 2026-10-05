@@ -19,7 +19,7 @@ const pull = (text, by = '') =>
 const FAQ = [
   ['What is CordyFuel™?', 'CordyFuel™ is a full-spectrum Cordyceps militaris (fruiting body and mycelium) grown in Coldstream, British Columbia, and standardized to a minimum of 3 mg/g cordycepin in every batch. It won Best Fruiting Body / Full Spectrum at the 2025 Cordy Cup. Rewild Energy and Rewild Energy Tincture are powered by CordyFuel™.'],
   ['Is CordyFuel™ a blend?', 'No. It is 100% Cordyceps militaris. No proprietary blend, nothing added, nothing else in the bag.'],
-  ['How do I take Rewild Energy?', 'Powder: ½ teaspoon in a smoothie, elixir, soup, tea, coffee, or hot water and honey. In a warm drink, add a little coconut oil or butter and blend it so the powder mixes in smooth. Tincture: 10 to 20 ml per serving, straight or added to a drink.'],
+  ['How do I take Rewild Energy?', 'Powder: ½ teaspoon in a smoothie, elixir, soup, tea, coffee, or hot water and honey. In a warm drink, add a little coconut oil or butter and blend it so the powder mixes in smooth. Tincture: use 10 to 20 ml per serving, straight or added to a drink.'],
 ];
 
 export const cordyfuelPage = {
@@ -180,7 +180,7 @@ export const cordyfuelPage = {
 ${reviewsSection({ eyebrow: 'What people are saying', title: 'Rewilders, in their own words.', ids: ['michelle', 'jesse', 'krystal'] })}
 
 <section class="section lp"><div class="lp-col">
-  <p class="eyebrow">How to take it</p>
+  <p class="eyebrow">How to use it</p>
   <h2 class="h2">Nothing complicated required.</h2>
   <p>CordyFuel™ is easy to work into what you're already doing. Add it to:</p>
   <ul class="lp-tags"><li>Coffee</li><li>Tea</li><li>Smoothies</li><li>Cacao</li><li>Protein shakes</li><li>Hot water + honey</li><li>Or find your own way</li></ul>
@@ -188,7 +188,7 @@ ${reviewsSection({ eyebrow: 'What people are saying', title: 'Rewilders, in thei
   <p>Tip for warm drinks: add a little coconut oil or butter and blend it. The fat helps the powder mix in smooth, so your drink doesn't get muddy.</p>
   <div class="lp-dose">
     <div><b>Powder</b><span>Add ½ teaspoon to your favourite smoothie, elixir, soup, tea, coffee, or hot water and honey.</span></div>
-    <div><b>Tincture</b><span>Take 10 to 20 ml per serving, straight or added to a drink. A 100 ml bottle holds 5 to 10 servings.</span></div>
+    <div><b>Tincture</b><span>Use 10 to 20 ml per serving, straight or added to a drink. A 100 ml bottle holds 5 to 10 servings.</span></div>
   </div>
 </div></section>
 
@@ -196,7 +196,7 @@ ${reviewsSection({ eyebrow: 'What people are saying', title: 'Rewilders, in thei
   <div><img class="cover sq" src="/img/cordyfuel-duo-square.webp" alt="Rewild Energy Cordyceps militaris powder pouch and tincture bottle, powered by CordyFuel™, beside a mountain lake" width="1024" height="1024" loading="lazy"></div>
   <div class="stack">
     <p class="eyebrow">Powder or tincture?</p>
-    <h2 class="h2">Same CordyFuel™.<br>Two ways to take it.</h2>
+    <h2 class="h2">Same CordyFuel™.<br>Two ways to use it.</h2>
     <div class="lp-formats">
       <div><b>Rewild Energy</b><span class="lp-f-sub">The original.</span><p>Full-spectrum Cordyceps militaris powder, powered by CordyFuel™, for smoothies, coffee, cacao or whatever you're already drinking.</p></div>
       <div><b>Rewild Energy Tincture</b><span class="lp-f-sub">Rewild Energy, without the powder.</span><p>Alcohol-free, portable and ridiculously easy to take straight or add to a drink.</p></div>

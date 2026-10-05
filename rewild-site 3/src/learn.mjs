@@ -39,7 +39,7 @@ export const GUIDES = [
     compounds: [['Cordycepin (UPLC)', '3 mg/g or more']],
     sensory: { colour: 'Beech wood', aroma: 'Honeyed, floral, nutty', flavour: 'Caramel, botanical, toasty' },
     heavy: true,
-    tips: 'Mild and slightly sweet, it disappears into coffee, matcha, smoothies and oats. Most people take it earlier in the day, before training or a long afternoon.',
+    tips: 'Mild and slightly sweet, it disappears into coffee, matcha, smoothies and oats. Most people use it earlier in the day, before training or a long afternoon.',
   },
   {
     slug: 'lions-mane',
@@ -66,7 +66,7 @@ export const GUIDES = [
     compounds: GLUCANS,
     sensory: { colour: 'Warm ivory', aroma: 'Clover, earthy, a hint of the sea', flavour: 'Savoury, delicate, earthy' },
     heavy: true,
-    tips: 'Gentle and savoury, so it works in coffee, tea, soups, sauces and smoothies. Many people take it with their morning cup, or before deep work.',
+    tips: 'Gentle and savoury, so it works in coffee, tea, soups, sauces and smoothies. Many people add it to their morning cup, or before deep work.',
   },
   {
     slug: 'reishi',

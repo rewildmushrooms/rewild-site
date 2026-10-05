@@ -20,7 +20,7 @@ const LEARN_LINKS = [
   ['/learn/reishi/', 'Reishi'],
   ['/learn/chaga/', 'Chaga'],
 ];
-const isLearnPath = (p) => p.startsWith('/learn/') || p.startsWith('/journal/') || JOURNAL_PATHS.has(p);
+const isLearnPath = (p) => p.startsWith('/learn/') || p.startsWith('/journal/') || p === '/resources/' || JOURNAL_PATHS.has(p);
 
 export const icons = {
   cart: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>',
@@ -67,7 +67,7 @@ export function layout(page) {
   const image = SITE.url + (page.image || '/img/og-default.jpg');
   const ld = [].concat(page.jsonld || []);
   const cur = (href) => (href === '/' ? page.path === '/' : page.path === href || page.path.startsWith(href)) ? ' aria-current="page"' : '';
-  const learnMenu = `<div class="nav-group"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="learn-menu"${isLearnPath(page.path) ? ' aria-current="page"' : ''}>Learn <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button><div class="nav-sub" id="learn-menu"><span class="sub-label">Mushroom guides</span>${LEARN_LINKS.map(([h, l]) => `<a href="${h}"${cur(h)}>${l}</a>`).join('')}<hr><a href="/journal/"${page.path === '/journal/' ? ' aria-current="page"' : ''}>Journal</a><a href="/learn/"${page.path === '/learn/' ? ' aria-current="page"' : ''}>All guides</a></div></div>`;
+  const learnMenu = `<div class="nav-group"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="learn-menu"${isLearnPath(page.path) ? ' aria-current="page"' : ''}>Learn <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button><div class="nav-sub" id="learn-menu"><span class="sub-label">Mushroom guides</span>${LEARN_LINKS.map(([h, l]) => `<a href="${h}"${cur(h)}>${l}</a>`).join('')}<hr><a href="/journal/"${page.path === '/journal/' ? ' aria-current="page"' : ''}>Journal</a><a href="/learn/"${page.path === '/learn/' ? ' aria-current="page"' : ''}>All guides</a><a href="/resources/"${page.path === '/resources/' ? ' aria-current="page"' : ''}>Books &amp; resources</a></div></div>`;
   const navHtml = NAV.map(([href, label, hot]) => href === 'LEARN' ? learnMenu : `<a href="${href}"${hot ? ' class="nav-hot"' : ''}${cur(href)}>${label}</a>`).join('');
   return `<!doctype html>
 <html lang="en-CA">
@@ -107,7 +107,7 @@ ${SITE.ga ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${SI
 <div class="announce">Free shipping in Canada on orders over $${SHIPPING.CA.freeOver / 100} · Now shipping to the US</div>
 <header class="site-header">
   <div class="wrap">
-    <a href="/" class="brand brand-logo" aria-label="REWILD Mushrooms home"><img src="/img/rewild-mushrooms-logo-v2.webp" alt="REWILD Mushrooms" width="504" height="120"></a>
+    <a href="/" class="brand brand-logo" aria-label="REWILD Mushrooms home"><img src="/img/rewild-mushrooms-logo-v3.webp" alt="REWILD Mushrooms" width="429" height="120"></a>
     <nav id="site-nav" class="nav" aria-label="Main">${navHtml}</nav>
     <div class="header-actions">
       <button type="button" class="icon-btn" data-open-cart aria-label="Open cart">${icons.cart}<span class="cart-count" data-count="0">0</span></button>
@@ -147,6 +147,7 @@ ${page.body}
         <a href="/manifesto/">The Manifesto</a>
         <a href="/our-story/">Our Story</a>
         <a href="/journal/">Journal</a>
+        <a href="/resources/">Books &amp; Resources</a>
       </nav>
       <nav class="footer-col" aria-label="Help"><p class="footer-h">Help</p>
         <a href="/shipping/">Shipping &amp; Returns</a>
@@ -156,7 +157,7 @@ ${page.body}
         <a href="/terms/">Terms</a>
       </nav>
     </div>
-    <p class="disclaimer">The information on this site is for educational purposes only and is not medical advice. Our products are not intended to diagnose, treat, cure or prevent any disease. Speak with a healthcare practitioner before use if you are pregnant, nursing or taking medication. CordyFuel™ is a trademark of <a href="https://nucelium.com" rel="noopener" target="_blank">NuCelium</a>, our grower, used with permission.</p>
+    <p class="disclaimer">REWILD mushroom powders are sold as foods. The information on this site is for general education and is not medical advice. Speak with a healthcare practitioner before use if you are pregnant, nursing or taking medication. CordyFuel™ is a trademark of <a href="https://nucelium.com" rel="noopener" target="_blank">NuCelium</a>, our grower, used with permission.</p>
     <div class="footer-bottom"><span>© ${new Date().getFullYear()} REWILD Mushrooms · Slocan Valley, British Columbia</span><span><a href="https://www.instagram.com/rewildmushroompowder/" rel="me noopener">@rewildmushroompowder</a></span></div>
   </div>
 </footer>

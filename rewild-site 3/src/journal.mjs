@@ -6,7 +6,7 @@ export const POSTS = [
     image: '/img/choosing-mushroom-supplement-canada.webp',
     imageAlt: 'A woven basket of freshly foraged wild mushrooms resting on moss in the forest',
     title: 'How To Choose A Mushroom Product In Canada (Without Getting Fooled By The Label)',
-    seoTitle: 'How To Choose A Mushroom Supplement In Canada | REWILD Journal',
+    seoTitle: 'How To Choose A Mushroom Powder In Canada | REWILD Journal',
     description: "Lion's Mane, Reishi, Chaga, Cordyceps. Here is how to read a mushroom product label in Canada: species, fruiting body vs mycelium, sourcing and third-party testing.",
     date: '2026-05-31',
     modified: '2026-05-31',

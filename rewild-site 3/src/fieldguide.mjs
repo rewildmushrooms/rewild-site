@@ -4,8 +4,8 @@ import { esc } from './layout.mjs';
 import { PRODUCT_BY_ID } from '../netlify/functions/_shared/catalog.mjs';
 
 const PICKS = [
-  { id: 'energy', when: 'Mornings and before you move', taste: 'Mild and slightly sweet. Caramel, toasty.', how: 'Most people take it earlier in the day, before training or a long afternoon. It disappears into coffee, matcha, smoothies and oats.', learn: '/learn/cordyceps/' },
-  { id: 'clarity', when: 'Workdays and deep focus time', taste: 'Gentle and savoury. Delicate, earthy.', how: 'Many people take it with their morning cup, or before deep work. Works in coffee, tea, soups, sauces and smoothies.', learn: '/learn/lions-mane/' },
+  { id: 'energy', when: 'Mornings and before you move', taste: 'Mild and slightly sweet. Caramel, toasty.', how: 'Most people use it earlier in the day, before training or a long afternoon. It disappears into coffee, matcha, smoothies and oats.', learn: '/learn/cordyceps/' },
+  { id: 'clarity', when: 'Workdays and deep focus time', taste: 'Gentle and savoury. Delicate, earthy.', how: 'Many people add it to their morning cup, or before deep work. Works in coffee, tea, soups, sauces and smoothies.', learn: '/learn/lions-mane/' },
   { id: 'strength', when: 'Any time of day', taste: 'Smooth and a little smoky. Toasty, nutty.', how: 'Try it in coffee, as a tea with a splash of milk and maple, or stirred into a smoothie.', learn: '/learn/chaga/' },
   { id: 'peace', when: 'The quiet end of the day', taste: 'Bitter and bold. Herbal, woody.', how: 'Pair it with something rich: hot cacao, a chai, golden milk or a dark roast. Many people save it for the evening.', learn: '/learn/reishi/' },
 ];
@@ -13,7 +13,7 @@ const PICKS = [
 const STACKS = [
   ['The morning coffee', 'Rewild Energy + Rewild Clarity', '½ teaspoon of each, stirred into your coffee.'],
   ['The full day', 'Energy in the morning, Peace at night', 'Energy in your morning cup. Peace in a hot cacao after dinner.'],
-  ['The one-bag start', 'Pick the one that fits your day', 'Take it daily for a few weeks before adding a second. Small daily choices compound.'],
+  ['The one-bag start', 'Pick the one that fits your day', 'Use it daily for a few weeks before adding a second. Small daily choices compound.'],
 ];
 
 const pick = (p) => {
@@ -33,7 +33,7 @@ const pick = (p) => {
 export const fieldGuide = {
   path: '/field-guide/',
   title: 'The Rewild Field Guide | Which Mushroom, When, and How | REWILD',
-  description: 'A two-minute guide to Cordyceps, Lion’s Mane, Chaga and Reishi: which one fits your day, how to take it, and what to look for in any mushroom product.',
+  description: 'A two-minute guide to Cordyceps, Lion’s Mane, Chaga and Reishi: which one fits your day, how to use it, and what to look for in any mushroom product.',
   noindex: true,
   head: `<style>
 .fg-picks{display:grid;gap:18px}
@@ -67,12 +67,12 @@ export const fieldGuide = {
   <h2 class="h2" style="font-size:clamp(28px,3.4vw,42px)">Pick by your day</h2>
   <p style="max-width:640px">Start with the part of your day you want to add it to.</p>
   <div class="fg-picks">${PICKS.map(pick).join('')}</div>
-  <p class="small" style="margin-top:16px">Prefer a liquid? <a href="/shop/cordyceps-tincture/">Rewild Energy Tincture</a> is the same CordyFuel™ Cordyceps, alcohol-free. Take 10 to 20 ml per serving, straight or in a drink.</p>
+  <p class="small" style="margin-top:16px">Prefer a liquid? <a href="/shop/cordyceps-tincture/">Rewild Energy Tincture</a> is the same CordyFuel™ Cordyceps, alcohol-free. Use 10 to 20 ml per serving, straight or in a drink.</p>
 </div></section>
 
 <section class="section"><div class="wrap narrow fg-sec">
   <p class="eyebrow">Step 2</p>
-  <h2 class="h2" style="font-size:clamp(28px,3.4vw,42px)">How to take it</h2>
+  <h2 class="h2" style="font-size:clamp(28px,3.4vw,42px)">How to use it</h2>
   <p style="max-width:640px"><b>½ teaspoon a day</b>, added to something you already eat or drink. That's it. A 100g bag holds roughly 70 to 100 servings, so about two to three months of daily use.</p>
   <div class="fg-grid">
     <div class="fg-card"><b>Coffee</b><p>Stir it into your morning cup.</p></div>

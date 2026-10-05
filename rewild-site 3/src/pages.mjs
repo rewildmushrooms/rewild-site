@@ -6,6 +6,7 @@ import { POSTS } from './journal.mjs';
 import { LAB, TESTS, PROCESS } from './lab.mjs';
 import { cordyfuelPage } from './cordyfuel.mjs';
 import { fieldGuide } from './fieldguide.mjs';
+import { resources } from './resources.mjs';
 import { GUIDES, GUIDE_BY_PRODUCT, GROWN, CLEAN, MICRO, HEAVY } from './learn.mjs';
 
 const powders = PRODUCTS.filter((p) => !p.isTincture && !p.isBundle);
@@ -108,7 +109,7 @@ const home = {
 </section>
 ${proofStrip()}
 ${Date.now() < Date.parse('2026-10-26T07:00:00Z') ? `<section class="section dark sp-band" id="spirit-plant"><div class="wrap split">
-  <div class="sp-poster"><img src="/img/spirit-plant-medicine-conference-2026.webp" alt="Spirit Plant Medicine Conference, The Living Bridge, October 23 to 25, 2026, Vancouver BC" width="720" height="1080" loading="lazy"></div>
+  <div class="sp-poster"><img src="/img/spirit-plant-poster-v2.webp" alt="Spirit Plant Medicine Conference, The Living Bridge, October 23 to 25, 2026, Vancouver BC" width="720" height="826" loading="lazy"></div>
   <div class="stack">
     <p class="eyebrow" style="color:var(--accent)">Come say hi · October 23 to 25 · Vancouver</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,46px)">Find us at the Spirit Plant Medicine Conference.</h2>
@@ -156,8 +157,8 @@ ${reviewsSection()}
     <span style="align-self:flex-start;background:var(--accent);font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:6px 12px;border-radius:2px">New · Liquid tincture</span>
     <h2 class="h2">Rewild Energy,<br>without the powder.</h2>
     <p class="small" style="font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">100 ml · Take 10-20 ml per serving · 5-10 servings</p>
-    <p class="lead">Same CordyFuel™ Cordyceps. A different way to take it. Simple, portable and easy to work into your day. Even people who don't love the taste of mushrooms tend to love this one.</p>
-    <p>100% Cordyceps militaris. Alcohol-free. Nothing added. Take it straight, or add it to whatever you're already drinking.</p>
+    <p class="lead">Same CordyFuel™ Cordyceps. A different way to enjoy it. Simple, portable and easy to work into your day. Even people who don't love the taste of mushrooms tend to love this one.</p>
+    <p>100% Cordyceps militaris. Alcohol-free. Nothing added. Drink it straight, or add it to whatever you're already drinking.</p>
     <div class="row"><button type="button" class="btn btn-dark" data-add="tincture">Add the tincture · $30</button><a class="btn btn-outline" href="/shop/cordyceps-tincture/">Details</a></div>
   </div>
   <div><img class="cover wide" src="/img/tincture-river-wide.webp" alt="CordyFuel™ Cordyceps militaris tincture on moss beside a mountain river in the Kootenays" width="1400" height="933" loading="lazy"></div>
@@ -228,7 +229,7 @@ ${CORDYFUEL_SECTION}
     <p class="lead" style="color:var(--on-dark)">The same award-winning CordyFuel™ <em>Cordyceps militaris</em>, in a bottle that goes wherever you go. Even people who don't love the taste of mushrooms tend to love this one.</p>
     <ul class="lp-badges" aria-label="At a glance"><li>Alcohol-free</li><li>100% Cordyceps militaris</li><li>Caffeine-free</li><li>Grown in BC</li></ul>
     <ul class="ticks" style="font-size:17px">
-      <li>Take it straight, or add it to water, coffee or a smoothie</li>
+      <li>Drink it straight, or add it to water, coffee or a smoothie</li>
       <li>Fits in a pocket, a gym bag or a ski jacket</li>
       <li>100 ml bottle · 10 to 20 ml per serving · 5 to 10 servings</li>
     </ul>
@@ -251,13 +252,13 @@ ${CORDYFUEL_SECTION}
 
 /* ---------------- PRODUCT PAGES ---------------- */
 const USE_TEXT = {
-  powder: 'Add ½ teaspoon to your favourite smoothie, elixir, soup, tea, coffee, or hot water and honey. Tip for warm drinks: add a little coconut oil or butter and blend it. The fat helps the powder mix in smooth, so your drink doesn\'t get muddy.',
-  tincture: 'Take 10 to 20 ml per serving, straight or added to a drink. A 100 ml bottle holds 5 to 10 servings.',
+  powder: 'Add about ½ teaspoon to coffee, cacao, tea, smoothies, soup, or hot water and honey. Tip for warm drinks: add a little coconut oil or butter and blend it. The fat helps the powder mix in smooth, so your drink doesn\'t get muddy.',
+  tincture: 'Use 10 to 20 ml per serving, straight or added to a drink. A 100 ml bottle holds 5 to 10 servings.',
 };
 const PRODUCT_DETAILS = {
   energy: {
     intro: `<p>Rewild Energy is powered by CordyFuel™ <em>Cordyceps militaris</em>, grown in British Columbia and awarded <strong>Best Fruiting Body / Full Spectrum at the 2025 Cordy Cup</strong>.</p><p>Cordycepin is the compound Cordyceps militaris is best known for. CordyFuel™ is standardized to a minimum of 3 mg/g in every batch, verified by third-party testing before release. Our highest result so far, from an independent lab, came in at 7.1 mg/g. Most commercial Cordyceps tests between 0.1 and 0.5 mg/g.</p><p>Bright, savoury and slightly sweet. A natural fit for your morning coffee or smoothie.</p>`,
-    ticks: ['Minimum 3 mg/g cordycepin, every batch', '2025 Cordy Cup: Best Fruiting Body / Full Spectrum', 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added · Non-GMO', 'Caffeine-free'],
+    ticks: ['Whole mushroom food powder', 'Minimum 3 mg/g cordycepin, every batch', '2025 Cordy Cup: Best Fruiting Body / Full Spectrum', 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added · Non-GMO', 'Caffeine-free'],
     faqs: [
       ['What is cordycepin?', 'Cordycepin is a naturally occurring compound found in Cordyceps militaris. We use it as a marker of quality and consistency: every batch of CordyFuel™ is tested and standardized to a minimum of 3 mg/g.'],
       ['Does CordyFuel™ contain caffeine?', 'No. CordyFuel™ is pure Cordyceps militaris powder with no caffeine or stimulants added.'],
@@ -266,21 +267,21 @@ const PRODUCT_DETAILS = {
   },
   clarity: {
     intro: `<p>Lion's Mane (<em>Hericium erinaceus</em>) grows in long, cascading white spines on hardwood trees. It has been eaten and respected in traditional kitchens for generations.</p><p>Ours is grown in British Columbia as a full-spectrum powder: fruiting body and mycelium together. Mild, a little sweet and easy to add to coffee, tea or a smoothie.</p>`,
-    ticks: ["100% Lion's Mane, nothing else in the bag", 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added · Non-GMO'],
+    ticks: ['Whole mushroom food powder', "100% Lion's Mane, nothing else in the bag", 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added · Non-GMO'],
     faqs: [["What does Lion's Mane taste like?", 'Mild and slightly sweet. It disappears into coffee, cacao and smoothies.']],
   },
   strength: {
     intro: `<p>Chaga (<em>Inonotus obliquus</em>) has quietly grown in northern forests for thousands of years, taking its character from its host and the forest around it.</p><p>Ours is grown in British Columbia as a full-spectrum powder. Earthy, rich and a little vanilla-like. Perfect in coffee, tea or broth.</p>`,
-    ticks: ['100% Chaga, nothing else in the bag', 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added · Non-GMO'],
+    ticks: ['Whole mushroom food powder', '100% Chaga, nothing else in the bag', 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added · Non-GMO'],
     faqs: [['Is your Chaga wild harvested?', 'No. It is cultivated indoors by our partner grower in British Columbia, so no wild birch forests are stripped and every batch can be tested and traced.']],
   },
   peace: {
     intro: `<p>Reishi (<em>Ganoderma lucidum</em>) has been revered for centuries as the mushroom of stillness. Glossy, woody and deeply rooted in tradition.</p><p>Ours is grown in British Columbia as a full-spectrum powder. Bitter and grounding. Many people enjoy it in an evening tea or cacao.</p>`,
-    ticks: ['100% Reishi, nothing else in the bag', 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added · Non-GMO'],
-    faqs: [['Reishi tastes bitter. How do I take it?', 'Pair it with something rich: cacao, a little honey, or a nut milk latte. A small amount goes a long way.']],
+    ticks: ['Whole mushroom food powder', '100% Reishi, nothing else in the bag', 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added · Non-GMO'],
+    faqs: [['Reishi tastes bitter. How do I use it?', 'Pair it with something rich: cacao, a little honey, or a nut milk latte. A small amount goes a long way.']],
   },
   tincture: {
-    intro: `<p>Same CordyFuel™ Cordyceps militaris as our Energy powder, in a portable, alcohol-free liquid. Simple, easy to carry and easy to work into your day.</p><p>Even people who don't love the taste of mushrooms tend to love this one. Take it straight, or add it to whatever you're already drinking.</p>`,
+    intro: `<p>Same CordyFuel™ Cordyceps militaris as our Energy powder, in a portable, alcohol-free liquid. Simple, easy to carry and easy to work into your day.</p><p>Even people who don't love the taste of mushrooms tend to love this one. Drink it straight, or add it to whatever you're already drinking.</p>`,
     ticks: ['Made with CordyFuel™ Cordyceps militaris', 'Alcohol-free', '100 ml bottle: 5 to 10 servings of 10 to 20 ml', 'Grown in BC · Lab tested'],
     faqs: [['Powder or tincture?', 'Same mushroom, different format. Powder works best stirred into food and drinks. The tincture is for straight-up, on-the-go days.']],
   },
@@ -291,7 +292,7 @@ const COMMON_FAQS = [
   ['How long does a bag last?', 'A 100g bag holds roughly 70 to 100 half-teaspoon servings, so about two to three months of daily use.'],
   ['What if I don\u2019t like it?', `Our 100% Risk-Free Guarantee has you covered. ${GUARANTEE_TEXT} <a href="/shipping/#guarantee">How it works</a>.`],
   ['How should I store it?', 'In a cool, dry place away from direct sunlight. Reseal the pouch after use. Best within 3 years of purchase.'],
-  ['Is this medical advice?', 'No. Our products are foods, not medicine. They are not intended to diagnose, treat, cure or prevent any disease. Talk to your healthcare practitioner before use if you are pregnant, nursing or taking medication.'],
+  ['Is this medical advice?', 'No. REWILD mushroom powders are sold as foods, not medicine. Talk to your healthcare practitioner before use if you are pregnant, nursing or taking medication.'],
 ];
 
 function productPage(p) {
@@ -375,7 +376,7 @@ function productPage(p) {
     <h2 class="h3" style="font-size:24px">On the label</h2>
     <dl class="spec">
       <dt>Ingredients</dt><dd>${p.isTincture ? `CordyFuel™ ${esc(p.latin)} (alcohol-free tincture)` : `Full spectrum (fruiting body + mycelium) ${esc(p.commonName)} mushroom powder (<em>${esc(p.latin)}</em>)`}</dd>
-      <dt>Suggested use</dt><dd>${p.isTincture ? USE_TEXT.tincture : USE_TEXT.powder}</dd>
+      <dt>How to use</dt><dd>${p.isTincture ? USE_TEXT.tincture : USE_TEXT.powder}</dd>
       <dt>Grown</dt><dd>British Columbia, Canada${p.isTincture ? '' : ', on certified organic sorghum'}, by our partner grower</dd>
       <dt>Storage</dt><dd>Cool, dry place away from direct sunlight. Reseal after use.</dd>
       <dt>Best before</dt><dd>Use within 3 years of purchase.</dd>
@@ -399,13 +400,13 @@ function productPage(p) {
 const quiz = {
   path: '/build-your-stack/',
   title: 'Build Your Mushroom Stack | Find Your Mushrooms | REWILD',
-  description: 'Eight quick questions to match Cordyceps, Lion\u2019s Mane, Chaga and Reishi to how you actually live. Get your stack and how to take it in about a minute.',
+  description: 'Eight quick questions to match Cordyceps, Lion\u2019s Mane, Chaga and Reishi to how you actually live. Get your stack and how to use it in about a minute.',
   jsonld: [crumbs([['Home', '/'], ['Build Your Stack', '/build-your-stack/']])],
   body: `
 <section class="page-hero dark hero-photo hero-larches"><div class="wrap stack-sm" style="gap:16px">
   <p class="eyebrow">Build your stack</p>
   <h1 class="h1" style="font-size:clamp(40px,5vw,64px);color:#fff">Find the mushrooms that fit your life.</h1>
-  <p class="lead" style="color:var(--on-dark);max-width:620px">Eight quick questions about how you actually live. About a minute. You'll get your stack, when to take it and how.</p>
+  <p class="lead" style="color:var(--on-dark);max-width:620px">Eight quick questions about how you actually live. About a minute. You'll get your stack, and when and how to use it.</p>
 </div></section>
 <section class="section tight"><div class="wrap narrow-quiz" id="quiz">
   <div id="quiz-app" class="stack" aria-live="polite"><noscript><p>Please turn on JavaScript to use the quiz, or <a href="/shop/">browse the shop</a>.</p></noscript></div>
@@ -566,7 +567,7 @@ const story = {
     <p class="eyebrow" style="margin-bottom:12px">Co-founder</p>
     <h2 style="margin-top:0">Sean Turner</h2>
     <p>Sean Turner has a background in holistic nutrition, with Ayurveda as his first area of study. For 16 years, he has studied and practiced nutrition, human optimization, and supplementation. He has championed functional mushrooms throughout.</p>
-    <p>Alongside a whole-food foundation, he considers functional mushrooms one of his first choices for proactive wellness. Cordyceps is among the first supplements he adds to his fitness and performance regimen.</p>
+    <p>Alongside a whole-food foundation, he considers functional mushrooms one of his first choices for proactive wellness. Cordyceps is one of the first things he adds to his day, especially before training.</p>
     <p>Sean is also a fire arts performer who has appeared on some of the biggest stages in Canada. These days, he's powered by CordyFuel™ seven days a week.</p>
     <p>Follow Sean on Instagram: <a href="https://www.instagram.com/sean.solace/" target="_blank" rel="noopener">@sean.solace</a></p>
   </div>
@@ -714,7 +715,7 @@ const FAQS = [
   ['Who grows your mushrooms?', 'REWILD is not the grower. Our mushrooms are grown by <a href="https://nucelium.com" rel="noopener" target="_blank">NuCelium</a>, a certified organic cultivator in British Columbia and the maker of CordyFuel™. We choose the products, brand them, pack them and share the lab results for every lot.'],
   ['What does full spectrum mean?', 'Our powders contain the whole organism: fruiting body and mycelium together. <a href="/fruiting-body-vs-mycelium-whats-the-difference-in-functional-mushroom-products/">Read the full explainer</a>.'],
   ['How do I take the powder?', 'Our labels suggest ½ teaspoon a day in a smoothie, elixir, soup, tea, coffee, or hot water and honey. Tip for warm drinks: add a little coconut oil or butter and blend it. The fat helps the powder mix in smooth, so your drink doesn\'t get muddy.'],
-  ['How do I take the tincture?', '10 to 20 ml per serving, straight or in a drink. Each 100 ml bottle holds 5 to 10 servings.'],
+  ['How do I use the tincture?', 'Use 10 to 20 ml per serving, straight or in a drink. Each 100 ml bottle holds 5 to 10 servings.'],
   ['Are your products tested?', 'Yes. Every lot is tested for species identity, potency (polysaccharides, beta-glucans, and cordycepin for CordyFuel™), a seven-test microbial panel, gluten and water activity. See the numbers on our <a href="/lab-results/">lab results</a> page.'],
   ['Can I see the lab report?', 'Yes. Full certificates of analysis are sent on request. <a href="/lab-results/#request">Request one here</a> and we\u2019ll email it, usually within one business day.'],
   ['How much is shipping?', `$20 flat rate in Canada, free on orders of $175 or more. US shipping and duties are quoted per order by email after you check out.`],
@@ -931,6 +932,7 @@ export const PAGES = [
   ...GUIDES.map(guidePage),
   journalIndex,
   ...POSTS.map(postPage),
+  resources,
   shipping,
   faq,
   contact,
