@@ -236,6 +236,14 @@
   const fitNav = () => { const n = $('#site-nav'); if (n && n.classList.contains('open')) n.style.maxHeight = Math.max(200, innerHeight - n.getBoundingClientRect().top) + 'px'; };
   if (mb) mb.addEventListener('click', () => { const n = $('#site-nav'); const o = n.classList.toggle('open'); mb.setAttribute('aria-expanded', o); if (o) fitNav(); else n.style.maxHeight = ''; });
   addEventListener('resize', fitNav);
+  // Back to top (phones): shows after about two screens of scrolling.
+  const tt = $('#to-top');
+  if (tt) {
+    let shown = false;
+    const onScroll = () => { const s = scrollY > innerHeight * 2; if (s !== shown) { shown = s; tt.classList.toggle('show', s); } };
+    addEventListener('scroll', onScroll, { passive: true }); onScroll();
+    tt.addEventListener('click', () => { const calm = matchMedia('(prefers-reduced-motion: reduce)').matches; scrollTo({ top: 0, behavior: calm ? 'auto' : 'smooth' }); });
+  }
 
   // Newsletter forms
   document.querySelectorAll('form[data-subscribe]').forEach((f) => f.addEventListener('submit', async (e) => {
