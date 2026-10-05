@@ -60,8 +60,8 @@ export const POSTS = [
   },
   {
     slug: 'how-to-read-a-mushroom-lab-report-coa',
-    image: '/img/label-energy-back.webp',
-    imageAlt: 'The back label of a REWILD Energy pouch, showing the lot number and ingredients',
+    image: '/img/journal-lab-report.webp',
+    imageAlt: 'Bright orange Cordyceps militaris fruiting bodies growing from a colonized grain block',
     title: 'How To Read A Mushroom Lab Report (COA) In Five Minutes',
     seoTitle: 'How To Read A Mushroom COA (Certificate Of Analysis) | REWILD Journal',
     description: 'How to read a mushroom certificate of analysis: lot numbers, species identity, beta-glucans, cordycepin, microbial testing and red flags to ask about.',
