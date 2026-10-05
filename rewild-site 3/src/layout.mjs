@@ -67,7 +67,7 @@ export function layout(page) {
   const image = SITE.url + (page.image || '/img/og-default.jpg');
   const ld = [].concat(page.jsonld || []);
   const cur = (href) => (href === '/' ? page.path === '/' : page.path === href || page.path.startsWith(href)) ? ' aria-current="page"' : '';
-  const learnMenu = `<div class="nav-group"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="learn-menu"${isLearnPath(page.path) ? ' aria-current="page"' : ''}>Learn <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button><div class="nav-sub" id="learn-menu"><span class="sub-label">Mushroom guides</span>${LEARN_LINKS.map(([h, l]) => `<a href="${h}"${cur(h)}>${l}</a>`).join('')}<hr><a href="/journal/"${page.path === '/journal/' ? ' aria-current="page"' : ''}>Journal</a><a href="/learn/"${page.path === '/learn/' ? ' aria-current="page"' : ''}>All guides</a><a href="/resources/"${page.path === '/resources/' ? ' aria-current="page"' : ''}>Books &amp; resources</a></div></div>`;
+  const learnMenu = `<div class="nav-group"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="learn-menu"${isLearnPath(page.path) ? ' aria-current="page"' : ''}>Learn <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button><div class="nav-sub" id="learn-menu"><span class="sub-label">Mushroom guides</span>${LEARN_LINKS.map(([h, l]) => `<a href="${h}"${cur(h)}>${l}</a>`).join('')}<hr><a href="/journal/"${page.path === '/journal/' ? ' aria-current="page"' : ''}>Journal</a><a href="/learn/"${page.path === '/learn/' ? ' aria-current="page"' : ''}>All guides</a><a href="/resources/"${page.path === '/resources/' ? ' aria-current="page"' : ''}>Books &amp; videos</a></div></div>`;
   const navHtml = NAV.map(([href, label, hot]) => href === 'LEARN' ? learnMenu : `<a href="${href}"${hot ? ' class="nav-hot"' : ''}${cur(href)}>${label}</a>`).join('');
   return `<!doctype html>
 <html lang="en-CA">
@@ -135,19 +135,18 @@ ${page.body}
         <a href="/shop/chaga-powder/">Strength · Chaga</a>
         <a href="/shop/reishi-powder/">Peace · Reishi</a>
         <span class="footer-soon">Turkey Tail · Coming Soon</span>
+        <a href="/build-your-stack/">Build Your Stack</a>
       </nav>
       <nav class="footer-col" aria-label="Learn"><p class="footer-h">Learn</p>
+        <a href="/learn/">Mushroom guides</a>
         <a href="/cordyfuel/">CordyFuel™, Decoded</a>
-        <a href="/learn/cordyceps/">Cordyceps</a>
-        <a href="/learn/lions-mane/">Lion's Mane</a>
-        <a href="/learn/reishi/">Reishi</a>
-        <a href="/learn/chaga/">Chaga</a>
-        <a href="/build-your-stack/">Build Your Stack</a>
         <a href="/lab-results/">Lab Results</a>
-        <a href="/manifesto/">The Manifesto</a>
-        <a href="/our-story/">Our Story</a>
         <a href="/journal/">Journal</a>
-        <a href="/resources/">Books &amp; Resources</a>
+        <a href="/resources/">Books &amp; Videos</a>
+      </nav>
+      <nav class="footer-col" aria-label="About"><p class="footer-h">About</p>
+        <a href="/our-story/">Our Story</a>
+        <a href="/manifesto/">The Manifesto</a>
       </nav>
       <nav class="footer-col" aria-label="Help"><p class="footer-h">Help</p>
         <a href="/shipping/">Shipping &amp; Returns</a>
