@@ -107,6 +107,16 @@ const home = {
   </div></div>
 </section>
 ${proofStrip()}
+${Date.now() < Date.parse('2026-10-26T07:00:00Z') ? `<section class="section dark" id="spirit-plant"><div class="wrap split">
+  <div><img class="cover wide" src="/img/rewild-bear-cordyfuel-tincture.webp" alt="REWILD at a festival with Rewild Energy tincture" width="960" height="1280" loading="lazy" style="aspect-ratio:4/3;object-fit:cover"></div>
+  <div class="stack">
+    <p class="eyebrow" style="color:var(--accent)">Come say hi · October 23 to 25 · Vancouver</p>
+    <h2 class="h2" style="font-size:clamp(30px,3.6vw,46px)">Find us at the Spirit Plant Medicine Conference.</h2>
+    <p class="lead" style="color:var(--on-dark)">We're vending in Vancouver this October. Come meet the three of us, try Rewild Energy and see the mushrooms up close.</p>
+    <p style="color:var(--on-dark-2)">Speakers include Paul Stamets, Rick Doblin, Dennis McKenna and many more.</p>
+    <div class="row" style="margin-top:6px"><a class="btn btn-yellow" href="https://spiritplantmedicine.com" target="_blank" rel="noopener">Conference details</a></div>
+  </div>
+</div></section>` : ''}
 <section class="section manifesto-band"><img class="manifesto-mark" src="/img/emblem-dark-lg.webp" alt="" width="600" height="600" loading="lazy" aria-hidden="true"><div class="narrow stack center" style="text-align:center;position:relative">
   <img src="/img/emblem-dark-sm.webp" alt="REWILD emblem" width="88" height="88" style="margin-bottom:4px">
   <p class="eyebrow">The Rewild Manifesto</p>
@@ -532,7 +542,7 @@ const story = {
     <p class="eyebrow" style="margin-bottom:12px">From the founder</p>
     <h2 style="margin-top:0">Paid in mushrooms.</h2>
     <p>I'm Jade, and I started REWILD here in the Slocan Valley. It began with a trade: mushrooms as payment for my work. That one yes turned into a company.</p>
-    <p>I've spent 20 years in design and marketing, from the Calgary Sun to my own studio, Humble Bee Design. I've also been a bartender, a roadie, a snowboarder and a relentless traveller. REWILD uses all of it.</p>
+    <p>I've spent 20 years in design and marketing, from the Calgary Sun to my own studio, Humble Bee Design. I've also been a bartender, a roadie, a snowboarder and a relentless traveller. REWILD uses all of it. Here I lead brand, design, marketing and tech.</p>
     <p>Lion's Mane and Cordyceps are the two I take most. But to me, REWILD isn't really about mushrooms. It's about getting outside, slowing down and moving more. Returning to your natural state. <a href="/manifesto/">Read the Rewild Manifesto</a>.</p>
     <p>I'm a humble shepherd. The mushrooms are leading the way.</p>
     <p style="font-style:italic;color:var(--muted)">Jade</p>
@@ -571,19 +581,18 @@ const story = {
 <section class="section"><div class="wrap split">
   <div><img class="cover portrait" src="/img/rewild-bear-cordyfuel-tincture.webp" alt="A bear at a summer festival with a bottle of Rewild Energy tincture in its teeth" width="960" height="1280" loading="lazy"></div>
   <div class="stack">
-    <p class="eyebrow">The team</p>
-    <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Built on trust, integrity and a solid passion for 'shrooms.</h2>
-    <div class="stack-sm" style="gap:18px;font-size:17px;color:var(--text)">
-      <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> A self-taught designer, marketer and lifelong explorer, Jade has spent 20 years turning ideas into things people can experience. At REWILD she leads brand, design, marketing and tech, following the mushrooms wherever they lead next.</p>
-      <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> A lifelong mountain guy and mushroom enthusiast, Pete has spent years in the Kootenay forests learning about fungi, and now makes his own mushroom tinctures and extracts. For him, REWILD is about getting back to the roots: time in nature, learning from the forest and sharing the good stuff with his community.</p>
-      <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> With 16 years studying nutrition, human optimization and supplementation, Sean brings a whole-food, back-to-basics approach to Rewild. He sees functional mushrooms as simple, whole foods that belong in an active life.</p>
+    <img src="/img/rewild-emblem-sunset.webp" alt="" width="96" height="96" loading="lazy" style="width:96px;height:auto">
+    <p class="eyebrow">Return to your natural state</p>
+    <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Rewild is an invitation to come back.</h2>
+    <div class="stack-sm" style="gap:18px;font-size:18px;color:var(--text)">
+      <p>It's not about perfection. It's not about living off-grid, or eating only wild plants and bathing in rivers.</p>
+      <p>It's about getting outside more. Slowing down. Moving your body. Knowing what you put in it.</p>
+      <p>Small choices, one at a time. The mushrooms are just one of them.</p>
     </div>
+    <div class="row" style="margin-top:6px"><a class="btn btn-dark" href="/manifesto/">Read the manifesto</a><a class="btn btn-outline" href="/shop/">Shop</a></div>
   </div>
 </div></section>
-<section class="section"><div class="narrow stack center" style="text-align:center">
-  <h2 class="h2">Read the manifesto.</h2>
-  <a class="btn btn-dark" href="/manifesto/">The Rewild Manifesto</a>
-</div></section>`,
+`,
 };
 
 /* ---------------- MANIFESTO ---------------- */
