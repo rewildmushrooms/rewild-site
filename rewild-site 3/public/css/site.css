@@ -425,7 +425,7 @@ p{text-wrap:pretty}
 .nav a,.nav-toggle{white-space:nowrap}
 .nav{align-items:center}
 @media (min-width:901px) and (max-width:1240px){.nav{gap:16px;font-size:12.5px;letter-spacing:.04em}.brand span{font-size:20px;letter-spacing:.24em}.nav a.nav-hot{padding:7px 10px}}
-@media (min-width:901px) and (max-width:1040px){.brand span{display:none}}
+@media (min-width:901px) and (max-width:1040px){.site-header .brand span{display:none}}
 
 /* 100% Risk-Free Guarantee (kept subtle) */
 .guarantee{display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-size:14px;line-height:1.5}
@@ -607,4 +607,7 @@ p{text-wrap:pretty}
 /* Rabbit hole: back to the original flower placement */
 .fringe:not(.stack-trip):not(.story-trip)::before{width:560px;height:560px;right:-170px;top:-190px;opacity:.9;animation:none}
 .fringe:not(.stack-trip):not(.story-trip)::after{width:380px;height:380px;left:-130px;right:auto;bottom:-150px;opacity:.9}
-@media (min-width:1150px){.footer-top{flex-wrap:nowrap;gap:40px}.footer-top>div:first-child{flex:0 1 340px}.footer-col{flex:0 0 auto}}
+.footer-top{display:grid;grid-template-columns:1fr;gap:40px 24px}.footer-top>*{min-width:0}.footer-stack{display:flex;flex-direction:column;gap:36px}
+@media (max-width:639px){.footer-top{grid-template-columns:1fr 1fr}.footer-top>div:first-child,.footer-top>.footer-col:nth-child(2){grid-column:1/-1}.footer-col a{white-space:normal}}
+@media (min-width:640px){.footer-top{grid-template-columns:1fr 1fr;gap:48px 40px}}
+@media (min-width:1100px){.footer-top{grid-template-columns:minmax(300px,1.35fr) auto auto auto;gap:48px 56px}}
