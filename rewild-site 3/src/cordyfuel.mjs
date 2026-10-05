@@ -19,7 +19,7 @@ const pull = (text, by = '') =>
 const FAQ = [
   ['What is CordyFuel™?', 'CordyFuel™ is a full-spectrum Cordyceps militaris (fruiting body and mycelium) grown in Coldstream, British Columbia, and standardized to a minimum of 3 mg/g cordycepin in every batch. It won Best Fruiting Body / Full Spectrum at the 2025 Cordy Cup. Rewild Energy and Rewild Energy Tincture are powered by CordyFuel™.'],
   ['Is CordyFuel™ a blend?', 'No. It is 100% Cordyceps militaris. No proprietary blend, nothing added, nothing else in the bag.'],
-  ['How do I take Rewild Energy?', 'Powder: ½ teaspoon in a smoothie, elixir, soup, tea, coffee, or hot water and honey. In a warm drink, add a little coconut oil or butter and blend it so the powder mixes in smooth. Tincture: use 10 to 20 ml per serving, straight or added to a drink.'],
+  ['How do I take Rewild Energy?', 'Powder: ½ teaspoon in a smoothie, elixir, soup, tea, coffee, or hot water and honey. In a warm drink, add a little coconut oil or butter and blend it so the powder mixes in smooth. Tincture: drink it straight or add it to a drink, 5 to 10 servings per bottle.'],
 ];
 
 export const cordyfuelPage = {
@@ -188,7 +188,7 @@ ${reviewsSection({ eyebrow: 'What people are saying', title: 'Rewilders, in thei
   <p>Tip for warm drinks: add a little coconut oil or butter and blend it. The fat helps the powder mix in smooth, so your drink doesn't get muddy.</p>
   <div class="lp-dose">
     <div><b>Powder</b><span>Add ½ teaspoon to your favourite smoothie, elixir, soup, tea, coffee, or hot water and honey.</span></div>
-    <div><b>Tincture</b><span>Use 10 to 20 ml per serving, straight or added to a drink. A 100 ml bottle holds 5 to 10 servings.</span></div>
+    <div><b>Tincture</b><span>Drink it straight or add it to a drink. A 100 ml bottle holds 5 to 10 servings.</span></div>
   </div>
 </div></section>
 

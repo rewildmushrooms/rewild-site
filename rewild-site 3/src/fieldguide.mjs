@@ -67,7 +67,7 @@ export const fieldGuide = {
   <h2 class="h2" style="font-size:clamp(28px,3.4vw,42px)">Pick by your day</h2>
   <p style="max-width:640px">Start with the part of your day you want to add it to.</p>
   <div class="fg-picks">${PICKS.map(pick).join('')}</div>
-  <p class="small" style="margin-top:16px">Prefer a liquid? <a href="/shop/cordyceps-tincture/">Rewild Energy Tincture</a> is the same CordyFuel™ Cordyceps, alcohol-free. Use 10 to 20 ml per serving, straight or in a drink.</p>
+  <p class="small" style="margin-top:16px">Prefer a liquid? <a href="/shop/cordyceps-tincture/">Rewild Energy Tincture</a> is the same CordyFuel™ Cordyceps, alcohol-free. Drink it straight or add it to a drink. 5 to 10 servings per bottle.</p>
 </div></section>
 
 <section class="section"><div class="wrap narrow fg-sec">

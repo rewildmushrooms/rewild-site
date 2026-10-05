@@ -156,7 +156,7 @@ ${reviewsSection()}
   <div class="stack">
     <span style="align-self:flex-start;background:var(--accent);font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:6px 12px;border-radius:2px">New · Liquid tincture</span>
     <h2 class="h2">Rewild Energy,<br>without the powder.</h2>
-    <p class="small" style="font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">100 ml · Take 10-20 ml per serving · 5-10 servings</p>
+    <p class="small" style="font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">100 ml · 5 to 10 servings per bottle</p>
     <p class="lead">Same CordyFuel™ Cordyceps. A different way to enjoy it. Simple, portable and easy to work into your day. Even people who don't love the taste of mushrooms tend to love this one.</p>
     <p>100% Cordyceps militaris. Alcohol-free. Nothing added. Drink it straight, or add it to whatever you're already drinking.</p>
     <div class="row"><button type="button" class="btn btn-dark" data-add="tincture">Add the tincture · $30</button><a class="btn btn-outline" href="/shop/cordyceps-tincture/">Details</a></div>
@@ -181,9 +181,11 @@ ${reviewsSection()}
       <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> A self-taught designer, marketer and lifelong explorer, Jade has spent 20 years turning ideas into things people can experience. At REWILD she leads brand, design, marketing and tech, following the mushrooms wherever they lead next.</p>
       <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> With 16 years studying nutrition, human optimization and supplementation, Sean brings a whole-food, back-to-basics approach to Rewild. He sees functional mushrooms as simple, whole foods that belong in an active life.</p>
     </div>
-    <p style="font-size:17px">Questions? Email <a class="link" href="mailto:hello@rewildmushrooms.com">hello@rewildmushrooms.com</a>. One of us three answers.</p>
-    <a class="btn btn-outline" href="/our-story/" style="align-self:flex-start">Our story</a>
   </div>
+</div>
+<div class="wrap stack-sm center" style="text-align:center;align-items:center;gap:18px;margin-top:40px">
+  <p style="font-size:17px;margin:0">Questions? Email <a class="link" href="mailto:hello@rewildmushrooms.com">hello@rewildmushrooms.com</a>. One of us three answers.</p>
+  <a class="btn btn-outline" href="/our-story/">Our story</a>
 </div></section>
 ${signupBanner('home')}`,
 };
@@ -231,7 +233,7 @@ ${CORDYFUEL_SECTION}
     <ul class="ticks" style="font-size:17px">
       <li>Drink it straight, or add it to water, coffee or a smoothie</li>
       <li>Fits in a pocket, a gym bag or a ski jacket</li>
-      <li>100 ml bottle · 10 to 20 ml per serving · 5 to 10 servings</li>
+      <li>100 ml bottle · 5 to 10 servings</li>
     </ul>
     <div class="tf-buy">
       <div class="tf-price">${money(PRODUCT_BY_ID.tincture.price)}<span>100 ml</span></div>
@@ -253,7 +255,7 @@ ${CORDYFUEL_SECTION}
 /* ---------------- PRODUCT PAGES ---------------- */
 const USE_TEXT = {
   powder: 'Add about ½ teaspoon to coffee, cacao, tea, smoothies, soup, or hot water and honey. Tip for warm drinks: add a little coconut oil or butter and blend it. The fat helps the powder mix in smooth, so your drink doesn\'t get muddy.',
-  tincture: 'Use 10 to 20 ml per serving, straight or added to a drink. A 100 ml bottle holds 5 to 10 servings.',
+  tincture: 'Drink it straight or add it to water, coffee or a smoothie. Each 100 ml bottle holds 5 to 10 servings.',
 };
 const PRODUCT_DETAILS = {
   energy: {
@@ -282,7 +284,7 @@ const PRODUCT_DETAILS = {
   },
   tincture: {
     intro: `<p>Same CordyFuel™ Cordyceps militaris as our Energy powder, in a portable, alcohol-free liquid. Simple, easy to carry and easy to work into your day.</p><p>Even people who don't love the taste of mushrooms tend to love this one. Drink it straight, or add it to whatever you're already drinking.</p>`,
-    ticks: ['Made with CordyFuel™ Cordyceps militaris', 'Alcohol-free', '100 ml bottle: 5 to 10 servings of 10 to 20 ml', 'Grown in BC · Lab tested'],
+    ticks: ['Made with CordyFuel™ Cordyceps militaris', 'Alcohol-free', '100 ml bottle: 5 to 10 servings', 'Grown in BC · Lab tested'],
     faqs: [['Powder or tincture?', 'Same mushroom, different format. Powder works best stirred into food and drinks. The tincture is for straight-up, on-the-go days.']],
   },
 };
@@ -715,7 +717,7 @@ const FAQS = [
   ['Who grows your mushrooms?', 'REWILD is not the grower. Our mushrooms are grown by <a href="https://nucelium.com" rel="noopener" target="_blank">NuCelium</a>, a certified organic cultivator in British Columbia and the maker of CordyFuel™. We choose the products, brand them, pack them and share the lab results for every lot.'],
   ['What does full spectrum mean?', 'Our powders contain the whole organism: fruiting body and mycelium together. <a href="/fruiting-body-vs-mycelium-whats-the-difference-in-functional-mushroom-products/">Read the full explainer</a>.'],
   ['How do I take the powder?', 'Our labels suggest ½ teaspoon a day in a smoothie, elixir, soup, tea, coffee, or hot water and honey. Tip for warm drinks: add a little coconut oil or butter and blend it. The fat helps the powder mix in smooth, so your drink doesn\'t get muddy.'],
-  ['How do I use the tincture?', 'Use 10 to 20 ml per serving, straight or in a drink. Each 100 ml bottle holds 5 to 10 servings.'],
+  ['How do I use the tincture?', 'Drink it straight or add it to a drink. Each 100 ml bottle holds 5 to 10 servings.'],
   ['Are your products tested?', 'Yes. Every lot is tested for species identity, potency (polysaccharides, beta-glucans, and cordycepin for CordyFuel™), a seven-test microbial panel, gluten and water activity. See the numbers on our <a href="/lab-results/">lab results</a> page.'],
   ['Can I see the lab report?', 'Yes. Full certificates of analysis are sent on request. <a href="/lab-results/#request">Request one here</a> and we\u2019ll email it, usually within one business day.'],
   ['How much is shipping?', `$20 flat rate in Canada, free on orders of $175 or more. US shipping and duties are quoted per order by email after you check out.`],
