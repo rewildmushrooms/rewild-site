@@ -533,3 +533,4 @@ p{text-wrap:pretty}
 .lp-tm{font-size:13px;line-height:1.5;color:rgba(255,255,255,.7)}.lp-tm a{color:inherit;text-decoration:underline}
 .sp-band{background:linear-gradient(rgba(12,13,10,.86),rgba(12,13,10,.9)),url(/img/spirit-plant-fire-circle.webp) center/cover,#121310}
 .sp-poster img{display:block;width:100%;max-width:400px;height:auto;border-radius:var(--radius);box-shadow:0 18px 50px rgba(0,0,0,.5);margin:0 auto}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px}.res-card{border:1px solid var(--line);border-radius:var(--radius);padding:26px;display:flex;flex-direction:column;gap:12px}.res-books{margin:0;padding-left:18px}.res-books li{margin:4px 0}.res-links a{font-weight:600}
