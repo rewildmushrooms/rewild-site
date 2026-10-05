@@ -89,7 +89,7 @@ const FRINGE_SECTION = `<section class="fringe"><div class="wrap">
     </button>
     <figcaption><b>${esc(v.title)}</b><span class="fringe-by">${esc(v.by)}</span><span>${esc(v.note)}</span></figcaption>
   </figure>`).join('')}</div>
-  <p class="fringe-fine">For culture and curiosity only. We don't sell psychedelic or Amanita mushrooms, and nothing here is advice. Amanita muscaria is poisonous: never eat a wild mushroom you can't identify with certainty.</p>
+  <p class="fringe-fine">For culture and curiosity only. We don't sell psychedelic or Amanita mushrooms, and nothing here is advice. Never eat a wild mushroom you can't identify with certainty.</p>
 </div></section>`;
 
 export const resources = {
