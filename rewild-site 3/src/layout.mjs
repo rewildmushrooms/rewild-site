@@ -120,6 +120,11 @@ ${page.body}
 </main>
 <footer class="site-footer">
   <div class="wrap">
+    <a class="ig-band" href="https://www.instagram.com/rewildmushroompowder/" target="_blank" rel="me noopener">
+      <svg class="ig-glyph" viewBox="0 0 24 24" width="40" height="40" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.3" fill="currentColor"/></svg>
+      <span class="ig-text"><b>Follow us on Instagram</b><span>@rewildmushroompowder</span></span>
+      <span class="ig-arrow" aria-hidden="true">&rarr;</span>
+    </a>
     <div class="footer-top">
       <div class="stack-sm">
         <div class="brand" style="color:#fff"><img src="/img/emblem-light-sm.webp" alt="" width="38" height="38"><span style="color:#fff">REWILD</span></div>
@@ -155,7 +160,7 @@ ${page.body}
       </nav>
     </div>
     <p class="disclaimer">The information on this site is for educational purposes only and is not medical advice. Our products are not intended to diagnose, treat, cure or prevent any disease. Speak with a healthcare practitioner before use if you are pregnant, nursing or taking medication. CordyFuel™ is a trademark of <a href="https://nucelium.com" rel="noopener" target="_blank">NuCelium</a>, our grower, used with permission.</p>
-    <div class="footer-bottom"><span>© ${new Date().getFullYear()} REWILD Mushrooms · Slocan Valley, British Columbia</span><span><a href="https://instagram.com/rewildmushrooms" rel="me noopener">@rewildmushrooms</a></span></div>
+    <div class="footer-bottom"><span>© ${new Date().getFullYear()} REWILD Mushrooms · Slocan Valley, British Columbia</span><span><a href="https://www.instagram.com/rewildmushroompowder/" rel="me noopener">@rewildmushroompowder</a></span></div>
   </div>
 </footer>
 

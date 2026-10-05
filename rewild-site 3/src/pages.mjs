@@ -530,9 +530,9 @@ const story = {
   <div class="founder-photo"><img class="cover sq" src="/img/jade-stevens-founder-mountains.webp" alt="Jade Stevens, founder of REWILD Mushrooms, hiking in the snowy Rockies with her black and white cat" width="800" height="800" loading="lazy"><p class="small muted" style="margin-top:10px">Jade Stevens, founder</p></div>
   <div class="prose" style="max-width:640px">
     <p class="eyebrow" style="margin-bottom:12px">From the founder</p>
-    <h2 style="margin-top:0">I didn't go looking for mushrooms. They found me.</h2>
-    <p>I'm Jade, and I started REWILD. It began with a trade: mushrooms as payment for my work. That one yes kept leading somewhere.</p>
-    <p>I've spent 20 years in design and marketing, from the Calgary Sun to my own studio, Humble Bee Design. I've also been a bartender, a roadie, a snowboarder and a relentless traveller. REWILD brings it all together.</p>
+    <h2 style="margin-top:0">Paid in mushrooms.</h2>
+    <p>I'm Jade, and I started REWILD here in the Slocan Valley. It began with a trade: mushrooms as payment for my work. That one yes turned into a company.</p>
+    <p>I've spent 20 years in design and marketing, from the Calgary Sun to my own studio, Humble Bee Design. I've also been a bartender, a roadie, a snowboarder and a relentless traveller. REWILD uses all of it.</p>
     <p>Lion's Mane and Cordyceps are the two I take most. But to me, REWILD isn't really about mushrooms. It's about getting outside, slowing down and moving more. Returning to your natural state. <a href="/manifesto/">Read the Rewild Manifesto</a>.</p>
     <p>I'm a humble shepherd. The mushrooms are leading the way.</p>
     <p style="font-style:italic;color:var(--muted)">Jade</p>
