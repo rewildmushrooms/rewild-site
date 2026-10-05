@@ -552,3 +552,20 @@ p{text-wrap:pretty}
 .res-take-by{margin:0;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);font-weight:700}
 .res-name{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:20px;margin:10px 0 0}
 .res-book-title{margin:0;font-size:17px}.res-note{margin:0;color:var(--muted);font-size:15px}
+.fringe{position:relative;overflow:hidden;color:#fff;padding:96px 0;background:radial-gradient(circle at 12% 20%,rgba(255,92,180,.55),transparent 32%),radial-gradient(circle at 88% 12%,rgba(80,220,200,.45),transparent 30%),radial-gradient(circle at 70% 90%,rgba(232,200,0,.5),transparent 34%),radial-gradient(circle at 25% 85%,rgba(255,120,40,.5),transparent 30%),linear-gradient(135deg,#1d0b33,#3b0f52 45%,#11214a);background-size:140% 140%;animation:fringe-drift 18s ease-in-out infinite alternate}
+.fringe::before,.fringe::after{content:"";position:absolute;border-radius:50%;border:2px dashed rgba(255,255,255,.18);pointer-events:none}
+.fringe::before{width:520px;height:520px;right:-160px;top:-180px}.fringe::after{width:360px;height:360px;left:-120px;bottom:-140px;border-style:dotted}
+@keyframes fringe-drift{from{background-position:0% 0%}to{background-position:100% 100%}}
+@media (prefers-reduced-motion:reduce){.fringe{animation:none}}
+.fringe .wrap{position:relative;z-index:1}
+.fringe-head{max-width:720px;margin-bottom:44px}
+.fringe-eyebrow{font-weight:800;text-transform:uppercase;letter-spacing:.18em;font-size:13px;margin:0 0 12px;color:#ffe9a8}
+.fringe-title{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(40px,6.5vw,84px);line-height:.95;margin:0 0 18px;background:linear-gradient(90deg,#ff7ac6,#ffd34d,#6ff0d4,#a98bff);-webkit-background-clip:text;background-clip:text;color:transparent;transform:rotate(-1.5deg)}
+.fringe-lead{font-size:19px;line-height:1.6;color:rgba(255,255,255,.9);margin:0}
+.fringe-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}@media (max-width:800px){.fringe-grid{grid-template-columns:1fr}}
+.fringe-card{margin:0;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:14px;backdrop-filter:blur(6px);transition:transform .25s}
+.fringe-card:nth-child(1){transform:rotate(-1deg)}.fringe-card:nth-child(2){transform:rotate(1deg)}.fringe-card:hover{transform:rotate(0) scale(1.01)}
+.fringe-card .yt{border-radius:10px}
+.fringe-card figcaption{display:flex;flex-direction:column;gap:4px;padding:14px 6px 4px;color:rgba(255,255,255,.88)}.fringe-card figcaption b{font-family:var(--display);font-size:20px;color:#fff}
+.fringe-by{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#ffe9a8}
+.fringe-fine{margin:36px 0 0;font-size:13px;color:rgba(255,255,255,.7);max-width:760px}
