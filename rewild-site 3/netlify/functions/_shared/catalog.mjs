@@ -76,7 +76,7 @@ export const PRODUCTS = [
     seoTitle: "Lion's Mane Powder Canada | Organic, BC-Grown | REWILD",
     seoDescription:
       "Organic, full-spectrum Lion's Mane mushroom powder grown in British Columbia. Fruiting body + mycelium, third-party tested. $50 / 100g.",
-    tagline: 'Quiet, steady, and easy to take every day.',
+    tagline: 'Quiet, steady, and easy to use every day.',
     story:
       "Lion's Mane grows in long, cascading spines on hardwood trees. It has been a respected food in traditional kitchens for generations. Ours is grown in British Columbia as a full-spectrum powder.",
   },
