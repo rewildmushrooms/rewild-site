@@ -305,11 +305,11 @@ const USE_TAGS = {
   peace: ['Hot cacao', 'Chai', 'Golden milk', 'Nut-milk lattes', 'Honey + hot water'],
   tincture: ['Straight up', 'Water bottle', 'Coffee', 'Smoothies', 'Sparkling water'],
 };
-// Energy Tincture: muted looping waterfall clip. Loads only when near the viewport; still frame for reduced motion.
+// Energy Tincture: Jade's original waterfall clip, unedited, played muted on loop. Loads only when near the viewport; still frame for reduced motion.
 const FALLS_BAND = `<section class="falls-band">
-  <video class="falls-vid" muted loop playsinline preload="none" poster="/img/energy-falls-poster.webp" aria-hidden="true"></video>
+  <video class="falls-vid" muted loop playsinline preload="none" aria-hidden="true"></video>
   <div class="wrap falls-copy"><p class="eyebrow">Made to come along</p><h2 class="h2">Long trails. Cold water. Bring it.</h2></div>
-  <script>(function(){var v=document.querySelector('.falls-vid');if(!v||!('IntersectionObserver' in window))return;if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;var on=false;new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){if(!on){v.src=innerWidth<760?'/img/energy-falls-720.mp4':'/img/energy-falls.mp4';on=true;}var pr=v.play();pr&&pr.catch(function(){});}else if(on){v.pause();}});},{rootMargin:'200px'}).observe(v);})();</script>
+  <script>(function(){var v=document.querySelector('.falls-vid');if(!v||!('IntersectionObserver' in window))return;var M='/img/IMG_3254.mov';if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){v.preload='metadata';v.src=M+'#t=0.5';return;}var on=false;new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){if(!on){v.src=M;on=true;}var pr=v.play();pr&&pr.catch(function(){});}else if(on){v.pause();}});},{rootMargin:'200px'}).observe(v);})();</script>
 </section>`;
 
 function howToUse(p) {
