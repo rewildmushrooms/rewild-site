@@ -107,7 +107,7 @@ ${SITE.ga ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${SI
 <div class="announce">Free shipping in Canada on orders over $${SHIPPING.CA.freeOver / 100} · Now shipping to the US</div>
 <header class="site-header">
   <div class="wrap">
-    <a href="/" class="brand brand-logo" aria-label="REWILD Mushrooms home"><img src="/img/rewild-mushrooms-logo-header.webp" alt="REWILD Mushrooms" width="293" height="120"></a>
+    <a href="/" class="brand brand-logo" aria-label="REWILD Mushrooms home"><img src="/img/rewild-mushrooms-logo-header.webp" alt="REWILD Mushrooms" width="504" height="120"></a>
     <nav id="site-nav" class="nav" aria-label="Main">${navHtml}</nav>
     <div class="header-actions">
       <button type="button" class="icon-btn" data-open-cart aria-label="Open cart">${icons.cart}<span class="cart-count" data-count="0">0</span></button>

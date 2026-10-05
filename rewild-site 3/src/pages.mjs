@@ -107,8 +107,8 @@ const home = {
   </div></div>
 </section>
 ${proofStrip()}
-${Date.now() < Date.parse('2026-10-26T07:00:00Z') ? `<section class="section dark" id="spirit-plant"><div class="wrap split">
-  <div><img class="cover wide" src="/img/rewild-bear-cordyfuel-tincture.webp" alt="REWILD at a festival with Rewild Energy tincture" width="960" height="1280" loading="lazy" style="aspect-ratio:4/3;object-fit:cover"></div>
+${Date.now() < Date.parse('2026-10-26T07:00:00Z') ? `<section class="section dark sp-band" id="spirit-plant"><div class="wrap split">
+  <div class="sp-poster"><img src="/img/spirit-plant-medicine-conference-2026.webp" alt="Spirit Plant Medicine Conference, The Living Bridge, October 23 to 25, 2026, Vancouver BC" width="720" height="1080" loading="lazy"></div>
   <div class="stack">
     <p class="eyebrow" style="color:var(--accent)">Come say hi · October 23 to 25 · Vancouver</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,46px)">Find us at the Spirit Plant Medicine Conference.</h2>
@@ -581,7 +581,7 @@ const story = {
 <section class="section"><div class="wrap split">
   <div><img class="cover portrait" src="/img/rewild-bear-cordyfuel-tincture.webp" alt="A bear at a summer festival with a bottle of Rewild Energy tincture in its teeth" width="960" height="1280" loading="lazy"></div>
   <div class="stack">
-    <img src="/img/rewild-emblem-sunset.webp" alt="" width="96" height="96" loading="lazy" style="width:96px;height:auto">
+    <img src="/img/rewild-emblem-sunset.webp" alt="" width="96" height="99" loading="lazy" style="width:96px;height:auto">
     <p class="eyebrow">Return to your natural state</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Rewild is an invitation to come back.</h2>
     <div class="stack-sm" style="gap:18px;font-size:18px;color:var(--text)">
@@ -590,6 +590,7 @@ const story = {
       <p>Small choices, one at a time. The mushrooms are just one of them.</p>
     </div>
     <div class="row" style="margin-top:6px"><a class="btn btn-dark" href="/manifesto/">Read the manifesto</a><a class="btn btn-outline" href="/shop/">Shop</a></div>
+    <p class="small muted" style="font-style:italic">*No bears were harmed taking this photo. Taken in Fernie, BC.</p>
   </div>
 </div></section>
 `,
