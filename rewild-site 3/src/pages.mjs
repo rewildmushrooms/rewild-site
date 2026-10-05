@@ -166,7 +166,7 @@ ${reviewsSection()}
     <p class="eyebrow">Meet the team</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Built on trust, integrity and a solid passion for 'shrooms.</h2>
     <div class="stack-sm" style="gap:18px;font-size:17px;color:var(--text)">
-      <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> A longtime mushroom enthusiast and lifelong mountain guy, Pete forages, makes his own tinctures and explores the Kootenays on a snowboard and a mountain bike. He brings a hands-on, back-to-nature approach to REWILD.</p>
+      <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> A lifelong mountain guy and mushroom enthusiast, Pete has spent years in the Kootenay forests learning about fungi, and now makes his own mushroom tinctures and extracts. For him, REWILD is about getting back to the roots: time in nature, learning from the forest and sharing the good stuff with his community.</p>
       <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> A self-taught designer, marketer and lifelong explorer, Jade has spent 20 years turning ideas into things people can experience. At REWILD she leads brand, design, marketing and tech, following the mushrooms wherever they lead next.</p>
       <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> With 16 years studying nutrition, human optimization and supplementation, Sean brings a whole-food, back-to-basics approach to Rewild. He sees functional mushrooms as simple, whole foods that belong in an active life.</p>
     </div>
@@ -542,9 +542,11 @@ const story = {
   <div class="prose" style="max-width:640px">
     <p class="eyebrow" style="margin-bottom:12px">Co-founder</p>
     <h2 style="margin-top:0">Pete Moss</h2>
-    <p>A longtime mushroom enthusiast and lifelong mountain guy, Pete has spent years exploring both the outdoors and the world of functional mushrooms, including foraging and making his own tinctures.</p>
-    <p>Snowboarding, mountain biking and hiking keep him connected to the wild, while DJing keeps things interesting. That same hands-on, back-to-nature approach is what connects him to REWILD and the idea that some of the best tools for feeling good have been around all along.</p>
-    <p>Based in the Kootenays, Pete also helps people create healthier homes through <a href="https://radonboss.ca" rel="noopener" target="_blank">RadonBoss.ca</a>.</p>
+    <p>A lifelong mountain guy and mushroom enthusiast, Pete Moss has spent years wandering the forests of the Kootenays, observing, learning, and getting increasingly fascinated by the incredible world of fungi.</p>
+    <p>Eventually, simply finding mushrooms wasn't enough. He wanted to understand them more deeply and discovered he could harvest and make his own mushroom tinctures and extracts. That opened the door to a much deeper relationship with fungi and their place in a healthy, connected lifestyle.</p>
+    <p>Pete is also the owner of <a href="https://radonboss.ca" rel="noopener" target="_blank">RadonBoss.ca</a>, where he helps people create healthier homes and breathe cleaner air while building strong connections within his community. That same passion for health, nature, and helping people feel better is what naturally brought him to REWILD.</p>
+    <p>Now Pete is excited to bring functional mushrooms to his community, sharing something that has become such a meaningful part of his own life. For him, it's about getting back to the roots: spending time in nature, learning from the forest, taking care of ourselves, and sharing the good stuff with the people around us.</p>
+    <p>Follow Pete on Instagram: <a href="https://www.instagram.com/petemossbosssauce/" target="_blank" rel="noopener">@petemossbosssauce</a></p>
   </div>
   <div class="founder-photo"><img class="cover sq" style="object-position:50% 0" src="/img/pete-moss-snowboarding.webp" alt="Pete Moss, co-founder of REWILD Mushrooms, snowboarding mid-air above a mountain event" width="800" height="800" loading="lazy"><p class="small muted" style="margin-top:10px">Pete Moss, co-founder</p></div>
 </div></section>
@@ -572,7 +574,7 @@ const story = {
     <p class="eyebrow">The team</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Built on trust, integrity and a solid passion for 'shrooms.</h2>
     <div class="stack-sm" style="gap:18px;font-size:17px;color:var(--text)">
-      <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> A longtime mushroom enthusiast and lifelong mountain guy, Pete forages, makes his own tinctures and explores the Kootenays on a snowboard and a mountain bike. He brings a hands-on, back-to-nature approach to REWILD.</p>
+      <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> A lifelong mountain guy and mushroom enthusiast, Pete has spent years in the Kootenay forests learning about fungi, and now makes his own mushroom tinctures and extracts. For him, REWILD is about getting back to the roots: time in nature, learning from the forest and sharing the good stuff with his community.</p>
       <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> A self-taught designer, marketer and lifelong explorer, Jade has spent 20 years turning ideas into things people can experience. At REWILD she leads brand, design, marketing and tech, following the mushrooms wherever they lead next.</p>
       <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> With 16 years studying nutrition, human optimization and supplementation, Sean brings a whole-food, back-to-basics approach to Rewild. He sees functional mushrooms as simple, whole foods that belong in an active life.</p>
     </div>
