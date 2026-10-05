@@ -745,8 +745,21 @@ const contact = simple('/contact/', 'Contact REWILD Mushrooms', 'Questions about
   <div class="field"><label for="c-email">Email</label><input id="c-email" name="email" type="email" autocomplete="email" required></div>
   <div class="field"><label for="c-subject">Subject</label><input id="c-subject" name="subject" type="text"></div>
   <div class="field"><label for="c-msg">Message</label><textarea id="c-msg" name="message" required></textarea></div>
+  <div class="field"><label for="c-heard">How did you hear about us? <span class="muted" style="font-weight:400">(optional)</span></label><select id="c-heard" name="heard_about">
+    <option value="">Choose one</option>
+    <option>Instagram</option>
+    <option>Facebook</option>
+    <option>Google or another search</option>
+    <option>A friend or family member</option>
+    <option>Jade, Pete or Sean</option>
+    <option>Spirit Plant Medicine Conference</option>
+    <option>A market, festival or event</option>
+    <option>A podcast, article or video</option>
+    <option>Other</option>
+  </select></div>
+  <div class="field" id="c-heard-detail-wrap"><label for="c-heard-detail">Who or where? <span class="muted" style="font-weight:400">(a name, event, account or link)</span></label><input id="c-heard-detail" name="heard_about_detail" type="text" maxlength="120"></div>
   <button type="submit" class="btn btn-dark" style="align-self:flex-start">Send</button>
-</form>`, { scripts: `<script>(function(){var s=new URLSearchParams(location.search).get('subject');if(s){document.getElementById('c-subject').value=s;}})();</script>` });
+</form>`, { scripts: `<script>(function(){var s=new URLSearchParams(location.search).get('subject');if(s){document.getElementById('c-subject').value=s;}var h=document.getElementById('c-heard'),w=document.getElementById('c-heard-detail-wrap'),ask=['A friend or family member','Jade, Pete or Sean','A market, festival or event','A podcast, article or video','Other'];function t(){w.hidden=ask.indexOf(h.value)<0;}h.addEventListener('change',t);t();})();</script>` });
 
 const contactThanks = { ...simple('/contact/thanks/', 'Message sent | REWILD', 'Thanks for reaching out.', 'Thank you', '<p>Your message is on its way. We\'ll be in touch soon.</p><p><a class="btn btn-outline" href="/shop/">Back to the shop</a></p>'), noindex: true };
 
@@ -765,7 +778,7 @@ const privacy = simple('/privacy/', 'Privacy Policy | REWILD Mushrooms', 'How RE
 const terms = simple('/terms/', 'Terms of Service | REWILD Mushrooms', 'Terms of service for purchases from REWILD Mushrooms.', 'Terms of Service', `
 <p><em>Last updated: October 2026</em></p>
 <h2>Products</h2>
-<p>Our mushroom powders and tinctures are sold as foods. Information on this site is for educational purposes only and is not medical advice. Our products are not intended to diagnose, treat, cure or prevent any disease. Speak with a healthcare practitioner before use if you are pregnant, nursing or taking medication.</p>
+<p>Our mushroom powders and tinctures are sold as foods. Information on this site is for general education and is not medical advice. Speak with a healthcare practitioner before use if you are pregnant, nursing or taking medication.</p>
 <h2>Pricing and payment</h2>
 <p>Prices are in Canadian dollars. Payment is taken securely by Square when you place your order. We may correct pricing errors and cancel affected orders with a full refund.</p>
 <h2>Promo codes</h2>
