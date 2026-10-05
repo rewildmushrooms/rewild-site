@@ -654,3 +654,20 @@ p{text-wrap:pretty}
 .site-footer a.footer-guarantee:hover b{color:var(--accent)}
 /* Mobile menu scrolls when it is taller than the screen */
 @media (max-width:900px){.nav.open{max-height:calc(100vh - 120px);max-height:calc(100dvh - 120px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}}
+/* Mobile simplification */
+.ann-short{display:none}
+.to-top{display:none}
+@media (max-width:700px){
+  .ann-full{display:none}.ann-short{display:inline}
+  .proof .proof-item:nth-child(n+4){display:none}
+  .use-grid{grid-template-columns:1fr 1fr;gap:16px}.use-tile{gap:8px}.use-tile b{font-size:15px;letter-spacing:.1em}.use-tile span{font-size:14px!important;margin-top:-4px!important}
+  .home-products{grid-template-columns:1fr 1fr;gap:16px 12px}
+  .home-products .card{gap:10px}.home-products .card h3{font-size:16px;letter-spacing:.03em}
+  .home-products .dot-label,.home-products .latin{display:none}
+  .home-products .price-line{font-size:13px}
+  .home-products .actions{flex-direction:column;gap:6px}.home-products .actions .btn{width:100%;min-height:40px;padding:0 8px;font-size:12px}
+  .to-top{display:grid;place-items:center;position:fixed;right:16px;bottom:20px;z-index:55;width:46px;height:46px;border-radius:50%;border:0;background:var(--ink);color:#fff;box-shadow:0 8px 20px rgba(0,0,0,.25);opacity:0;transform:translateY(16px);pointer-events:none;transition:opacity .25s,transform .25s;cursor:pointer}
+  .to-top.show{opacity:.92;transform:none;pointer-events:auto}
+}
+.footer-stack .footer-col{flex:none}
+@media (max-width:700px){.footer-top{padding-top:56px;padding-bottom:28px}.footer-top>div:first-child{margin-bottom:-8px}}
