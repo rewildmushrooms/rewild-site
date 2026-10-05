@@ -21,9 +21,9 @@
       ['stamina', 'Stamina', 'For training, hiking and moving'],
       ['focus', 'Focus', 'Deep work without the drift'],
       ['creative', 'Creative flow', 'Ideas that keep coming'],
-      ['resilience', 'Resilience', 'Bouncing back from busy'],
+      ['resilience', 'Resilience', 'Steady through busy seasons'],
       ['grounded', 'Feeling grounded', 'Solid, steady, strong'],
-      ['calm', 'Calm', 'Taking the edge off'],
+      ['calm', 'Calm', 'Slower, quieter evenings'],
       ['winddown', 'A better wind-down', 'Ending the day well'],
     ] },
     { key: 'day', q: 'What does a typical day look like?', opts: [
@@ -36,7 +36,7 @@
       ['travel', 'Always on the move', 'Travel, commutes, different beds'],
       ['study', 'Learning something', 'School, training or a new craft'],
     ] },
-    { key: 'when', q: 'When do you want a boost most?', opts: [
+    { key: 'when', q: 'When would you take it most?', opts: [
       ['morning', 'First thing', 'Starting the day right'],
       ['afternoon', 'The afternoon dip', 'Getting through the middle'],
       ['training', 'Before activity', 'Training, hiking, moving'],

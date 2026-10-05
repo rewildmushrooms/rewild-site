@@ -72,7 +72,7 @@
     const body = $('#cart-lines'); if (!body) return;
     const q = quote();
     if (state.items.length === 0) {
-      body.innerHTML = '<div class="empty"><p>Your cart is empty.</p><p style="margin-top:16px"><a class="btn btn-outline" href="/shop/">Shop mushrooms</a></p></div>';
+      body.innerHTML = '<div class="empty"><p>Your cart is empty.</p><p style="margin-top:16px"><a class="btn btn-outline" href="/shop/">Shop mushrooms</a></p><p class="small muted" style="margin-top:12px">Not sure where to start? <a class="link" href="/build-your-stack/">Build your stack</a>.</p></div>';
     } else {
       const lineHtml = (p, i) => `<div class="line"><img src="${p.image}" alt="" width="72" height="72">
           <div><div class="name">${esc(p.name)}</div><div class="sub">${esc(p.format)}</div>
