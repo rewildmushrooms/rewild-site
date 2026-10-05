@@ -56,7 +56,7 @@ export function lifecycleEmail(kind, c, { site, code, optout }) {
     ? {
         subject: 'Running low?',
         head: 'Running low?',
-        body: [hi, `If you've been taking it daily, your ${names.join(' and ')} should be running low around now. Reorder today and it arrives before you run out, so you never miss a day.`, 'Canadian orders ship in 1 to 3 business days. Orders over $175 ship free.'],
+        body: [hi, `If you've been using it daily, your ${names.join(' and ')} should be running low around now. Reorder today and it arrives before you run out, so you never miss a day.`, 'Canadian orders ship in 1 to 3 business days. Orders over $175 ship free.'],
         cta: 'Reorder in one click',
         link: `${site}/shop/?cart=${encodeURIComponent(cart)}&utm_source=email&utm_medium=lifecycle&utm_campaign=reorder`,
       }
