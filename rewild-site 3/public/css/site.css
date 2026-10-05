@@ -648,3 +648,7 @@ p{text-wrap:pretty}
 .falls-band::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.6))}
 .falls-copy{position:relative;z-index:1;padding-top:48px;padding-bottom:48px}
 .falls-copy .eyebrow{color:#fff;opacity:.85}.falls-copy .h2{color:#fff;max-width:640px;text-shadow:0 2px 18px rgba(0,0,0,.35)}
+/* Shop dropdown + footer guarantee */
+.nav-sub.shop-sub{min-width:300px}.shop-sub a{white-space:nowrap}
+.site-footer a.footer-guarantee{margin-top:18px;max-width:340px;text-decoration:none}
+.site-footer a.footer-guarantee:hover b{color:var(--accent)}
