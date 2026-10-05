@@ -11,8 +11,8 @@
 
   const Q = [
     { key: 'why', q: 'What brings you here?', opts: [
-      ['regular', 'I already take mushrooms', 'Looking for better ones'],
-      ['switching', "I'm switching from a blend", 'Want to know what I’m taking'],
+      ['regular', 'I already use mushrooms', 'Looking for better ones'],
+      ['switching', "I'm switching from a blend", 'Want to know what’s in it'],
       ['new', "I'm curious and new to this", 'Show me where to start'],
       ['gift', "I'm buying for someone else", 'A gift that means something'],
     ] },
@@ -48,7 +48,7 @@
       ['cutting', 'Cutting back', 'Trying to drink less'],
       ['none', "I don't drink it", 'Tea, water or nothing'],
     ] },
-    { key: 'how', q: 'How do you like to take things?', opts: [
+    { key: 'how', q: 'How do you like to have it?', opts: [
       ['drink', 'In coffee or tea', 'Stirred into my cup'],
       ['smoothie', 'Smoothies', 'Blended in'],
       ['food', 'In food', 'Soups, oats, sauces'],
@@ -101,27 +101,37 @@
 
   const A = { why: [], want: [], day: [], when: [], coffee: [], how: [], format: [], start: [] };
   let step = 0;
+  let lastPct = 0;
+  const calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Card colours: the four mushroom colours on question 2, a bright rotation everywhere else.
+  const PAL = ['#F2780C', '#2F7FE0', '#22B573', '#8A4DFF', '#E8364B'];
+  const MCOL = { energy: '#F2780C', clarity: '#8A4DFF', strength: '#22B573', peace: '#E8364B' };
+  const CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 
-  function choiceHtml(item, q) {
+  function choiceHtml(item, q, i) {
     const [v, title, sub] = item;
     const on = A[q.key].includes(v);
-    return `<button type="button" class="choice" data-v="${v}" aria-pressed="${on}"><b>${cf(esc(title))}</b><span>${cf(esc(sub))}</span></button>`;
+    const c = q.key === 'want' ? MCOL[WANT_MAP[v]] : PAL[i % PAL.length];
+    return `<button type="button" class="choice" data-v="${v}" aria-pressed="${on}" style="--c:${c};--i:${i}"><span class="ck" aria-hidden="true"><i>${String.fromCharCode(65 + i)}</i>${CHECK}</span><b>${cf(esc(title))}</b><span class="sub">${cf(esc(sub))}</span></button>`;
   }
 
   function renderStep() {
     const q = Q[step];
     const pct = Math.round((step / Q.length) * 100);
     app.innerHTML = `
-      <div class="quiz-progress" aria-hidden="true"><span style="width:${pct}%"></span></div>
+      <div class="quiz-progress" aria-hidden="true"><span style="--p:${lastPct}%"></span></div>
       <p class="eyebrow">Question ${step + 1} of ${Q.length}</p>
-      <h2 class="h3" id="quiz-q" tabindex="-1">${esc(q.q)}</h2>
+      <h2 class="h3 quiz-q" id="quiz-q" tabindex="-1">${esc(q.q)}</h2>
       ${q.hint ? `<p class="muted">${q.hint}</p>` : ''}
-      <div class="choices" role="group" aria-labelledby="quiz-q">${q.opts.map((o) => choiceHtml(o, q)).join('')}</div>
+      <div class="choices" role="group" aria-labelledby="quiz-q">${q.opts.map((o, i) => choiceHtml(o, q, i)).join('')}</div>
       <div class="row" style="margin-top:12px">
         ${step > 0 ? '<button type="button" class="btn btn-outline" id="q-back">Back</button>' : ''}
         ${q.max > 1 ? `<button type="button" class="btn btn-dark" id="q-next" ${A[q.key].length ? '' : 'disabled'}>Next</button>` : ''}
       </div>`;
-    app.querySelectorAll('.choice').forEach((b) => b.addEventListener('click', () => pick(q, b.dataset.v)));
+    const bar = app.querySelector('.quiz-progress span');
+    requestAnimationFrame(() => requestAnimationFrame(() => bar && bar.style.setProperty('--p', pct + '%')));
+    lastPct = pct;
+    app.querySelectorAll('.choice').forEach((b) => b.addEventListener('click', (e) => pick(q, b, e)));
     const back = document.getElementById('q-back');
     if (back) back.addEventListener('click', () => { step--; renderStep(); });
     const nx = document.getElementById('q-next');
@@ -129,13 +139,29 @@
     if (step > 0) { const h = document.getElementById('quiz-q'); h && h.focus({ preventScroll: true }); }
   }
 
-  function pick(q, v) {
+  // Selection updates in place so the fill and checkmark can animate before moving on.
+  function pick(q, btn, e) {
+    const v = btn.dataset.v;
     const list = A[q.key];
     const max = q.max || 1;
-    if (max === 1) { A[q.key] = [v]; renderStep(); setTimeout(advance, 160); return; }
-    if (list.includes(v)) list.splice(list.indexOf(v), 1);
-    else { if (list.length >= max) list.shift(); list.push(v); }
-    renderStep();
+    const r = btn.getBoundingClientRect();
+    const x = e && e.clientX ? ((e.clientX - r.left) / r.width) * 100 : 50;
+    const y = e && e.clientY ? ((e.clientY - r.top) / r.height) * 100 : 50;
+    btn.style.setProperty('--x', x + '%'); btn.style.setProperty('--y', y + '%');
+    const press = (val, on) => { const b = app.querySelector(`.choice[data-v="${val}"]`); if (b) b.setAttribute('aria-pressed', on); };
+    if (max === 1) {
+      if (app.dataset.busy) return;
+      app.dataset.busy = '1';
+      A[q.key] = [v];
+      app.querySelectorAll('.choice').forEach((b) => b.setAttribute('aria-pressed', b === btn));
+      app.classList.add('picked');
+      setTimeout(() => { delete app.dataset.busy; app.classList.remove('picked'); advance(); }, calm ? 180 : 620);
+      return;
+    }
+    if (list.includes(v)) { list.splice(list.indexOf(v), 1); press(v, false); }
+    else { if (list.length >= max) press(list.shift(), false); list.push(v); press(v, true); }
+    const nx = document.getElementById('q-next');
+    if (nx) nx.disabled = !list.length;
   }
 
   function advance() {
