@@ -137,6 +137,7 @@ ${page.body}
         <span class="footer-soon">Turkey Tail · Coming Soon</span>
         <a href="/build-your-stack/">Build Your Stack</a>
       </nav>
+      <div class="footer-stack">
       <nav class="footer-col" aria-label="Learn"><p class="footer-h">Learn</p>
         <a href="/learn/">Mushroom guides</a>
         <a href="/cordyfuel/">CordyFuel™, Decoded</a>
@@ -148,6 +149,7 @@ ${page.body}
         <a href="/our-story/">Our Story</a>
         <a href="/manifesto/">The Manifesto</a>
       </nav>
+      </div>
       <nav class="footer-col" aria-label="Help"><p class="footer-h">Help</p>
         <a href="/shipping/">Shipping &amp; Returns</a>
         <a href="/faq/">FAQ</a>
