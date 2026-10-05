@@ -99,10 +99,10 @@ const home = {
   body: `
 <section class="hero hero-home">
   <div class="wrap"><div class="hero-copy">
-    <p class="eyebrow">Organic functional mushrooms, grown in BC</p>
+    <p class="eyebrow">For the ones who'd rather be outside</p>
     <h1 class="h1">Feel more alive.</h1>
     <p class="tag">Energy. Clarity. Strength. Peace.</p>
-    <p class="body">Most mushroom powders ask you to take their word for it. <a href="/lab-results/" style="color:inherit;text-decoration:underline;text-underline-offset:3px">We show you the numbers.</a> Full-spectrum, every lot third-party tested, and Rewild Energy is powered by CordyFuel™, the 2025 Cordy Cup winner.</p>
+    <p class="body">You already believe in mushrooms. So do we. Ours are organic, full-spectrum and grown right here in BC, with <a href="/lab-results/" style="color:inherit;text-decoration:underline;text-underline-offset:3px">every lot lab tested</a>. Stir them into your morning cup, then get outside.</p>
     <div class="row" style="margin-top:8px"><a class="btn btn-yellow" href="#cordyfuel-options">Start with Rewild Energy</a><a class="btn btn-ghost" href="/shop/">Shop all mushrooms</a></div>
     <p class="note">Return to your natural state.</p>
   </div></div>
