@@ -444,10 +444,10 @@ const lab = {
     <div class="lab-hero-photo"><img src="/img/banner-tincture-snow-peaks-v3.webp" srcset="/img/banner-tincture-snow-peaks-v3-800.webp 800w, /img/banner-tincture-snow-peaks-v3.webp 1600w" sizes="(max-width: 900px) 100vw, 46vw" alt="REWILD Energy CordyFuel™ tincture bottle on a rock above snowy mountain peaks" width="1600" height="1205"></div>
   </div>
   <div class="stats lab-hero-stats">
-    <div class="stat inverse"><b>3+ mg/g</b><span>Cordycepin minimum in every lot of CordyFuel™</span></div>
-    <div class="stat inverse"><b>7.1 mg/g</b><span>Our highest result, from an independent lab</span></div>
+    <div class="stat inverse"><b>4 of 4</b><span>Powders confirmed as the species on the label, by DNA or chemical fingerprint</span></div>
+    <div class="stat inverse"><b>42 to 62%</b><span>Beta-glucans measured in recent lots, across all four powders</span></div>
     <div class="stat inverse"><b>13+</b><span>Lab checks on every lot: identity, potency, purity, stability</span></div>
-    <div class="stat inverse"><b>2025</b><span>Cordy Cup winner, Sweden. Best Cordyceps militaris (Fruiting Body / Full Spectrum)</span></div>
+    <div class="stat inverse"><b>7</b><span>Microbial tests every lot has to pass, plus gluten under 15 ppm</span></div>
   </div>
 </div></section>
 
@@ -478,6 +478,7 @@ const lab = {
           <tr><td>Microbial panel (7 tests)</td><td>Within limits</td><td><b>Pass</b></td></tr>
           <tr><td>Gluten</td><td>&lt; 15 ppm</td><td><b>&lt; 10 ppm</b></td></tr>
         </tbody></table>
+        ${l.id === 'energy' ? '<p class="small muted" style="margin:6px 0 0">CordyFuel™ won Best Fruiting Body / Full Spectrum at the 2025 Cordy Cup.</p>' : ''}
       </div>
     </article>`;
   }).join('')}</div>
