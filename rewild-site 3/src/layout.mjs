@@ -8,11 +8,20 @@ export const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&am
 const NAV = [
   ['/', 'Home'],
   ['/cordyfuel/', 'CordyFuel™', 'hot'],
-  ['/shop/', 'Shop'],
+  ['SHOP'],
   ['/build-your-stack/', 'Build Your Stack'],
   ['LEARN'],
   ['/lab-results/', 'Lab Results'],
   ['/our-story/', 'Our Story'],
+];
+// Shop dropdown. The Duo has no product page of its own, so it links to the home page offer.
+const SHOP_LINKS = [
+  ['/shop/cordyceps-tincture/', 'Energy Tincture · Cordyceps', 'New'],
+  ['/#cordyfuel', 'Energy Duo · Powder + Tincture'],
+  ['/shop/cordyceps-militaris-powder/', 'Energy · Cordyceps'],
+  ['/shop/lions-mane-powder/', "Clarity · Lion's Mane"],
+  ['/shop/chaga-powder/', 'Strength · Chaga'],
+  ['/shop/reishi-powder/', 'Peace · Reishi'],
 ];
 const LEARN_LINKS = [
   ['/learn/cordyceps/', 'Cordyceps'],
@@ -68,7 +77,8 @@ export function layout(page) {
   const ld = [].concat(page.jsonld || []);
   const cur = (href) => (href === '/' ? page.path === '/' : page.path === href || page.path.startsWith(href)) ? ' aria-current="page"' : '';
   const learnMenu = `<div class="nav-group"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="learn-menu"${isLearnPath(page.path) ? ' aria-current="page"' : ''}>Learn <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button><div class="nav-sub" id="learn-menu"><span class="sub-label">Mushroom guides</span>${LEARN_LINKS.map(([h, l]) => `<a href="${h}"${cur(h)}>${l}</a>`).join('')}<hr><a href="/journal/"${page.path === '/journal/' ? ' aria-current="page"' : ''}>Journal</a><a href="/learn/"${page.path === '/learn/' ? ' aria-current="page"' : ''}>All guides</a><a href="/resources/"${page.path === '/resources/' ? ' aria-current="page"' : ''}>Books &amp; videos</a></div></div>`;
-  const navHtml = NAV.map(([href, label, hot]) => href === 'LEARN' ? learnMenu : `<a href="${href}"${hot ? ' class="nav-hot"' : ''}${cur(href)}>${label}</a>`).join('');
+  const shopMenu = `<div class="nav-group"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="shop-menu"${page.path.startsWith('/shop/') ? ' aria-current="page"' : ''}>Shop <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button><div class="nav-sub shop-sub" id="shop-menu">${SHOP_LINKS.map(([h, l, tag]) => `<a href="${h}"${page.path === h ? ' aria-current="page"' : ''}>${tag ? `<span class="new-tag">${tag}</span>` : ''}${l}</a>`).join('')}<hr><a href="/shop/"${page.path === '/shop/' ? ' aria-current="page"' : ''}>Shop all</a></div></div>`;
+  const navHtml = NAV.map(([href, label, hot]) => href === 'LEARN' ? learnMenu : href === 'SHOP' ? shopMenu : `<a href="${href}"${hot ? ' class="nav-hot"' : ''}${cur(href)}>${label}</a>`).join('');
   return `<!doctype html>
 <html lang="en-CA">
 <head>
@@ -127,6 +137,7 @@ ${page.body}
         <p style="font-style:italic">Return to your natural state.</p>
         <div style="margin-top:12px"><p style="color:#fff;font-weight:700;margin-bottom:4px">Join the Rewilders</p><p style="margin-bottom:10px">Get <strong style="color:var(--accent)">20% off</strong> your first order when you sign up.</p>${signupForm('footer')}</div>
         <a class="ig-btn" href="https://www.instagram.com/rewildmushroompowder/" target="_blank" rel="me noopener"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.3" fill="currentColor"/></svg>Follow us on Instagram</a>
+        <a class="guarantee on-dark compact footer-guarantee" href="/shipping/#guarantee"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><div><b>100% Risk-Free Guarantee</b><span>Full refund within 14 days of delivery. No questions asked.</span></div></a>
       </div>
       <nav class="footer-col" aria-label="Shop"><p class="footer-h">Shop</p>
         <a href="/shop/cordyceps-tincture/"><span class="new-tag">New</span> Energy Tincture · Cordyceps</a>
