@@ -33,7 +33,7 @@ export const POSTS = [
 <p>For many Canadians, local sourcing matters. Not because local is always better. But because transparency builds trust.</p>
 <h2>Why Rewild Takes A Different Approach</h2>
 <p>There are many good mushroom products on the market. We simply believe consumers deserve complete transparency about what they're buying. That's why every Rewild product is built around a few simple principles:</p>
-<ul><li>Grown in British Columbia, Canada</li><li>Full spectrum mushrooms (fruiting body + mycelium)</li><li>Third-party tested</li><li>No fillers or unnecessary additives</li><li>Clear labels, so you can <a href="/build-your-stack/">build your own stack</a></li></ul>
+<ul><li>Grown in British Columbia, Canada</li><li>Full spectrum mushrooms (fruiting body + mycelium)</li><li>Third-party tested</li><li>Nothing added: no carriers or unnecessary additives</li><li>Clear labels, so you can <a href="/build-your-stack/">build your own stack</a></li></ul>
 <p>Our goal isn't to overwhelm you with complicated formulas. Our goal is to help you understand exactly what's in the package.</p>
 <h2>Look Beyond Marketing Claims</h2>
 <p>The front of a package is designed to attract attention. The back of the package is where the real information lives. When comparing mushroom products, spend less time focusing on bold marketing promises. Spend more time evaluating:</p>

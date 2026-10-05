@@ -101,7 +101,7 @@ const home = {
     <p class="eyebrow">For people who already believe in the power of mushrooms</p>
     <h1 class="h1">Feel more alive.</h1>
     <p class="tag">Energy. Clarity. Strength. Peace.</p>
-    <p class="body">Exceptionally grown mushrooms for people doing meaningful things in the world. Organic. Full-spectrum. Grown in BC. Third-party lab tested.</p>
+    <p class="body">For people who'd rather be outside, and want to know exactly what's in their mug. Organic. Full-spectrum. Grown in BC. Third-party lab tested.</p>
     <div class="row" style="margin-top:8px"><a class="btn btn-yellow" href="#cordyfuel-options">Start with Rewild Energy</a><a class="btn btn-ghost" href="/shop/">Shop all mushrooms</a></div>
     <p class="note">Return to your natural state.</p>
   </div></div>
@@ -123,7 +123,7 @@ ${CORDYFUEL_SECTION}
       <h2 class="h2" style="font-size:clamp(30px,3.6vw,46px)">Which mushrooms belong in your life?</h2>
       <p class="lead" style="font-size:18px">Mushrooms are tools. Not miracles. Not shortcuts.</p>
     </div>
-    <a class="btn btn-outline" href="/shop/">Shop all</a>
+    <div class="stack-sm" style="gap:10px;align-items:flex-start"><a class="btn btn-outline" href="/shop/">Shop all</a><span class="small muted">Not sure? <a class="link" href="/build-your-stack/">Build your stack</a>.</span></div>
   </div>
   <div class="grid-4">${powders.map((p) => productCard(p)).join('')}</div>
 </div></section>
@@ -136,7 +136,7 @@ ${reviewsSection()}
     <div class="row" style="margin-top:6px"><a class="btn btn-yellow" href="/build-your-stack/">Build your stack</a><a class="btn btn-ghost" href="/shop/">Shop all</a></div>
   </div>
   <ol class="steps">
-    <li><span class="n">01</span><div><b>Answer three questions</b><span>About your day, your rhythm and how you like to take things.</span></div></li>
+    <li><span class="n">01</span><div><b>A few quick questions</b><span>About a minute. Your day, your rhythm and how you like to take things.</span></div></li>
     <li><span class="n">02</span><div><b>Get your stack</b><span>The mushrooms that fit your day, matched in a minute.</span></div></li>
     <li><span class="n">03</span><div><b>Make it part of your day</b><span>Small daily choices compound.</span></div></li>
   </ol>
@@ -168,8 +168,9 @@ ${reviewsSection()}
     <div class="stack-sm" style="gap:18px;font-size:17px;color:var(--text)">
       <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> A longtime mushroom enthusiast and lifelong mountain guy, Pete forages, makes his own tinctures and explores the Kootenays on a snowboard and a mountain bike. He brings a hands-on, back-to-nature approach to REWILD.</p>
       <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> A self-taught designer, marketer and lifelong explorer, Jade has spent 20 years turning ideas into things people can experience. At REWILD she leads brand, design, marketing and tech, following the mushrooms wherever they lead next.</p>
-      <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> With 16 years studying nutrition, human optimization and supplementation, Sean brings a whole-food, back-to-basics approach to Rewild. He sees functional mushrooms as simple, natural tools for helping the body perform, adapt and recover.</p>
+      <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> With 16 years studying nutrition, human optimization and supplementation, Sean brings a whole-food, back-to-basics approach to Rewild. He sees functional mushrooms as simple, whole foods that belong in an active life.</p>
     </div>
+    <p style="font-size:17px">Questions? Email <a class="link" href="mailto:hello@rewildmushrooms.com">hello@rewildmushrooms.com</a>. One of us three answers.</p>
     <a class="btn btn-outline" href="/our-story/" style="align-self:flex-start">Our story</a>
   </div>
 </div></section>
@@ -246,7 +247,7 @@ const USE_TEXT = {
 const PRODUCT_DETAILS = {
   energy: {
     intro: `<p>Rewild Energy is powered by CordyFuel™ <em>Cordyceps militaris</em>, grown in British Columbia and awarded <strong>Best Fruiting Body / Full Spectrum at the 2025 Cordy Cup</strong>.</p><p>Cordycepin is the compound Cordyceps militaris is best known for. CordyFuel™ is standardized to a minimum of 3 mg/g in every batch, verified by third-party testing before release. Our highest result so far, from an independent lab, came in at 7.1 mg/g. Most commercial Cordyceps tests between 0.1 and 0.5 mg/g.</p><p>Bright, savoury and slightly sweet. A natural fit for your morning coffee or smoothie.</p>`,
-    ticks: ['Minimum 3 mg/g cordycepin, every batch', '2025 Cordy Cup: Best Fruiting Body / Full Spectrum', 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · No fillers · Non-GMO', 'Caffeine-free'],
+    ticks: ['Minimum 3 mg/g cordycepin, every batch', '2025 Cordy Cup: Best Fruiting Body / Full Spectrum', 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added · Non-GMO', 'Caffeine-free'],
     faqs: [
       ['What is cordycepin?', 'Cordycepin is a naturally occurring compound found in Cordyceps militaris. We use it as a marker of quality and consistency: every batch of CordyFuel™ is tested and standardized to a minimum of 3 mg/g.'],
       ['Does CordyFuel™ contain caffeine?', 'No. CordyFuel™ is pure Cordyceps militaris powder with no caffeine or stimulants added.'],
@@ -255,17 +256,17 @@ const PRODUCT_DETAILS = {
   },
   clarity: {
     intro: `<p>Lion's Mane (<em>Hericium erinaceus</em>) grows in long, cascading white spines on hardwood trees. It has been eaten and respected in traditional kitchens for generations.</p><p>Ours is grown in British Columbia as a full-spectrum powder: fruiting body and mycelium together. Mild, a little sweet and easy to add to coffee, tea or a smoothie.</p>`,
-    ticks: ["100% Lion's Mane, nothing else in the bag", 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · No fillers · Non-GMO'],
+    ticks: ["100% Lion's Mane, nothing else in the bag", 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added · Non-GMO'],
     faqs: [["What does Lion's Mane taste like?", 'Mild and slightly sweet. It disappears into coffee, cacao and smoothies.']],
   },
   strength: {
     intro: `<p>Chaga (<em>Inonotus obliquus</em>) has quietly grown in northern forests for thousands of years, taking its character from its host and the forest around it.</p><p>Ours is grown in British Columbia as a full-spectrum powder. Earthy, rich and a little vanilla-like. Perfect in coffee, tea or broth.</p>`,
-    ticks: ['100% Chaga, nothing else in the bag', 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · No fillers · Non-GMO'],
+    ticks: ['100% Chaga, nothing else in the bag', 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added · Non-GMO'],
     faqs: [['Is your Chaga wild harvested?', 'No. It is cultivated indoors by our partner grower in British Columbia, so no wild birch forests are stripped and every batch can be tested and traced.']],
   },
   peace: {
     intro: `<p>Reishi (<em>Ganoderma lucidum</em>) has been revered for centuries as the mushroom of stillness. Glossy, woody and deeply rooted in tradition.</p><p>Ours is grown in British Columbia as a full-spectrum powder. Bitter and grounding. Many people enjoy it in an evening tea or cacao.</p>`,
-    ticks: ['100% Reishi, nothing else in the bag', 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · No fillers · Non-GMO'],
+    ticks: ['100% Reishi, nothing else in the bag', 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added · Non-GMO'],
     faqs: [['Reishi tastes bitter. How do I take it?', 'Pair it with something rich: cacao, a little honey, or a nut milk latte. A small amount goes a long way.']],
   },
   tincture: {
@@ -352,6 +353,7 @@ function productPage(p) {
       </div>
       <p class="small muted">Free shipping in Canada over $175 · $20 flat rate under that · <a href="/shipping/">US shipping quoted per order</a></p>
       ${guarantee(' compact')}
+      <p class="small muted">Not sure this is the one? <a class="link" href="/build-your-stack/">Build your stack</a>. About a minute.</p>
       <ul class="ticks">${d.ticks.map((t) => `<li><span>${esc(t)}</span></li>`).join('')}</ul>
       ${productReview(p.id)}
     </div>
@@ -572,7 +574,7 @@ const story = {
     <div class="stack-sm" style="gap:18px;font-size:17px;color:var(--text)">
       <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> A longtime mushroom enthusiast and lifelong mountain guy, Pete forages, makes his own tinctures and explores the Kootenays on a snowboard and a mountain bike. He brings a hands-on, back-to-nature approach to REWILD.</p>
       <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> A self-taught designer, marketer and lifelong explorer, Jade has spent 20 years turning ideas into things people can experience. At REWILD she leads brand, design, marketing and tech, following the mushrooms wherever they lead next.</p>
-      <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> With 16 years studying nutrition, human optimization and supplementation, Sean brings a whole-food, back-to-basics approach to Rewild. He sees functional mushrooms as simple, natural tools for helping the body perform, adapt and recover.</p>
+      <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> With 16 years studying nutrition, human optimization and supplementation, Sean brings a whole-food, back-to-basics approach to Rewild. He sees functional mushrooms as simple, whole foods that belong in an active life.</p>
     </div>
   </div>
 </div></section>
@@ -668,7 +670,7 @@ function postPage(post) {
 <section class="section tight"><div class="narrow"><div class="prose">${post.body}</div></div></section>
 </article>
 <section class="section tight stone"><div class="wrap">
-  <div class="stack-sm" style="margin-bottom:32px;gap:12px"><p class="eyebrow">Explore Rewild Mushrooms</p><h2 class="h3">Canadian-grown. Full spectrum. Third-party tested.</h2></div>
+  <div class="stack-sm" style="margin-bottom:32px;gap:12px"><p class="eyebrow">Explore Rewild Mushrooms</p><h2 class="h3">Canadian-grown. Full spectrum. Third-party tested.</h2><p class="small muted">Not sure which one fits? <a class="link" href="/build-your-stack/">Build your stack</a>. About a minute.</p></div>
   <div class="grid-4">${powders.map((p) => productCard(p)).join('')}</div>
 </div></section>`,
   };
@@ -850,6 +852,7 @@ function guidePage(g) {
 <section class="section stone"><div class="narrow prose" style="max-width:760px">
   <h2 style="margin-top:0">Go deeper</h2>
   <p>If you want to fall all the way down the rabbit hole, start with mycologist Paul Stamets. His book <em>Mycelium Running</em> and the 2019 documentary <em>Fantastic Fungi</em> are two of the best introductions to how fungi shape the living world, from forest soil to the food on your plate.</p>
+  <p>Not sure which one fits your day? <a href="/build-your-stack/">Build your stack</a>. It takes about a minute.</p>
   <p>Or keep reading here: ${others.map((o) => `<a href="/learn/${o.slug}/">${esc(o.name)}</a>`).join(', ')}, or the <a href="/journal/">journal</a>.</p>
   <p class="small muted">This guide is for education only and is not medical advice.</p>
 </div></section>
@@ -900,7 +903,7 @@ const notFound = {
   title: 'Page not found | REWILD',
   description: 'This page wandered off into the forest.',
   noindex: true,
-  body: `<section class="section"><div class="narrow stack center" style="text-align:center"><p class="eyebrow">404</p><h1 class="h1" style="font-size:clamp(36px,5vw,60px)">This page went back to nature.</h1><p class="lead">Let's get you somewhere useful.</p><div class="row" style="justify-content:center"><a class="btn btn-dark" href="/shop/">Shop</a><a class="btn btn-outline" href="/">Home</a></div></div></section>`,
+  body: `<section class="section"><div class="narrow stack center" style="text-align:center"><p class="eyebrow">404</p><h1 class="h1" style="font-size:clamp(36px,5vw,60px)">This page went back to nature.</h1><p class="lead">Let's get you somewhere useful.</p><div class="row" style="justify-content:center"><a class="btn btn-dark" href="/shop/">Shop</a><a class="btn btn-outline" href="/build-your-stack/">Build your stack</a><a class="btn btn-outline" href="/">Home</a></div></div></section>`,
 };
 
 export const PAGES = [

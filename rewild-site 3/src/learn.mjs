@@ -3,7 +3,7 @@
 // REWILD's own words. Keep this educational: no health claims.
 // To swap a photo: drop a square image in public/img and change `image` below. Set image: null for a placeholder.
 
-const CLEAN = ['Certified organic (Canada and US)', 'Non-GMO', 'Gluten free (under 15 ppm)', 'Vegan', 'Kosher', 'Halal', 'Made in a GMP-verified facility', 'No fillers, colours, preservatives or desiccants'];
+const CLEAN = ['Certified organic (Canada and US)', 'Non-GMO', 'Gluten free (under 15 ppm)', 'Vegan', 'Kosher', 'Halal', 'Made in a GMP-verified facility', 'No added fillers, colours, preservatives or desiccants'];
 const MICRO = 'Seven microbial checks on every lot: total plate count, yeast, mould, coliforms, E. coli, Salmonella and S. aureus.';
 const HEAVY = [['Arsenic', 'under 0.1 ppm'], ['Cadmium', 'under 0.1 ppm'], ['Lead', 'under 0.25 ppm'], ['Mercury', 'under 0.1 ppm']];
 const GLUCANS = [
@@ -129,7 +129,7 @@ export const GUIDE_BY_PRODUCT = Object.fromEntries(GUIDES.map((g) => [g.productI
 
 export const GROWN = [
   ['Grown in BC', 'Cultivated indoors by our partner grower in British Columbia, using solid-state fermentation on certified organic grain.'],
-  ['The whole organism', 'Each powder contains the fruiting body, mycelium, stroma, natural prebiotic fibre and the compounds the mycelium releases as it grows, together with the organic grain it grew on.'],
+  ['The whole organism', 'Each powder contains the fruiting body, mycelium, stroma, natural fibre and the compounds the mycelium releases as it grows, together with the organic grain it grew on.'],
   ['DNA verified', 'Every lot is identified by DNA (qPCR) and must match an authenticated reference sample of the species on the label.'],
   ['Made to last', 'Water activity is kept under 0.6 so the powder stays dry and stable for three years from production.'],
 ];

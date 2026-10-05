@@ -26,8 +26,8 @@ export const TESTIMONIALS = [
     id: 'jesse',
     name: 'Jesse F.',
     detail: "Men's Coach · Calgary, AB",
-    head: 'It gave me so much energy',
-    quote: "It gave me so much energy, that during the first snowfall I wanted to shovel my neighbours', the entire street. If it wasn't for having to go to work, I would have.",
+    head: 'I wanted to shovel the whole street',
+    quote: "...during the first snowfall I wanted to shovel my neighbours', the entire street. If it wasn't for having to go to work, I would have.",
     products: ['energy', 'tincture', 'duo'],
   },
 ];
@@ -49,7 +49,7 @@ const card = (t) => t.youtube ? video(t) : `<figure class="review">
 </figure>`;
 
 // Full section (homepage, CordyFuel page).
-export function reviewsSection({ eyebrow = 'What Rewilders are saying', title = 'Real people. Real routines.', ids, tone = 'stone' } = {}) {
+export function reviewsSection({ eyebrow = 'What Rewilders are saying', title = 'Real people. Their words. Not ours.', ids, tone = 'stone' } = {}) {
   const list = ids ? ids.map((id) => TESTIMONIALS.find((t) => t.id === id)).filter(Boolean) : TESTIMONIALS;
   if (!list.length) return '';
   return `<section class="section ${tone} reviews-band" aria-label="Customer reviews"><div class="wrap">

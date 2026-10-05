@@ -18,15 +18,15 @@ const pull = (text, by = '') =>
 
 const FAQ = [
   ['What is CordyFuel™?', 'CordyFuel™ is a full-spectrum Cordyceps militaris (fruiting body and mycelium) grown in Coldstream, British Columbia, and standardized to a minimum of 3 mg/g cordycepin in every batch. It won Best Fruiting Body / Full Spectrum at the 2025 Cordy Cup. Rewild Energy and Rewild Energy Tincture are powered by CordyFuel™.'],
-  ['Is CordyFuel™ a blend?', 'No. It is 100% Cordyceps militaris. No fillers, no proprietary blend, nothing else in the bag.'],
+  ['Is CordyFuel™ a blend?', 'No. It is 100% Cordyceps militaris. No proprietary blend, nothing added, nothing else in the bag.'],
   ['How do I take Rewild Energy?', 'Powder: ½ teaspoon in a smoothie, elixir, soup, tea, coffee, or hot water and honey. In a warm drink, add a little coconut oil or butter and blend it so the powder mixes in smooth. Tincture: 10 to 20 ml per serving, straight or added to a drink.'],
 ];
 
 export const cordyfuelPage = {
   path: '/cordyfuel/',
   title: 'What is CordyFuel™? Award-Winning Cordyceps Militaris from BC | REWILD',
-  description: 'CordyFuel™ is high-potency, full-spectrum Cordyceps militaris grown in BC. 2025 Cordy Cup winner, third-party tested, no fillers. Powering Rewild Energy.',
-  ogTitle: 'What is CordyFuel™? Energy. Movement. Recovery.',
+  description: 'CordyFuel™ is high-potency, full-spectrum Cordyceps militaris grown in BC. 2025 Cordy Cup winner, third-party tested, nothing added. Powering Rewild Energy.',
+  ogTitle: 'What is CordyFuel™? Energy. Movement. Nothing hidden.',
   image: '/img/cordyfuel-duo-square.webp',
   preload: '/img/hero-snowboard-cordyfuel.webp',
   jsonld: [
@@ -46,10 +46,10 @@ export const cordyfuelPage = {
   <div class="wrap"><div class="hero-copy" style="max-width:680px">
     <p class="eyebrow">What is CordyFuel™?</p>
     <h1 class="h1">CordyFuel™<span class="h1-sub lp-h1-sub">High-potency Cordyceps militaris, grown in British Columbia</span></h1>
-    <p class="tag">Energy. Movement. Recovery.</p>
+    <p class="tag">Energy. Movement. Nothing hidden.</p>
     <p class="body">No mystery blend. No laundry list of ingredients. No complicated protocol. Just full-spectrum <em>Cordyceps militaris</em>, grown in BC and third-party tested for what actually matters.</p>
     <ul class="lp-badges" aria-label="At a glance">
-      <li>Award-winning potency</li><li>Canadian grown</li><li>Full spectrum</li><li>No fillers</li><li>Non-GMO</li>
+      <li>Award-winning potency</li><li>Canadian grown</li><li>Full spectrum</li><li>Nothing added</li><li>Non-GMO</li>
     </ul>
     <div class="row" style="margin-top:6px">${cta('Shop Rewild Energy', true)}</div>
     <p class="note">Return to your natural state.</p>
@@ -69,7 +69,7 @@ export const cordyfuelPage = {
 <section class="section stone lp"><div class="lp-col">
   <p class="eyebrow">Cordyceps militaris, explained</p>
   <h2 class="h2">Meet CordyFuel™.</h2>
-  <p>Cordyceps has been used for generations and has become one of the most recognized functional mushrooms for people interested in energy, endurance and performance.</p>
+  <p>Cordyceps has been used for generations and has become one of the best-known functional mushrooms in the world.</p>
   <p class="lp-big">But not all Cordyceps is the same.</p>
   <p>CordyFuel™ is grown in British Columbia using a carefully selected strain of <em>Cordyceps militaris</em> and cultivated for unusually high levels of naturally occurring cordycepin.</p>
   <p>Nothing is hidden behind a proprietary blend. What you see is what you get.</p>
@@ -97,7 +97,7 @@ export const cordyfuelPage = {
   <p>We believe you should know what you're putting into your body.</p>
   <p>CordyFuel™ is cultivated in Coldstream, British Columbia, in a dedicated mushroom growing facility, and third-party tested for potency and quality.</p>
   <ul class="lp-checks">
-    <li>Grown in BC</li><li>Third-party tested</li><li>Full spectrum: fruiting body + mycelium</li><li>Grown on organic sorghum</li><li>No fillers</li><li>Non-GMO</li>
+    <li>Grown in BC</li><li>Third-party tested</li><li>Full spectrum: fruiting body + mycelium</li><li>Grown on organic sorghum</li><li>Nothing added</li><li>Non-GMO</li>
   </ul>
   ${pull("We don't believe you should need a chemistry degree to understand what's in the bag.")}
   <p><a class="link" href="/lab-results/">See how it's grown and tested</a></p>
@@ -135,7 +135,7 @@ export const cordyfuelPage = {
     <p>My energy was low. I wasn't moving like myself. I didn't really feel like myself.</p>
     <p>CordyFuel™ became one small part of finding my way back.</p>
     ${pull('Not a miracle. Not the thing that fixed everything.<br>A tool.')}
-    <p>One that helped reconnect me with movement, energy and a body I actually wanted to use again.</p>
+    <p>One part of getting back to movement, and to a body I actually wanted to use again.</p>
     <p>That trade eventually became REWILD.</p>
     <p>Funny how mushrooms work.</p>
     <p class="lp-sign">Jade</p>

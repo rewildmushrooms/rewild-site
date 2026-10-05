@@ -36,9 +36,9 @@ export const icons = {
 export function proofStrip() {
   const items = [
     [icons.trophy, 'Cordy Cup Winner', '2025, Sweden · Best Cordyceps militaris (Fruiting Body / Full Spectrum)'],
-    [icons.flask, 'Third-Party Tested', 'Every batch. Lab results on request.'],
+    [icons.flask, 'Third-Party Tested', 'Every batch. <a href="/lab-results/" style="color:inherit;text-decoration:underline">See the numbers</a>.'],
     [icons.mountain, 'Grown in BC', 'On certified organic sorghum in a 45,000 sq ft solar-powered facility'],
-    [icons.leaf, '100% Organic', 'No fillers. Nothing added.'],
+    [icons.leaf, '100% Organic', 'Nothing added to the mushroom.'],
     [icons.circle, 'Full Spectrum', 'Fruiting body + mycelium. The whole mushroom, not just one part.'],
   ];
   return `<section class="dark" aria-label="Why Rewild"><div class="wrap proof">${items
