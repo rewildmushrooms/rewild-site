@@ -298,6 +298,30 @@ const COMMON_FAQS = [
   ['Is this medical advice?', 'No. REWILD mushroom powders are sold as foods, not medicine. Talk to your healthcare practitioner before use if you are pregnant, nursing or taking medication.'],
 ];
 
+const USE_TAGS = {
+  energy: ['Coffee', 'Matcha', 'Smoothies', 'Oats', 'Protein shakes', 'Hot water + honey'],
+  clarity: ['Coffee', 'Tea', 'Smoothies', 'Soups', 'Sauces', 'Hot water + honey'],
+  strength: ['Coffee', 'Tea', 'Chai', 'Smoothies', 'Oats', 'Hot water + honey'],
+  peace: ['Hot cacao', 'Chai', 'Golden milk', 'Nut-milk lattes', 'Honey + hot water'],
+  tincture: ['Straight up', 'Water bottle', 'Coffee', 'Smoothies', 'Sparkling water'],
+};
+function howToUse(p) {
+  const key = p.isTincture ? 'tincture' : p.id;
+  const tags = USE_TAGS[key];
+  if (!tags) return '';
+  const tip = p.isTincture
+    ? 'Tip: keep a bottle in your pack. It goes wherever you go, no blender required.'
+    : 'Tip for warm drinks: add a little coconut oil or butter and blend it. The fat helps the powder mix in smooth, so your drink doesn\'t get muddy.';
+  return `<section class="section"><div class="narrow stack" style="gap:22px">
+  <p class="eyebrow">How to use it</p>
+  <h2 class="h2" style="font-size:clamp(32px,4.4vw,56px);margin:0">Nothing complicated required.</h2>
+  <p class="lead" style="margin:0">${esc(p.name)} is easy to work into what you're already doing. Add it to:</p>
+  <ul class="lp-tags">${tags.map((t) => `<li>${esc(t)}</li>`).join('')}<li>Or find your own way</li></ul>
+  <p style="margin:0">Consistency matters more than complexity. Just add it to something you already do every day.</p>
+  <p class="muted" style="margin:0">${tip}</p>
+</div></section>`;
+}
+
 function productPage(p) {
   const d = PRODUCT_DETAILS[p.id];
   const faqs = [...d.faqs, ...COMMON_FAQS.filter((f) => !(p.isTincture && f[0].startsWith('How long')))];
@@ -388,6 +412,7 @@ function productPage(p) {
     </dl>
   </div>
 </div></section>
+${howToUse(p)}
 <section class="section tight"><div class="narrow">
   <h2 class="h3" style="margin-bottom:20px">Questions</h2>
   ${faqHtml(faqs)}
