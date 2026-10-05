@@ -37,9 +37,10 @@ const SHIELD = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stro
 const guarantee = (extra = '') => `<div class="guarantee${extra}">${SHIELD}<div><b>100% Risk-Free Guarantee</b><span>${GUARANTEE_TEXT}</span></div></div>`;
 const faqHtml = (faqs) => faqs.map(([q, a]) => `<details class="faq"><summary>${esc(q)}</summary><div class="answer">${a}</div></details>`).join('');
 
+const BRIGHT = { energy: '#F2780C', clarity: '#8A4DFF', strength: '#22B573', peace: '#E8364B', tincture: '#F2780C', duo: '#F2780C' };
 function productCard(p, { headingLevel = 3 } = {}) {
   const h = `h${headingLevel}`;
-  return `<article class="card">
+  return `<article class="card pcard" style="--pc:${BRIGHT[p.id] || p.color}">
     <a class="img-link" href="/shop/${p.slug}/"><img src="${p.image}" alt="${esc(p.alt)}" width="600" height="600" loading="lazy"></a>
     <div class="meta">
       <div class="dot-label"><span class="dot" style="background:${p.color}"></span><span>${esc(p.mushroom)}</span></div>
@@ -102,7 +103,7 @@ const home = {
     <p class="eyebrow">For the ones who'd rather be outside</p>
     <h1 class="h1">Feel more alive.</h1>
     <p class="tag">Energy. Clarity. Strength. Peace.</p>
-    <p class="body">You already believe in mushrooms. So do we. Ours are organic, full-spectrum and grown right here in BC, with <a href="/lab-results/" style="color:inherit;text-decoration:underline;text-underline-offset:3px">every lot lab tested</a>. Stir them into your morning cup, then get outside.</p>
+    <p class="body">Early starts. Long trails. Campfires that go late. Organic, full-spectrum mushrooms grown in BC, stirred into your morning cup before you head out the door. Stay wild.</p>
     <div class="row" style="margin-top:8px"><a class="btn btn-yellow" href="#cordyfuel-options">Start with Rewild Energy</a><a class="btn btn-ghost" href="/shop/">Shop all mushrooms</a></div>
     <p class="note">Return to your natural state.</p>
   </div></div>
@@ -139,10 +140,10 @@ ${CORDYFUEL_SECTION}
   <div class="grid-4">${powders.map((p) => productCard(p)).join('')}</div>
 </div></section>
 ${reviewsSection()}
-<section class="section dark" id="stack"><div class="wrap split">
+<section class="section fringe stack-trip" id="stack"><div class="wrap split">
   <div class="stack">
-    <p class="eyebrow">Build your stack</p>
-    <h2 class="h2">Know what you're choosing.</h2>
+    <p class="fringe-eyebrow">Build your stack</p>
+    <h2 class="h2 fringe-grad">Know what you're choosing.</h2>
     <p class="lead" style="color:var(--on-dark);max-width:560px">Your days aren't like anyone else's. Neither is what you need from them. Choose the mushrooms that match how you actually live, and get exactly what you came for.</p>
     <div class="row" style="margin-top:6px"><a class="btn btn-yellow" href="/build-your-stack/">Build your stack</a><a class="btn btn-ghost" href="/shop/">Shop all</a></div>
   </div>
@@ -582,10 +583,10 @@ const story = {
   <h2>What we believe</h2>
   <ul><li>Mushrooms are tools. Not miracles. Not shortcuts.</li><li>You should know exactly what's inside, clearly labelled.</li><li>Trust comes from transparency, not hype. That's why every lot is lab tested and <a href="/lab-results/">the numbers are public</a>.</li><li>Small daily choices compound.</li></ul>
 </div></section>
-<section class="section"><div class="wrap split">
+<section class="section fringe story-trip"><div class="wrap split">
   <div><img class="cover portrait" src="/img/rewild-bear-cordyfuel-tincture.webp" alt="A bear at a summer festival with a bottle of Rewild Energy tincture in its teeth" width="960" height="1280" loading="lazy"></div>
   <div class="stack">
-    <img src="/img/rewild-emblem-sunset.webp" alt="" width="96" height="99" loading="lazy" style="width:96px;height:auto">
+    <img src="/img/rewild-emblem-sunset-v2.webp" alt="" width="96" height="99" loading="lazy" style="width:96px;height:auto">
     <p class="eyebrow">Return to your natural state</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Rewild is an invitation to come back.</h2>
     <div class="stack-sm" style="gap:18px;font-size:18px;color:var(--text)">
