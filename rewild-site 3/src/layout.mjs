@@ -120,17 +120,13 @@ ${page.body}
 </main>
 <footer class="site-footer">
   <div class="wrap">
-    <a class="ig-band" href="https://www.instagram.com/rewildmushroompowder/" target="_blank" rel="me noopener">
-      <svg class="ig-glyph" viewBox="0 0 24 24" width="40" height="40" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.3" fill="currentColor"/></svg>
-      <span class="ig-text"><b>Follow us on Instagram</b><span>@rewildmushroompowder</span></span>
-      <span class="ig-arrow" aria-hidden="true">&rarr;</span>
-    </a>
     <div class="footer-top">
       <div class="stack-sm">
         <div class="brand" style="color:#fff"><img src="/img/emblem-light-sm.webp" alt="" width="38" height="38"><span style="color:#fff">REWILD</span></div>
         <p>Organic, full-spectrum mushrooms grown in British Columbia.</p>
         <p style="font-style:italic">Return to your natural state.</p>
         <div style="margin-top:12px"><p style="color:#fff;font-weight:700;margin-bottom:8px">Join the Rewilders</p>${signupForm('footer')}</div>
+        <a class="ig-btn" href="https://www.instagram.com/rewildmushroompowder/" target="_blank" rel="me noopener"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.3" fill="currentColor"/></svg>Follow us on Instagram</a>
       </div>
       <nav class="footer-col" aria-label="Shop"><p class="footer-h">Shop</p>
         <a href="/shop/cordyceps-tincture/"><span class="new-tag">New</span> Energy Tincture · Cordyceps</a>
