@@ -159,7 +159,7 @@ ${page.body}
       </nav>
     </div>
     <p class="disclaimer">REWILD mushroom powders are sold as foods. The information on this site is for general education and is not medical advice. Speak with a healthcare practitioner before use if you are pregnant, nursing or taking medication. CordyFuel™ is a trademark of <a href="https://nucelium.com" rel="noopener" target="_blank">NuCelium</a>, our grower, used with permission.</p>
-    <div class="footer-bottom"><span>© ${new Date().getFullYear()} REWILD Mushrooms · Slocan Valley, British Columbia</span><span><a href="https://www.instagram.com/rewildmushroompowder/" rel="me noopener">@rewildmushroompowder</a></span></div>
+    <div class="footer-bottom"><span>© ${new Date().getFullYear()} REWILD Mushrooms · Slocan Valley, British Columbia</span><span><a class="rabbit-link" href="/resources/#rabbit-hole"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M3 12a9 7 0 0 1 18 0z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 12v6.5a2.5 2.5 0 0 0 5 0V12" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="8.6" r="1.1" fill="currentColor"/><circle cx="14.5" cy="7.4" r="1.1" fill="currentColor"/></svg>down the rabbit hole</a></span></div>
   </div>
 </footer>
 

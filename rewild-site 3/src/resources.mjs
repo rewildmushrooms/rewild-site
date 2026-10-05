@@ -76,7 +76,7 @@ const FRINGE = [
   { id: 'Cjs5HtaqZ_c', title: 'Amanita Muscaria: Why Was It Secret?', by: 'Simon Rilling with Marianne & Johan (podcast)', note: 'A long conversation about the red-and-white toadstool: history, folklore and why it was kept quiet.' },
 ];
 
-const FRINGE_SECTION = `<section class="fringe"><div class="wrap">
+const FRINGE_SECTION = `<section class="fringe" id="rabbit-hole"><div class="wrap">
   <div class="fringe-head">
     <p class="fringe-eyebrow">Videos \u00b7 Fringe fungi \u00b7 off the beaten trail</p>
     <h2 class="fringe-title">Down the rabbit hole.</h2>
