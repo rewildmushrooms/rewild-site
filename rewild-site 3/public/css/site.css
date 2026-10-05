@@ -652,3 +652,5 @@ p{text-wrap:pretty}
 .nav-sub.shop-sub{min-width:300px}.shop-sub a{white-space:nowrap}
 .site-footer a.footer-guarantee{margin-top:18px;max-width:340px;text-decoration:none}
 .site-footer a.footer-guarantee:hover b{color:var(--accent)}
+/* Mobile menu scrolls when it is taller than the screen */
+@media (max-width:900px){.nav.open{max-height:calc(100vh - 120px);max-height:calc(100dvh - 120px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}}
