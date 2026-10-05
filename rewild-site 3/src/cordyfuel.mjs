@@ -26,7 +26,7 @@ export const cordyfuelPage = {
   path: '/cordyfuel/',
   title: 'What is CordyFuel™? Award-Winning Cordyceps Militaris from BC | REWILD',
   description: 'CordyFuel™ is high-potency, full-spectrum Cordyceps militaris grown in BC. 2025 Cordy Cup winner, third-party tested, nothing added. Powering Rewild Energy.',
-  ogTitle: 'What is CordyFuel™? Energy. Movement. Nothing hidden.',
+  ogTitle: 'What is CordyFuel™? For people who move.',
   image: '/img/cordyfuel-duo-square.webp',
   preload: '/img/hero-snowboard-cordyfuel.webp',
   jsonld: [
@@ -45,15 +45,16 @@ export const cordyfuelPage = {
 <section class="hero lp-hero">
   <div class="wrap"><div class="hero-copy" style="max-width:680px">
     <p class="eyebrow">What is CordyFuel™?</p>
-    <h1 class="h1">CordyFuel™<span class="h1-sub lp-h1-sub">High-potency Cordyceps militaris, grown in British Columbia</span></h1>
-    <p class="tag">Energy. Movement. Nothing hidden.</p>
-    <p class="body">No mystery blend. No laundry list of ingredients. No complicated protocol. Just full-spectrum <em>Cordyceps militaris</em>, grown in BC and third-party tested for what actually matters.</p>
+    <h1 class="h1">CordyFuel™<span class="h1-sub lp-h1-sub">Award-winning Cordyceps militaris, grown in British Columbia</span></h1>
+    <p class="tag">For people who move.</p>
+    <p class="lp-tm">CordyFuel™ is a trademark of <a href="https://nucelium.com" rel="noopener" target="_blank">NuCelium</a>, our BC grower.</p>
     <ul class="lp-badges" aria-label="At a glance">
-      <li>Award-winning potency</li><li>Canadian grown</li><li>Full spectrum</li><li>Nothing added</li><li>Non-GMO</li>
+      <li>Third-party tested</li><li>Canadian grown</li><li>Full spectrum</li><li>Nothing added</li><li>Non-GMO</li>
     </ul>
     <div class="row" style="margin-top:6px">${cta('Shop Rewild Energy', true)}</div>
     <p class="note">Return to your natural state.</p>
   </div></div>
+  <a class="photo-credit" href="https://www.instagram.com/petemossbosssauce/" target="_blank" rel="noopener">Pictured: Pete Moss, REWILD co-founder · @petemossbosssauce</a>
 </section>
 
 <section class="section lp"><div class="lp-col">
@@ -163,7 +164,7 @@ export const cordyfuelPage = {
   <ul class="lp-litany lp-litany-dark">
     <li>Strain selection matters.</li><li>Growing conditions matter.</li><li>The substrate matters.</li><li>Testing matters.</li><li>And the final numbers matter.</li>
   </ul>
-  <p>The Cordy Cup result gave us something unusual in the mushroom world:</p>
+  <p>The Cordy Cup result gave CordyFuel™ something unusual in the mushroom world:</p>
   <p class="lp-big" style="color:var(--accent)">Proof you can actually measure.</p>
 </div></section>
 

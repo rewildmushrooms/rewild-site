@@ -574,8 +574,8 @@ const story = {
     <p class="eyebrow">The team</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Built on trust, integrity and a solid passion for 'shrooms.</h2>
     <div class="stack-sm" style="gap:18px;font-size:17px;color:var(--text)">
-      <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> A lifelong mountain guy and mushroom enthusiast, Pete has spent years in the Kootenay forests learning about fungi, and now makes his own mushroom tinctures and extracts. For him, REWILD is about getting back to the roots: time in nature, learning from the forest and sharing the good stuff with his community.</p>
       <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> A self-taught designer, marketer and lifelong explorer, Jade has spent 20 years turning ideas into things people can experience. At REWILD she leads brand, design, marketing and tech, following the mushrooms wherever they lead next.</p>
+      <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> A lifelong mountain guy and mushroom enthusiast, Pete has spent years in the Kootenay forests learning about fungi, and now makes his own mushroom tinctures and extracts. For him, REWILD is about getting back to the roots: time in nature, learning from the forest and sharing the good stuff with his community.</p>
       <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> With 16 years studying nutrition, human optimization and supplementation, Sean brings a whole-food, back-to-basics approach to Rewild. He sees functional mushrooms as simple, whole foods that belong in an active life.</p>
     </div>
   </div>

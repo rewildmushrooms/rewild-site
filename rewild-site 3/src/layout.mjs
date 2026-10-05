@@ -134,6 +134,7 @@ ${page.body}
         <a href="/shop/lions-mane-powder/">Clarity · Lion's Mane</a>
         <a href="/shop/chaga-powder/">Strength · Chaga</a>
         <a href="/shop/reishi-powder/">Peace · Reishi</a>
+        <span class="footer-soon">Turkey Tail · Coming Soon</span>
       </nav>
       <nav class="footer-col" aria-label="Learn"><p class="footer-h">Learn</p>
         <a href="/cordyfuel/">CordyFuel™, Decoded</a>
