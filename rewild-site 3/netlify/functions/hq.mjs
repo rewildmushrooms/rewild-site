@@ -37,6 +37,7 @@ import { checkPassword } from './_shared/auth.mjs';
 import { traffic } from './_shared/ga.mjs';
 import { markShipped } from './_shared/shipping.mjs';
 import { setOrderStatus, addOrderNote, refundOrder, deleteOrder } from './_shared/orderadmin.mjs';
+import { sendTelegram } from './_shared/telegram.mjs';
 
 // Returns the signed-in team member, or null.
 export async function authorized(req) {
@@ -506,6 +507,7 @@ export default async (req) => {
       if (b.action === 'refundOrder') { console.log('refund', member.id, b.orderId, b.amount || 'all'); return json(200, await refundOrder(b, member)); }
       if (b.action === 'deleteOrder') { console.log('order deleted', member.id, b.orderId); return json(200, await deleteOrder(b, member)); }
       if (b.action === 'shippingInvoice') return json(200, { ok: true, ...(await sendShippingInvoice(b)) });
+      if (b.action === 'testAlert') return json(200, await sendTelegram('✅ REWILD order alerts are working. New website orders will show up here.'));
       return json(400, { error: 'Unknown action' });
     }
     return json(405, { error: 'Method not allowed' });
