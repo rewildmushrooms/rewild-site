@@ -534,3 +534,21 @@ p{text-wrap:pretty}
 .sp-band{background:linear-gradient(rgba(12,13,10,.86),rgba(12,13,10,.9)),url(/img/spirit-plant-fire-circle.webp) center/cover,#121310}
 .sp-poster img{display:block;width:100%;max-width:400px;height:auto;border-radius:var(--radius);box-shadow:0 18px 50px rgba(0,0,0,.5);margin:0 auto}
 .res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}@media (max-width:900px){.res-grid{grid-template-columns:1fr}}.res-card{background:#fff}.res-feature{display:grid;grid-template-columns:1fr 1.1fr;gap:48px;align-items:center}@media (max-width:900px){.res-feature{grid-template-columns:1fr}}.res-book{border-left:3px solid var(--accent);padding:4px 0 4px 16px;display:flex;flex-direction:column;gap:6px}.res-card{border:1px solid var(--line);border-radius:var(--radius);padding:26px;display:flex;flex-direction:column;gap:12px}.res-books{margin:0;padding-left:18px}.res-books li{margin:4px 0}.res-links{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}.res-links a{font-weight:600}
+.res-hero-band{background:radial-gradient(ellipse at 20% 30%,rgba(232,200,0,.14),transparent 55%),radial-gradient(ellipse at 85% 80%,rgba(176,58,30,.25),transparent 60%),#121310;color:#fff;padding:88px 0 72px;overflow:hidden}
+.res-hero-band .res-feature{grid-template-columns:.8fr 1.2fr}
+.res-cover-wrap{position:relative;justify-self:center}
+.res-cover{display:block;width:100%;max-width:320px;height:auto;border-radius:4px;transform:rotate(-4deg);box-shadow:0 30px 60px rgba(0,0,0,.6),0 0 0 6px rgba(255,255,255,.04);transition:transform .3s}
+.res-cover-wrap:hover .res-cover{transform:rotate(-1deg) scale(1.02)}
+.res-sticker{position:absolute;top:-18px;right:-18px;z-index:2;width:92px;height:92px;border-radius:50%;background:var(--accent);color:var(--ink);font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:15px;line-height:1.1;display:flex;align-items:center;justify-content:center;text-align:center;transform:rotate(12deg);box-shadow:0 8px 20px rgba(0,0,0,.4)}
+.res-big{font-family:var(--display);font-weight:800;font-size:clamp(40px,6vw,76px);line-height:1;margin:0;color:#fff;text-transform:uppercase}.res-big em{font-style:normal}
+.res-by{font-size:20px;color:var(--accent);margin:0;font-weight:600}
+.res-hero-band .res-links a{color:#fff}
+.res-film{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;margin-top:64px;padding-top:48px;border-top:1px solid var(--dark-line)}
+@media (max-width:900px){.res-hero-band .res-feature,.res-film{grid-template-columns:1fr}.res-cover{max-width:240px}}
+.res-card{position:relative;background:#fff;border:0;border-top:6px solid var(--tone);box-shadow:0 10px 30px rgba(18,19,16,.08);transition:transform .2s,box-shadow .2s}
+.res-card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(18,19,16,.14)}
+.res-avatar{width:56px;height:56px;border-radius:50%;background:var(--tone);color:#fff;font-family:var(--display);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:18px}
+.res-take{margin:6px 0 0;font-family:var(--display);font-weight:700;font-size:21px;line-height:1.3;color:var(--ink)}.res-take span{color:var(--tone);font-size:44px;line-height:0;vertical-align:-.35em;margin-right:4px}
+.res-take-by{margin:0;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);font-weight:700}
+.res-name{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:20px;margin:10px 0 0}
+.res-book-title{margin:0;font-size:17px}.res-note{margin:0;color:var(--muted);font-size:15px}
