@@ -305,6 +305,13 @@ const USE_TAGS = {
   peace: ['Hot cacao', 'Chai', 'Golden milk', 'Nut-milk lattes', 'Honey + hot water'],
   tincture: ['Straight up', 'Water bottle', 'Coffee', 'Smoothies', 'Sparkling water'],
 };
+// Energy Tincture: muted looping waterfall clip. Loads only when near the viewport; still frame for reduced motion.
+const FALLS_BAND = `<section class="falls-band">
+  <video class="falls-vid" muted loop playsinline preload="none" poster="/img/energy-falls-poster.webp" aria-hidden="true"></video>
+  <div class="wrap falls-copy"><p class="eyebrow">Made to come along</p><h2 class="h2">Long trails. Cold water. Bring it.</h2></div>
+  <script>(function(){var v=document.querySelector('.falls-vid');if(!v||!('IntersectionObserver' in window))return;if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;var on=false;new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){if(!on){v.src=innerWidth<760?'/img/energy-falls-720.mp4':'/img/energy-falls.mp4';on=true;}var pr=v.play();pr&&pr.catch(function(){});}else if(on){v.pause();}});},{rootMargin:'200px'}).observe(v);})();</script>
+</section>`;
+
 function howToUse(p) {
   const key = p.isTincture ? 'tincture' : p.id;
   const tags = USE_TAGS[key];
@@ -412,6 +419,7 @@ function productPage(p) {
     </dl>
   </div>
 </div></section>
+${p.isTincture ? FALLS_BAND : ''}
 ${howToUse(p)}
 <section class="section tight"><div class="narrow">
   <h2 class="h3" style="margin-bottom:20px">Questions</h2>
@@ -468,12 +476,6 @@ const lab = {
       <div class="row"><a class="btn btn-yellow" href="#request">Request a full report</a><a class="btn btn-ghost" href="#results">See the numbers</a></div>
     </div>
     <div class="lab-hero-photo"><img src="/img/banner-tincture-snow-peaks-v3.webp" srcset="/img/banner-tincture-snow-peaks-v3-800.webp 800w, /img/banner-tincture-snow-peaks-v3.webp 1600w" sizes="(max-width: 900px) 100vw, 46vw" alt="REWILD Energy CordyFuel™ tincture bottle on a rock above snowy mountain peaks" width="1600" height="1205"></div>
-  </div>
-  <div class="stats lab-hero-stats">
-    <div class="stat inverse"><b>4 of 4</b><span>Powders confirmed as the species on the label, by DNA or chemical fingerprint</span></div>
-    <div class="stat inverse"><b>42 to 62%</b><span>Beta-glucans measured in recent lots, across all four powders</span></div>
-    <div class="stat inverse"><b>13+</b><span>Lab checks on every lot: identity, potency, purity, stability</span></div>
-    <div class="stat inverse"><b>7</b><span>Microbial tests every lot has to pass, plus gluten under 15 ppm</span></div>
   </div>
 </div></section>
 
