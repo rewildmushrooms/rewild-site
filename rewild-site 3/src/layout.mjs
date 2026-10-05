@@ -114,7 +114,7 @@ ${SITE.ga ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${SI
 </head>
 <body>
 <a href="#main" class="sr-only">Skip to content</a>
-<div class="announce">Free shipping in Canada on orders over $${SHIPPING.CA.freeOver / 100} · Now shipping to the US</div>
+<div class="announce"><span class="ann-full">Free shipping in Canada on orders over $${SHIPPING.CA.freeOver / 100} · Now shipping to the US</span><span class="ann-short">Free shipping in Canada over $${SHIPPING.CA.freeOver / 100}</span></div>
 <header class="site-header">
   <div class="wrap">
     <a href="/" class="brand brand-logo" aria-label="REWILD Mushrooms home"><img src="/img/rewild-mushrooms-logo-v3.webp" alt="REWILD Mushrooms" width="429" height="120"></a>
@@ -232,6 +232,7 @@ ${page.body}
 <script src="/js/catalog.js?v=${SITE.build}"></script>
 <script src="/js/pricing.js?v=${SITE.build}" defer></script>
 <script src="/js/cart.js?v=${SITE.build}" defer></script>
+<button type="button" class="to-top" id="to-top" aria-label="Back to top"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 14l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 ${page.scripts || ''}
 </body>
 </html>`;

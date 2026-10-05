@@ -2,6 +2,151 @@
 // To add a post: copy one object, give it a new slug, date and body.
 export const POSTS = [
   {
+    slug: 'mushroom-hot-cacao-recipe',
+    image: '/img/use-cacao.webp',
+    schemaImage: '/img/og-default.jpg',
+    imageAlt: 'A mug of hot cacao made with REWILD mushroom powder',
+    title: 'Trail-Morning Mushroom Hot Cacao (A Recipe That Fits In A Thermos)',
+    seoTitle: 'Mushroom Hot Cacao Recipe | Easy, Thermos-Friendly | REWILD Journal',
+    description: "An easy mushroom hot cacao for cold mornings: real cacao, maple and ½ tsp of Chaga, Reishi, Lion's Mane or Cordyceps powder. Plus a make-ahead jar mix.",
+    date: '2026-10-05',
+    modified: '2026-10-05',
+    readMins: 4,
+    body: `
+<p>Some mornings start before the sun does. Frost on the truck. A long drive to the trailhead. Gloves that never quite dry out. This is the mug we make on those mornings, and the one that rides along in the thermos.</p>
+<p>It takes about five minutes. No blender required. And it works with any of our mushroom powders, so use whichever one is already in your cupboard.</p>
+<h2>What You'll Need (One Big Mug)</h2>
+<ul>
+<li>1 cup (250 ml) milk of any kind: dairy, oat, almond, coconut</li>
+<li>1 tablespoon unsweetened cacao powder, or 15 g of dark chocolate, chopped</li>
+<li>½ teaspoon REWILD mushroom powder</li>
+<li>1 to 2 teaspoons maple syrup or honey, to taste</li>
+<li>A small pinch of salt</li>
+<li>Optional: a pinch of cinnamon, and 1 teaspoon coconut oil or butter</li>
+</ul>
+<h2>How To Make It</h2>
+<ol>
+<li><strong>Make a paste first.</strong> In your mug, stir the cacao, mushroom powder and salt with a splash of hot water until smooth. This one step is the difference between silky and clumpy.</li>
+<li><strong>Heat the milk.</strong> Warm it in a small pot until it steams. Don't let it boil.</li>
+<li><strong>Whisk it together.</strong> Pour the hot milk into the paste a little at a time, whisking or stirring as you go.</li>
+<li><strong>Finish it.</strong> Add maple or honey to taste. If you're using coconut oil or butter, stir it in now. The fat helps the powder blend in smooth, so your drink doesn't get muddy.</li>
+</ol>
+<p>Heading out? Pour it straight into a preheated thermos. (Fill the thermos with boiling water for a few minutes first, then dump it. Your cacao stays hot for hours longer.)</p>
+<h2>Which Mushroom Goes Best?</h2>
+<p>They all work. They just taste a little different in the mug:</p>
+<ul>
+<li><a href="/shop/chaga-powder/">Chaga</a> is earthy and a little vanilla-like. The most natural match for chocolate.</li>
+<li><a href="/shop/reishi-powder/">Reishi</a> is bitter, and dark chocolate loves bitter. Add an extra drizzle of maple and it disappears.</li>
+<li><a href="/shop/lions-mane-powder/">Lion's Mane</a> is mild and slightly sweet. You'll barely know it's there.</li>
+<li><a href="/shop/cordyceps-militaris-powder/">Cordyceps</a> is bright and a little savoury. Great with a pinch of cinnamon.</li>
+</ul>
+<p>Can't decide? <a href="/build-your-stack/">Build your stack</a> takes about a minute.</p>
+<h2>Make-Ahead Jar Mix (10 Mugs)</h2>
+<p>For cabin weekends, festival camping or anyone who doesn't want to measure at 5am. Stir together in a clean, dry jar:</p>
+<ul>
+<li>10 tablespoons cacao powder</li>
+<li>5 teaspoons REWILD mushroom powder</li>
+<li>3 tablespoons coconut sugar or brown sugar</li>
+<li>¼ teaspoon salt, and cinnamon if you like it</li>
+</ul>
+<p>Use about 2 heaping tablespoons per mug. Make the paste with a splash of hot water, then add hot milk. Keep the jar sealed and dry.</p>
+<h2>Three Easy Twists</h2>
+<ul>
+<li><strong>Campfire:</strong> heat everything together in a small pot over the stove or fire, stirring the whole time.</li>
+<li><strong>Spiced:</strong> cinnamon, a pinch of nutmeg and the tiniest pinch of cayenne.</li>
+<li><strong>Mint:</strong> a drop of peppermint extract, or let a fresh mint sprig steep in the milk while it heats.</li>
+</ul>
+<p>That's it. Nothing complicated required. Just a warm mug, a cold morning and somewhere you'd rather be.</p>`,
+  },
+  {
+    slug: 'how-to-read-a-mushroom-lab-report-coa',
+    image: '/img/label-energy-back.webp',
+    imageAlt: 'The back label of a REWILD Energy pouch, showing the lot number and ingredients',
+    title: 'How To Read A Mushroom Lab Report (COA) In Five Minutes',
+    seoTitle: 'How To Read A Mushroom COA (Certificate Of Analysis) | REWILD Journal',
+    description: 'How to read a mushroom certificate of analysis: lot numbers, species identity, beta-glucans, cordycepin, microbial testing and red flags to ask about.',
+    date: '2026-10-05',
+    modified: '2026-10-05',
+    readMins: 5,
+    body: `
+<p>"Third-party tested" is printed on a lot of mushroom bags. It's a good sign. But the phrase on its own doesn't tell you much. The real information lives in the lab report, called a certificate of analysis, or COA.</p>
+<p>A COA can look intimidating. Columns of numbers, test methods in capital letters, units you haven't seen since high school. The good news is you only need to know where to look. Here's how we read one.</p>
+<h2>1. Find The Lot Number</h2>
+<p>Every COA should be tied to a specific batch, called a lot. Our Energy powder, for example, has a recent lot numbered 240807-CM300-4118. That number should connect the report to real product.</p>
+<p>If a report has no lot number, it's hard to know what was actually tested. Also check the date. A report from several years ago doesn't tell you much about what's in the bag today.</p>
+<h2>2. Check Identity: Is It The Right Mushroom?</h2>
+<p>This is the most basic question, and one of the most important. Is the mushroom in the bag the species on the label?</p>
+<p>Labs answer this a few ways. DNA sequencing (you may see "Sanger sequencing") reads the organism's genetic code. Chemical fingerprinting (often listed as FTIR or HPTLC) compares the material to a known reference. Either is a good sign. A report with no identity test at all is worth asking about.</p>
+<h2>3. Read The Potency Numbers</h2>
+<p>This section tells you what's measurably in the powder. For functional mushrooms, the usual measurements are:</p>
+<ul>
+<li><strong>Total polysaccharides:</strong> a broad measure of the complex carbohydrates in the powder.</li>
+<li><strong>Beta-glucans (1,3-1,6):</strong> a more specific measure of the type of fibre mushrooms are known for. This number is more useful than total polysaccharides on its own, because a broad polysaccharide test can also pick up starch.</li>
+<li><strong>Species-specific markers:</strong> for Cordyceps militaris, that's cordycepin, usually measured by UPLC or HPLC.</li>
+</ul>
+<p>Look for two columns: the <strong>specification</strong> (the minimum the product has to meet) and the <strong>result</strong> (what this lot actually measured). For our Energy powder, the cordycepin specification is at least 3 mg/g. A recent lot measured 5.7 mg/g in-house and 7.1 mg/g at an independent lab. Its beta-glucan specification is at least 30%, and that lot came in at 42.8%.</p>
+<p>A report that only says "pass" without showing numbers tells you a lot less than one that shows both.</p>
+<h2>4. Check Purity: What Shouldn't Be In It</h2>
+<p>This is the safety section. Mushroom powders are a food, so you want to see microbial testing. Our lots go through seven microbial checks: total plate count, yeast, mould, coliforms, E. coli, Salmonella and S. aureus.</p>
+<p>You may also see limits for heavy metals such as arsenic, cadmium, lead and mercury, and, if the product is labelled gluten-free, a gluten result. Ours has to test under 15 ppm.</p>
+<h2>5. Look For Stability</h2>
+<p>Some reports include water activity, which shows how dry and shelf-stable the powder is. Dry powder keeps better. It's part of why every REWILD lot carries a three-year shelf life.</p>
+<h2>Red Flags Worth Asking About</h2>
+<ul>
+<li>No lot number, or a lot number that doesn't match anything on the bag</li>
+<li>No lab name or no test methods listed</li>
+<li>Results with no specification to compare against</li>
+<li>A report that's several years old</li>
+<li>Testing on a raw ingredient, but not the finished product</li>
+<li>A company that won't share a report when you ask</li>
+</ul>
+<p>None of these automatically mean a product is bad. They just mean you should ask more questions.</p>
+<h2>Where To See Ours</h2>
+<p>Our current numbers for every product are on our <a href="/lab-results/">lab results</a> page, including what each lot is tested for and what it measured. Full COA PDFs are available on request. Just ask and we'll send them.</p>
+<p>Want the bigger picture on choosing a mushroom product? Start with <a href="/how-to-choose-a-mushroom-supplement-in-canada/">how to read a mushroom label in Canada</a>.</p>`,
+  },
+  {
+    slug: 'how-our-cordyceps-is-grown-in-bc',
+    image: '/img/learn-cordyceps.webp',
+    imageAlt: 'Bright orange Cordyceps militaris fruiting bodies',
+    title: 'From Grain To Powder: How Our Cordyceps Is Grown In BC',
+    seoTitle: 'How Cordyceps Militaris Is Grown In BC | CordyFuel™ | REWILD Journal',
+    description: 'How the CordyFuel™ Cordyceps militaris in Rewild Energy is grown in BC: organic sorghum, 4 to 6 weeks of growing, whole-organism harvest, milling and lab tests.',
+    date: '2026-10-05',
+    modified: '2026-10-05',
+    readMins: 5,
+    body: `
+<p>Here's something we want to be upfront about: we don't grow our Cordyceps ourselves. We chose the people who do.</p>
+<p>The Cordyceps militaris in Rewild Energy is CordyFuel™, grown by NuCelium in Coldstream, British Columbia. CordyFuel™ is NuCelium's trademark and their work. Our job is to bring it to you, clearly labelled and tested. Here's what happens before it ever reaches your pouch.</p>
+<h2>First, Which Cordyceps?</h2>
+<p>The Cordyceps you may have heard stories about, Cordyceps sinensis, grows wild on insect larvae high on the Tibetan Plateau. It's rare, hard to trace and very expensive.</p>
+<p>Cordyceps militaris is a related species that can be cultivated. It grows on grain, not insects, which means it can be grown cleanly, consistently and close to home. It also naturally contains cordycepin, the compound it's best known for, and that's what we use to measure consistency from batch to batch.</p>
+<h2>Where It's Grown</h2>
+<p>NuCelium grows in a 45,000 square foot facility in BC's Okanagan, running on solar power from one of the largest rooftop arrays in the province. They grow from their own DNA-verified strains, so it starts with the right organism, not a guess.</p>
+<h2>From Grain To Powder, Step By Step</h2>
+<ol>
+<li><strong>Cook.</strong> Organic sorghum grain is cooked in an autoclave.</li>
+<li><strong>Bag.</strong> The grain is cooled and portioned into grow bags.</li>
+<li><strong>Sterilize.</strong> The bags go back through the autoclave so nothing unwanted survives.</li>
+<li><strong>Inoculate.</strong> Each bag is seeded with living mycelium from a fully mature bag.</li>
+<li><strong>Grow.</strong> The Cordyceps grows for 4 to 6 weeks. Bright orange fruiting bodies push up out of the grain.</li>
+<li><strong>Harvest.</strong> The bags are opened onto trays and the whole colonized block is broken apart.</li>
+<li><strong>Dry.</strong> Everything goes into the dryer together: the mycelium, the young and mature fruiting bodies, and the compounds they released into the grain.</li>
+<li><strong>Mill.</strong> The dried material is milled into a fine powder.</li>
+<li><strong>Test.</strong> Every lot is lab tested before it's released.</li>
+</ol>
+<h2>Why Harvest The Whole Thing?</h2>
+<p>This is what "full spectrum" means on our label. Instead of keeping one part of the mushroom and throwing the rest away, the whole organism is kept: fruiting body and mycelium together, along with everything they made while growing. Nothing is extracted out and nothing is added in.</p>
+<p>It also means the powder honestly includes some of the grain the mycelium grew on. We'd rather tell you that than pretend otherwise. (There's more on this in <a href="/fruiting-body-vs-mycelium-whats-the-difference-in-functional-mushroom-products/">fruiting body vs mycelium</a>.)</p>
+<h2>How Every Batch Is Checked</h2>
+<p>CordyFuel™ is standardized to a minimum of 3 mg/g of cordycepin in every batch, verified by third-party testing before release. Each lot is also checked for species identity, beta-glucans and polysaccharides, seven microbial tests and gluten.</p>
+<p>In 2025, CordyFuel™ won Best Fruiting Body / Full Spectrum at the Cordy Cup in Sweden. We're proud to sell it.</p>
+<p>You can see the current numbers for every product on our <a href="/lab-results/">lab results</a> page.</p>
+<h2>Why This Matters To Us</h2>
+<p>We started REWILD because we wanted to know exactly what was in our mug. Who grew it. Where. On what. How it was tested. Knowing the answer to every one of those questions is the whole point.</p>
+<p>Want to try it? <a href="/shop/cordyceps-militaris-powder/">Rewild Energy</a> is the powder, and the <a href="/shop/cordyceps-tincture/">Energy Tincture</a> is the same CordyFuel™ in an alcohol-free liquid.</p>`,
+  },
+  {
     slug: 'how-to-choose-a-mushroom-supplement-in-canada',
     image: '/img/choosing-mushroom-supplement-canada.webp',
     imageAlt: 'A woven basket of freshly foraged wild mushrooms resting on moss in the forest',

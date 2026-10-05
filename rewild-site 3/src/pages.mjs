@@ -137,7 +137,7 @@ ${CORDYFUEL_SECTION}
     </div>
     <div class="stack-sm" style="gap:10px;align-items:flex-start"><a class="btn btn-outline" href="/shop/">Shop all</a><span class="small muted">Not sure? <a class="link" href="/build-your-stack/">Build your stack</a>.</span></div>
   </div>
-  <div class="grid-4">${powders.map((p) => productCard(p)).join('')}</div>
+  <div class="grid-4 home-products">${powders.map((p) => productCard(p)).join('')}</div>
 </div></section>
 ${reviewsSection()}
 <section class="section fringe stack-trip" id="stack"><div class="wrap split">
@@ -166,29 +166,19 @@ ${reviewsSection()}
 </div></section>
 <section class="section stone"><div class="wrap stack" style="gap:48px">
   <div class="stack-sm" style="max-width:720px;gap:16px">
-    <p class="eyebrow">How to take mushroom powder</p>
+    <p class="eyebrow">How to use mushroom powder</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,46px)">Mushrooms that fit<br>real life.</h2>
     <p class="lead">Coffee. Cacao. Tea. Smoothies. Food. Or honey and hot water. Add it to what's already part of your day. Returning to your natural state doesn't have to be complicated.</p>
   </div>
-  <div class="grid-4">${USES.map(([k, t, s]) => `<div class="use-tile"><img src="/img/use-${k}.webp" alt="${t} with REWILD mushroom powder" width="477" height="489" loading="lazy"><b>${t}</b><span class="muted" style="font-size:16px;margin-top:-8px">${s}</span></div>`).join('')}</div>
+  <div class="grid-4 use-grid">${USES.map(([k, t, s]) => `<div class="use-tile"><img src="/img/use-${k}.webp" alt="${t} with REWILD mushroom powder" width="477" height="489" loading="lazy"><b>${t}</b><span class="muted" style="font-size:16px;margin-top:-8px">${s}</span></div>`).join('')}</div>
 </div></section>
-<section class="section" id="team"><div class="wrap split">
-  <div><img class="cover sq" src="/img/rewild-team-2026.webp" alt="REWILD founders Pete, Jade and Sean in the forest with Reishi, Lion's Mane and Cordyceps, and an orange cat" width="1100" height="1100" loading="lazy"></div>
-  <div class="stack">
-    <p class="eyebrow">Meet the team</p>
-    <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Built on trust, integrity and a solid passion for 'shrooms.</h2>
-    <div class="stack-sm" style="gap:18px;font-size:17px;color:var(--text)">
-      <p><strong style="color:var(--ink)">Pete Moss, co-founder.</strong> A lifelong mountain guy and mushroom enthusiast, Pete has spent years in the Kootenay forests learning about fungi, and now makes his own mushroom tinctures and extracts. For him, REWILD is about getting back to the roots: time in nature, learning from the forest and sharing the good stuff with his community.</p>
-      <p><strong style="color:var(--ink)">Jade Stevens, founder.</strong> A self-taught designer, marketer and lifelong explorer, Jade has spent 20 years turning ideas into things people can experience. At REWILD she leads brand, design, marketing and tech, following the mushrooms wherever they lead next.</p>
-      <p><strong style="color:var(--ink)">Sean Turner, co-founder.</strong> With 16 years studying nutrition, human optimization and supplementation, Sean brings a whole-food, back-to-basics approach to Rewild. He sees functional mushrooms as simple, whole foods that belong in an active life.</p>
-    </div>
-  </div>
-</div>
-<div class="wrap stack-sm center" style="text-align:center;align-items:center;gap:18px;margin-top:40px">
+<section class="section tight" id="team"><div class="wrap stack-sm" style="text-align:center;align-items:center;gap:16px">
+  <img src="/img/rewild-team-2026-640.webp" alt="REWILD founders Pete, Jade and Sean in the forest" width="120" height="120" loading="lazy" style="width:120px;height:120px;border-radius:50%;object-fit:cover">
+  <p class="eyebrow">Meet the team</p>
+  <h2 class="h3" style="max-width:560px">Built on trust, integrity and a solid passion for 'shrooms.</h2>
   <p style="font-size:17px;margin:0">Questions? Email <a class="link" href="mailto:hello@rewildmushrooms.com">hello@rewildmushrooms.com</a>. One of us three answers.</p>
-  <a class="btn btn-outline" href="/our-story/">Our story</a>
-</div></section>
-${signupBanner('home')}`,
+  <a class="btn btn-outline" href="/our-story/">Meet Jade, Pete and Sean</a>
+</div></section>`,
 };
 
 /* ---------------- SHOP ---------------- */
@@ -261,7 +251,7 @@ const USE_TEXT = {
 const PRODUCT_DETAILS = {
   energy: {
     intro: `<p>Rewild Energy is powered by CordyFuel™ <em>Cordyceps militaris</em>, grown in British Columbia and awarded <strong>Best Fruiting Body / Full Spectrum at the 2025 Cordy Cup</strong>.</p><p>Cordycepin is the compound Cordyceps militaris is best known for. CordyFuel™ is standardized to a minimum of 3 mg/g in every batch, verified by third-party testing before release. Our highest result so far, from an independent lab, came in at 7.1 mg/g. Most commercial Cordyceps tests between 0.1 and 0.5 mg/g.</p><p>Bright, savoury and slightly sweet. A natural fit for your morning coffee or smoothie.</p>`,
-    ticks: ['Whole mushroom food powder', 'Minimum 3 mg/g cordycepin, every batch', '2025 Cordy Cup: Best Fruiting Body / Full Spectrum', 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added · Non-GMO', 'Caffeine-free'],
+    ticks: ['Whole mushroom food powder · Full spectrum', '2025 Cordy Cup: Best Fruiting Body / Full Spectrum', 'Grown in BC on certified organic sorghum', 'Third-party tested · Caffeine-free'],
     faqs: [
       ['What is cordycepin?', 'Cordycepin is a naturally occurring compound found in Cordyceps militaris. We use it as a marker of quality and consistency: every batch of CordyFuel™ is tested and standardized to a minimum of 3 mg/g.'],
       ['Does CordyFuel™ contain caffeine?', 'No. CordyFuel™ is pure Cordyceps militaris powder with no caffeine or stimulants added.'],
@@ -270,17 +260,17 @@ const PRODUCT_DETAILS = {
   },
   clarity: {
     intro: `<p>Lion's Mane (<em>Hericium erinaceus</em>) grows in long, cascading white spines on hardwood trees. It has been eaten and respected in traditional kitchens for generations.</p><p>Ours is grown in British Columbia as a full-spectrum powder: fruiting body and mycelium together. Mild, a little sweet and easy to add to coffee, tea or a smoothie.</p>`,
-    ticks: ['Whole mushroom food powder', "100% Lion's Mane, nothing else in the bag", 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added · Non-GMO'],
+    ticks: ['Whole mushroom food powder · Full spectrum', "100% Lion's Mane, nothing else in the bag", 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added'],
     faqs: [["What does Lion's Mane taste like?", 'Mild and slightly sweet. It disappears into coffee, cacao and smoothies.']],
   },
   strength: {
     intro: `<p>Chaga (<em>Inonotus obliquus</em>) has quietly grown in northern forests for thousands of years, taking its character from its host and the forest around it.</p><p>Ours is grown in British Columbia as a full-spectrum powder. Earthy, rich and a little vanilla-like. Perfect in coffee, tea or broth.</p>`,
-    ticks: ['Whole mushroom food powder', '100% Chaga, nothing else in the bag', 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added · Non-GMO'],
+    ticks: ['Whole mushroom food powder · Full spectrum', '100% Chaga, nothing else in the bag', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added'],
     faqs: [['Is your Chaga wild harvested?', 'No. It is cultivated indoors by our partner grower in British Columbia, so no wild birch forests are stripped and every batch can be tested and traced.']],
   },
   peace: {
     intro: `<p>Reishi (<em>Ganoderma lucidum</em>) has been revered for centuries as the mushroom of stillness. Glossy, woody and deeply rooted in tradition.</p><p>Ours is grown in British Columbia as a full-spectrum powder. Bitter and grounding. Many people enjoy it in an evening tea or cacao.</p>`,
-    ticks: ['Whole mushroom food powder', '100% Reishi, nothing else in the bag', 'Full spectrum: fruiting body + mycelium', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added · Non-GMO'],
+    ticks: ['Whole mushroom food powder · Full spectrum', '100% Reishi, nothing else in the bag', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added'],
     faqs: [['Reishi tastes bitter. How do I use it?', 'Pair it with something rich: cacao, a little honey, or a nut milk latte. A small amount goes a long way.']],
   },
   tincture: {
@@ -421,11 +411,11 @@ function productPage(p) {
 </div></section>
 ${p.isTincture ? FALLS_BAND : ''}
 ${howToUse(p)}
-<section class="section tight"><div class="narrow">
+<section class="section tight stone"><div class="narrow">
   <h2 class="h3" style="margin-bottom:20px">Questions</h2>
   ${faqHtml(faqs)}
 </div></section>
-<section class="section tight stone"><div class="wrap">
+<section class="section tight"><div class="wrap">
   <h2 class="h3" style="margin-bottom:32px">Build your stack</h2>
   <div class="grid-3">${others.map((o) => productCard(o)).join('')}</div>
 </div></section>`,
@@ -700,7 +690,7 @@ function postPage(post) {
         author: { '@type': 'Person', name: 'Jade Stevens' },
         publisher: { '@id': SITE.url + '/#org' },
         mainEntityOfPage: abs(`/${post.slug}/`),
-        image: SITE.url + post.image.replace('.webp', '.jpg'),
+        image: SITE.url + (post.schemaImage || post.image.replace('.webp', '.jpg')),
       },
     ],
     body: `
