@@ -223,7 +223,7 @@ a{color:var(--ink)}
   <p class="msg" id="load-msg" role="status"></p>
 
   <section class="panel" id="alerts-panel">
-    <div class="panel-head"><h2>Heads up</h2><span class="muted small" id="al-time"></span></div>
+    <div class="panel-head"><h2>Heads up</h2><span class="muted small" id="al-time"></span><button class="btn ghost small" id="tg-test" type="button">Test Telegram alert</button></div>
     <ul class="alerts" id="al-list"><li><span class="d">Checking stock, codes, orders and traffic…</span></li></ul>
   </section>
 
@@ -388,6 +388,7 @@ a{color:var(--ink)}
     $('#funnel-note').textContent=s.abandoned?.count?(s.abandoned.count+' checkout'+(s.abandoned.count===1?'':'s')+' not paid ('+money(s.abandoned.value)+' left in carts).'):'';
   }
 
+  $('#tg-test').onclick=async(e)=>{const b=e.currentTarget;b.disabled=true;try{const r=await api('',{method:'POST',body:JSON.stringify({action:'testAlert'})});b.textContent=r.sent?'Sent. Check Telegram':(r.reason||'Not set up yet');}catch(err){b.textContent='Failed: '+err.message;}setTimeout(()=>{b.disabled=false;b.textContent='Test Telegram alert';},6000);};
   async function loadAlerts(){
     try{
       const r=await api('?action=alerts');
