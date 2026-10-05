@@ -232,7 +232,10 @@
 
   // Mobile menu
   const mb = $('#menu-btn');
-  if (mb) mb.addEventListener('click', () => { const n = $('#site-nav'); const o = n.classList.toggle('open'); mb.setAttribute('aria-expanded', o); });
+  // Mobile menu: cap its height to the space below the header so long menus scroll inside.
+  const fitNav = () => { const n = $('#site-nav'); if (n && n.classList.contains('open')) n.style.maxHeight = Math.max(200, innerHeight - n.getBoundingClientRect().top) + 'px'; };
+  if (mb) mb.addEventListener('click', () => { const n = $('#site-nav'); const o = n.classList.toggle('open'); mb.setAttribute('aria-expanded', o); if (o) fitNav(); else n.style.maxHeight = ''; });
+  addEventListener('resize', fitNav);
 
   // Newsletter forms
   document.querySelectorAll('form[data-subscribe]').forEach((f) => f.addEventListener('submit', async (e) => {
