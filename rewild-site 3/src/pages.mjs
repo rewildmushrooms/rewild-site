@@ -305,11 +305,11 @@ const USE_TAGS = {
   peace: ['Hot cacao', 'Chai', 'Golden milk', 'Nut-milk lattes', 'Honey + hot water'],
   tincture: ['Straight up', 'Water bottle', 'Coffee', 'Smoothies', 'Sparkling water'],
 };
-// Energy Tincture: Jade's original waterfall clip, unedited, played muted on loop on desktop, preloaded quietly once the page has finished loading (skipped on slow or data-saver connections). Phones (and reduced motion) get the first frame only. Loads only when near the viewport; still frame for reduced motion.
+// Energy Tincture: Jade's original waterfall clip, unedited, played muted on loop on desktop, starts loading when a visitor scrolls within about a screen of it, so only people heading that way download it. Phones (and reduced motion) get the first frame only. Loads only when near the viewport; still frame for reduced motion.
 const FALLS_BAND = `<section class="falls-band">
   <video class="falls-vid" muted loop playsinline preload="none" aria-hidden="true"></video>
   <div class="wrap falls-copy"><p class="eyebrow">Made to come along</p><h2 class="h2">Long trails. Cold water. Bring it.</h2></div>
-  <script>(function(){var v=document.querySelector('.falls-vid');if(!v||!('IntersectionObserver' in window))return;var M='/img/IMG_3254.mov';if(innerWidth<760||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){v.preload='metadata';v.src=M+'#t=0.001';return;}var on=false;function go(){if(!on){on=true;v.preload='auto';v.src=M;}}var c=navigator.connection;if(!(c&&(c.saveData||/2g|3g/.test(c.effectiveType||'')))){var w=function(){setTimeout(go,1200);};document.readyState==='complete'?w():addEventListener('load',w);}new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){go();var pr=v.play();pr&&pr.catch(function(){});}else if(on){v.pause();}});},{rootMargin:'200px'}).observe(v);})();</script>
+  <script>(function(){var v=document.querySelector('.falls-vid');if(!v||!('IntersectionObserver' in window))return;var M='/img/IMG_3254.mov';if(innerWidth<760||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){v.preload='metadata';v.src=M+'#t=0.001';return;}var on=false;function go(){if(!on){on=true;v.preload='auto';v.src=M;}}new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){go();}});},{rootMargin:'1200px 0px'}).observe(v);new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){go();var pr=v.play();pr&&pr.catch(function(){});}else if(on){v.pause();}});}).observe(v);})();</script>
 </section>`;
 
 function howToUse(p) {
