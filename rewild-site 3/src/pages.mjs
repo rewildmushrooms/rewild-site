@@ -114,7 +114,7 @@ ${Date.now() < Date.parse('2026-10-26T07:00:00Z') ? `<section class="section dar
   <div class="stack">
     <p class="eyebrow" style="color:var(--accent)">Come say hi · October 23 to 25 · Vancouver</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,46px)">Find us at the Spirit Plant Medicine Conference.</h2>
-    <p class="lead" style="color:var(--on-dark)">We're vending in Vancouver this October. Come meet the three of us, try Rewild Energy and see the mushrooms up close.</p>
+    <p class="lead" style="color:var(--on-dark)">We're vending in Vancouver this October. Come meet Jade and Pete Moss, try Rewild Energy and talk mushrooms with us. Every product will be on the table, plus an offer you'll only find at the event.</p>
     <p style="color:var(--on-dark-2)">Speakers include Paul Stamets, Rick Doblin, Dennis McKenna and many more.</p>
     <div class="row" style="margin-top:6px"><a class="btn btn-yellow" href="https://spiritplantmedicine.com" target="_blank" rel="noopener">Conference details</a></div>
   </div>
