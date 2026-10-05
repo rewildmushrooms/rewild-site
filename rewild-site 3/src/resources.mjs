@@ -1,5 +1,5 @@
 // Resources: books and people worth following on functional mushrooms.
-// Rules: functional and culinary mushrooms only (no psychedelic titles). No shop links on this page.
+// Rules: books are functional and culinary only. Psychedelic content lives only in the Fringe section at the bottom, with its disclaimer. No shop links on this page.
 // Links point to each author's own site or publisher page, plus socials we have verified.
 import { SITE } from './site.mjs';
 import { esc } from './layout.mjs';
@@ -74,6 +74,27 @@ const STAMETS = `<section class="res-hero-band"><div class="wrap res-feature">
   </div>
 </div></section>`;
 
+const FRINGE = [
+  { id: 'vp3kBIvR2SE', title: 'Psilocybin Sporius', by: 'Aether Elf (music video)', note: 'A trippy little music video. Headphones on, lights low.' },
+  { id: 'Cjs5HtaqZ_c', title: 'Amanita Muscaria: Why Was It Secret?', by: 'Simon Rilling with Marianne & Johan (podcast)', note: 'A long conversation about the red-and-white toadstool: history, folklore and why it was kept quiet.' },
+];
+
+const FRINGE_SECTION = `<section class="fringe"><div class="wrap">
+  <div class="fringe-head">
+    <p class="fringe-eyebrow">Fringe fungi \u00b7 off the beaten trail</p>
+    <h2 class="fringe-title">Down the rabbit hole.</h2>
+    <p class="fringe-lead">Every forest has a weird corner. This is ours. Not everything in the fungi kingdom belongs in your coffee, and these two aren't about anything we sell. Just good stuff for the curious.</p>
+  </div>
+  <div class="fringe-grid">${FRINGE.map((v) => `<figure class="fringe-card">
+    <button type="button" class="yt" data-yt="${v.id}" aria-label="Play: ${esc(v.title)}">
+      <img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="" loading="lazy" width="480" height="360">
+      <span class="yt-play" aria-hidden="true"></span>
+    </button>
+    <figcaption><b>${esc(v.title)}</b><span class="fringe-by">${esc(v.by)}</span><span>${esc(v.note)}</span></figcaption>
+  </figure>`).join('')}</div>
+  <p class="fringe-fine">For culture and curiosity only. We don't sell psychedelic or Amanita mushrooms, and nothing here is advice. Amanita muscaria is poisonous: never eat a wild mushroom you can't identify with certainty.</p>
+</div></section>`;
+
 export const resources = {
   path: '/resources/',
   title: 'Mushroom Books & Resources | Functional Mushrooms | REWILD',
@@ -91,5 +112,6 @@ export const resources = {
 ${STAMETS}
 <section class="section stone"><div class="wrap"><p class="eyebrow">Keep going</p><h2 class="h2" style="font-size:clamp(28px,3.4vw,42px);margin:0 0 32px">Three more for the shelf.</h2><div class="res-grid">${AUTHORS.map(card).join('')}</div>
   <p class="small muted" style="margin-top:36px;max-width:720px">We're not affiliated with these authors and don't earn anything from these links. Their views are their own, and nothing here is medical advice.</p>
-</div></section>`,
+</div></section>
+${FRINGE_SECTION}`,
 };
