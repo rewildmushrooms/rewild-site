@@ -616,3 +616,35 @@ p{text-wrap:pretty}
 .story-trip::before{background:url(/img/deco-reishi.svg) center/contain no-repeat!important;width:820px;height:461px;right:-170px;left:auto;top:auto;bottom:-110px;margin:0;opacity:.15}
 .stack-trip::after,.story-trip::after{display:none}
 @media (max-width:700px){.stack-trip::before{width:520px;height:292px;right:-140px;bottom:-30px;opacity:.13}.story-trip::before{width:540px;height:304px;right:-170px;bottom:-60px;opacity:.12}}
+/* Quiz: colourful choice cards, ink-wipe fill and drawn checkmark */
+.quiz-progress{height:8px;border-radius:8px}.quiz-progress span{width:100%;background:linear-gradient(90deg,#F2780C,#E8C800,#22B573,#2F7FE0,#8A4DFF);clip-path:inset(0 calc(100% - var(--p,0%)) 0 0 round 8px);transition:clip-path .6s cubic-bezier(.2,.8,.2,1)}
+.quiz-q{animation:chIn .45s cubic-bezier(.2,.8,.2,1) backwards}
+.choices{gap:16px}
+.choice{position:relative;overflow:hidden;isolation:isolate;gap:4px;padding:20px 20px 22px;border:2px solid var(--line);border-radius:16px;transition:transform .25s cubic-bezier(.2,.8,.2,1),border-color .2s,box-shadow .25s,color .2s;animation:chIn .45s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0)*55ms)}
+.choice::before{content:"";position:absolute;inset:-2px;z-index:-1;background:var(--c);clip-path:circle(0% at var(--x,50%) var(--y,50%));transition:clip-path .55s cubic-bezier(.2,.8,.2,1)}
+.choice:hover,.choice:focus-visible{border-color:var(--c);transform:translateY(-4px);box-shadow:0 14px 28px -16px var(--c)}
+.choice:focus-visible{outline:3px solid var(--c);outline-offset:3px}
+.choice:active{transform:translateY(-1px) scale(.98)}
+.choice[aria-pressed=true]{border-color:var(--c);color:var(--ink);box-shadow:0 16px 32px -14px var(--c)}
+.choice[aria-pressed=true]::before{clip-path:circle(150% at var(--x,50%) var(--y,50%))}
+.choice b{font-size:17px;line-height:1.2;letter-spacing:.01em;text-wrap:balance}
+.choice .sub{font-size:15px;color:var(--muted);transition:color .2s}
+.choice[aria-pressed=true] .sub{color:rgba(17,17,17,.78)}
+.choice .ck{width:32px;height:32px;margin-bottom:10px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--c);color:var(--c);font:800 13px/1 var(--display);transition:background .25s,border-color .25s}
+.ck i{grid-area:1/1;font-style:normal;transition:opacity .15s,transform .2s}
+.ck svg{grid-area:1/1;width:18px;height:18px;fill:none;stroke:var(--c);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:24;stroke-dashoffset:24}
+.choice[aria-pressed=true] .ck{background:#fff;border-color:#fff;animation:ckPop .55s cubic-bezier(.3,1.6,.5,1)}
+.choice[aria-pressed=true] .ck i{opacity:0;transform:scale(.3)}
+.choice[aria-pressed=true] .ck svg{animation:ckDraw .35s .12s ease-out forwards}
+#quiz-app.picked .choice:not([aria-pressed=true]){opacity:.45;transform:scale(.97);transition:opacity .3s,transform .3s}
+@keyframes chIn{from{opacity:0;transform:translateY(14px)}}
+@keyframes ckPop{0%{transform:scale(.5)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+@keyframes ckDraw{to{stroke-dashoffset:0}}
+@media (max-width:560px){.choices{grid-template-columns:1fr 1fr;gap:12px}.choice{padding:16px 14px 18px}.choice b{font-size:15px}.choice .sub{font-size:13.5px}}
+@media (prefers-reduced-motion:reduce){.choice,.choice::before,.quiz-q,.ck,.ck svg,.quiz-progress span{animation:none!important;transition:none!important}.choice[aria-pressed=true] .ck svg{stroke-dashoffset:0}}
+/* Energy Tincture waterfall band */
+.falls-band{position:relative;overflow:hidden;min-height:clamp(380px,52vw,620px);display:flex;align-items:flex-end;background:#13201a url(/img/energy-falls-poster.webp) center/cover no-repeat;color:#fff}
+.falls-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.falls-band::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.6))}
+.falls-copy{position:relative;z-index:1;padding-top:48px;padding-bottom:48px}
+.falls-copy .eyebrow{color:#fff;opacity:.85}.falls-copy .h2{color:#fff;max-width:640px;text-shadow:0 2px 18px rgba(0,0,0,.35)}
