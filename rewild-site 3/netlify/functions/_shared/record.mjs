@@ -13,6 +13,7 @@ import { getJSON, setJSON } from './store.mjs';
 import { orderCode, partnerForOrder } from './team.mjs';
 import { putIndex, appendLedger, customerSummary, orderSummary } from './data.mjs';
 import { markPurchased, useRecoveryCode, RECOVERY_RE } from './carts.mjs';
+import { sendTelegram, orderAlertText, telegramReady } from './telegram.mjs';
 
 const amt = (m) => Number(m?.amount || 0);
 export const emailKey = (e) => String(e || '').trim().toLowerCase();
@@ -118,6 +119,17 @@ export async function recordPaidOrder(order, opts, deps = {}) {
   await putIndex('orders', order.id, orderSummary(rec));
   if (customer?.marketingConsent && !steps.mlsync) {
     try { await (deps.syncCustomer || syncCustomer)(customer); steps.mlsync = true; await setJSON('orders', order.id, rec); } catch (e) { console.error('mailerlite sync failed', e.message); }
+  }
+  // 5. Telegram alert to the owner: once per order, only for orders from the last day (never for old orders being re-synced).
+  const fresh = Date.now() - Date.parse(order.created_at || 0) < 24 * 3600 * 1000;
+  if (!steps.alert && fresh && (deps.sendTelegram || telegramReady())) {
+    try {
+      if (!(await getJSON('order-alerts', order.id))) {
+        await setJSON('order-alerts', order.id, { at: new Date().toISOString() });
+        await (deps.sendTelegram || sendTelegram)(orderAlertText(rec, order, (process.env.SITE_URL || 'https://rewildmushrooms.com').replace(/\/$/, '')));
+      }
+      steps.alert = true; await setJSON('orders', order.id, rec);
+    } catch (e) { console.error('telegram alert failed', e.message); }
   }
   return rec;
 }
