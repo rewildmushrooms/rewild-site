@@ -36,7 +36,7 @@
       ['travel', 'Always on the move', 'Travel, commutes, different beds'],
       ['study', 'Learning something', 'School, training or a new craft'],
     ] },
-    { key: 'when', q: 'When would you take it most?', opts: [
+    { key: 'when', q: 'When would you use it most?', opts: [
       ['morning', 'First thing', 'Starting the day right'],
       ['afternoon', 'The afternoon dip', 'Getting through the middle'],
       ['training', 'Before activity', 'Training, hiking, moving'],
@@ -54,7 +54,7 @@
       ['food', 'In food', 'Soups, oats, sauces'],
       ['straight', 'Straight and on the go', 'Quick and simple'],
     ] },
-    { key: 'format', q: 'Where will you take it most?', opts: [
+    { key: 'format', q: 'Where will you use it most?', opts: [
       ['home', 'At home', 'Part of my morning or kitchen routine'],
       ['go', 'On the go', 'Work, trails, travel, the gym bag'],
       ['both', 'Both', 'A home routine plus one in my bag'],
@@ -81,8 +81,8 @@
   // Question 2 answers map to the four mushrooms.
   const WANT_MAP = { steady: 'energy', stamina: 'energy', focus: 'clarity', creative: 'clarity', resilience: 'strength', grounded: 'strength', calm: 'peace', winddown: 'peace' };
   const TIMING = {
-    energy: 'Most people take it in the morning or before activity.',
-    clarity: 'Most people take it in the morning or early afternoon.',
+    energy: 'Most people use it in the morning or before activity.',
+    clarity: 'Most people use it in the morning or early afternoon.',
     strength: 'Fits any time of day, especially in coffee or tea.',
     peace: 'Most people save it for the evening.',
   };
@@ -187,7 +187,7 @@
       <p class="lead">${esc(DAY_LINE[A.day[0]] || '')} ${esc(WHY[A.why[0]] || '')}</p>
       <form class="quiz-email quiz-email-top stack-sm" novalidate>
         <h3 style="font-size:22px">Get your stack sent to you</h3>
-        <p style="font-size:16px">We'll email your stack, when to take it and how, so it's there when you need it. Plus field notes a few times a month. Unsubscribe anytime.</p>
+        <p style="font-size:16px">We'll email your stack, and when and how to use it, so it's there when you need it. Plus field notes a few times a month. Unsubscribe anytime.</p>
         <div class="signup">
           <label for="quiz-email" class="sr-only">Email address</label>
           <input id="quiz-email" name="email" type="email" placeholder="Your email" autocomplete="email" required>
@@ -198,7 +198,7 @@
       </form>
       <div class="grid-3" style="margin-top:8px">${cartIds.map(card).join('')}</div>
       <div class="stat" style="background:var(--stone);margin-top:8px">
-        <h3 style="font-size:20px;margin-bottom:10px">How to take it</h3>
+        <h3 style="font-size:20px;margin-bottom:10px">How to use it</h3>
         <ul class="ticks">
           ${howLine ? `<li><span>${cf(esc(howLine))}</span></li>` : ''}
           ${pickIds.map((id) => `<li><span><strong>${cf(esc(id === 'tincture' ? 'Energy Tincture' : WORD[id]))}:</strong> ${esc(TIMING[id === 'tincture' ? 'energy' : id])}</span></li>`).join('')}
