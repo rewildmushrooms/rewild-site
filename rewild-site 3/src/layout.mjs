@@ -125,7 +125,7 @@ ${page.body}
         <div class="brand" style="color:#fff"><img src="/img/emblem-light-sm.webp" alt="" width="38" height="38"><span style="color:#fff">REWILD</span></div>
         <p>Organic, full-spectrum mushrooms grown in British Columbia.</p>
         <p style="font-style:italic">Return to your natural state.</p>
-        <div style="margin-top:12px"><p style="color:#fff;font-weight:700;margin-bottom:8px">Join the Rewilders</p>${signupForm('footer')}</div>
+        <div style="margin-top:12px"><p style="color:#fff;font-weight:700;margin-bottom:4px">Join the Rewilders</p><p style="margin-bottom:10px">Get <strong style="color:var(--accent)">20% off</strong> your first order when you sign up.</p>${signupForm('footer')}</div>
         <a class="ig-btn" href="https://www.instagram.com/rewildmushroompowder/" target="_blank" rel="me noopener"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.3" fill="currentColor"/></svg>Follow us on Instagram</a>
       </div>
       <nav class="footer-col" aria-label="Shop"><p class="footer-h">Shop</p>
