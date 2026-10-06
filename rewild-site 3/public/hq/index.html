@@ -294,6 +294,14 @@ a{color:var(--ink)}
       <p class="muted" style="margin-top:0"><b>Square</b> sends money emails (receipts, refunds, invoices). <b>MailerLite</b> sends marketing (welcome, quiz, after-purchase). <b>The website</b> sends system emails (cart reminders, low stock, password resets): ask Claude to change those.</p>
       <div class="scroll"><table><thead><tr><th>Email</th><th>Sent when</th><th>Goes to</th><th>Sent by</th><th>Status</th><th></th></tr></thead><tbody id="em-list"></tbody></table></div>
     </section>
+    <section class="panel" id="cart-seq">
+      <div class="panel-head"><h2>In the abandoned-cart emails now</h2><span class="muted small" id="cs-sum"></span></div>
+      <p class="muted" style="margin-top:0">Reminder 1 at 1 hour, reminder 2 at 24 hours, 15% code at 48 hours. It stops the moment they pay, buy something else or opt out. Carts drop off after 7 days.</p>
+      <div class="scroll"><table><thead><tr><th>Started</th><th>Customer</th><th>Cart</th><th class="num">Value</th><th>Emails sent</th><th>Next</th></tr></thead><tbody id="cs-list"></tbody></table></div>
+      <h3 style="margin:22px 0 8px;font-size:16px">Finished in the last 14 days</h3>
+      <div class="scroll"><table><thead><tr><th>Started</th><th>Customer</th><th>Cart</th><th class="num">Value</th><th>Emails sent</th><th>Outcome</th></tr></thead><tbody id="cs-done"></tbody></table></div>
+      <p class="msg" id="cs-msg" role="status"></p>
+    </section>
   </div>
 
   <div data-panel="codes" hidden>
@@ -723,7 +731,20 @@ a{color:var(--ink)}
     ['Contact form message','Someone uses the contact form','rewildmushrooms@protonmail.com','Netlify','on','https://app.netlify.com/projects/rewild-mushrooms/forms','Netlify: Forms > notifications'],
   ];
   const ST={on:'<span class="chip rep">On</span>',draft:'<span class="chip hv">Draft</span>',planned:'<span class="chip">Planned</span>'};
+  async function loadCartSeq(){
+    const m=$('#cs-msg');m.className='msg';m.textContent='Loading…';
+    const when=(iso)=>new Date(iso).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+    const who=(c)=>`<a href="#" data-cemail="${esc(c.email)}">${esc(c.name||c.email)}</a>${c.name?`<br><span class="muted small">${esc(c.email)}</span>`:''}`;
+    const OUT={purchased:'Bought',bought_other:'Bought (different cart)',expired:'Ended, no purchase',optout:'Opted out'};
+    try{const r=await api('?action=cartSequence');m.textContent='';
+      $('#cs-sum').textContent=r.active.length+' in the emails now';
+      $('#cs-list').innerHTML=r.active.length?r.active.map(c=>`<tr><td>${when(c.at)}</td><td>${who(c)}</td><td>${esc(c.items)}</td><td class="num">${money(c.value)}</td><td>${c.sent} of ${r.steps}${c.code?`<br><span class="muted small">${esc(c.code)}</span>`:''}</td><td>${!c.consent?'<span class="muted">No emails (didn\'t tick the box)</span>':c.nextStep?`Email ${c.nextStep}${c.nextStep===3?' (15% code)':''}<br><span class="muted small">${when(c.nextAt)}</span>`:'<span class="muted">All sent. Ends after 7 days</span>'}</td></tr>`).join(''):'<tr><td colspan="6" class="muted">Nobody right now.</td></tr>';
+      $('#cs-done').innerHTML=r.finished.length?r.finished.map(c=>`<tr><td>${when(c.at)}</td><td>${who(c)}</td><td>${esc(c.items)}</td><td class="num">${money(c.value)}</td><td>${c.sent}</td><td>${c.recovered?'<span class="chip rep">Recovered</span>':esc(OUT[c.status]||c.status)}</td></tr>`).join(''):'<tr><td colspan="6" class="muted">None yet.</td></tr>';
+      document.querySelectorAll('[data-cemail]').forEach(a=>a.onclick=(e)=>{e.preventDefault();show('customers');openCustomer(a.dataset.cemail);});
+    }catch(err){m.className='msg err';m.textContent=err.message;}
+  }
   function loadEmails(){
+    loadCartSeq();
     $('#em-list').innerHTML=EMAILS.map(([n,w,to,by,st,url,note])=>`<tr><td><strong>${esc(n)}</strong>${note?'<br><span class="muted small">'+esc(note)+'</span>':''}</td><td>${esc(w)}</td><td>${esc(to)}</td><td>${esc(by)}</td><td>${ST[st]||''}</td><td>${url?`<a class="btn ghost small" href="${esc(url)}" target="_blank" rel="noopener">Edit</a>`:by==='Website'?'<span class="muted small">Ask Claude</span>':''}</td></tr>`).join('');
   }
 
