@@ -38,6 +38,7 @@ import { traffic } from './_shared/ga.mjs';
 import { markShipped } from './_shared/shipping.mjs';
 import { setOrderStatus, addOrderNote, refundOrder, deleteOrder } from './_shared/orderadmin.mjs';
 import { sendTelegram } from './_shared/telegram.mjs';
+import { fetchOrder, shipToFrom } from './_shared/record.mjs';
 
 // Returns the signed-in team member, or null.
 export async function authorized(req) {
@@ -473,6 +474,11 @@ export default async (req) => {
         return json(200, await ordersList(parseDays(url.searchParams.get('days')), src));
       }
       if (action === 'alerts') return json(200, await alerts());
+      if (action === 'orderAddress') { // older orders saved before addresses were kept: read it from Square
+        const id = url.searchParams.get('id') || '';
+        if (!/^[A-Za-z0-9_-]{10,64}$/.test(id)) return json(400, { error: 'Bad order id' });
+        return json(200, { shipTo: shipToFrom(await fetchOrder(id)) });
+      }
       if (action === 'traffic') {
         const days = Math.min(365, parseDays(url.searchParams.get('days')));
         try { return json(200, await traffic(days)); } catch (e) { return json(200, { configured: true, error: e.message }); }
