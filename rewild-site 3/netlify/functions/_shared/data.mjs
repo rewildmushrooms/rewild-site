@@ -91,6 +91,7 @@ export function orderSummary(r) {
     by: r.by || null,
     source: r.source || 'online',
     country: r.country || null,
+    shipTo: r.shipTo || null,
     shipment: r.shipment ? { at: r.shipment.at, carrier: r.shipment.carrier, tracking: r.shipment.tracking, emailed: !!r.shipment.emailed } : null,
   };
 }

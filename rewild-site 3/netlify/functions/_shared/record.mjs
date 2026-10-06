@@ -20,7 +20,24 @@ export const emailKey = (e) => String(e || '').trim().toLowerCase();
 
 export const isWebOrder = (o) => o?.metadata?.source === 'rewildmushrooms.com';
 
-// Plain record of an order, no addresses.
+// Where to ship it, from Square's shipping details (collected at checkout).
+export function shipToFrom(o) {
+  const r = (o?.fulfillments || []).map((f) => f.shipment_details?.recipient).find((x) => x?.address) || null;
+  if (!r) return null;
+  const a = r.address || {};
+  return {
+    name: r.display_name || [a.first_name, a.last_name].filter(Boolean).join(' ') || null,
+    line1: a.address_line_1 || null,
+    line2: a.address_line_2 || null,
+    city: a.locality || null,
+    region: a.administrative_district_level_1 || null,
+    postal: a.postal_code || null,
+    country: a.country || null,
+    phone: r.phone_number || null,
+  };
+}
+
+// Plain record of an order (with the shipping address, for packing in HQ).
 export function orderRecord(o, email, name) {
   const refunded = (o.refunds || []).filter((r) => r.status !== 'REJECTED' && r.status !== 'FAILED').reduce((a, r) => a + amt(r.amount_money), 0);
   return {
@@ -39,6 +56,7 @@ export function orderRecord(o, email, name) {
     code: orderCode(o) || null,
     partner: partnerForOrder(o)?.partner.id || null,
     country: o.metadata?.destination || null,
+    shipTo: shipToFrom(o),
     newsletter: o.metadata?.newsletter === 'yes',
     state: o.state,
     source: 'online',
