@@ -590,7 +590,7 @@ a{color:var(--ink)}
     try{const r=await api('?action=orders&days='+odays+(src?'&source='+src:''));m.textContent='';
       const toShip=r.orders.filter(o=>o.source!=='offline'&&['processing','on-hold'].includes(o.status)&&!o.shipment).length;
       $('#or-sum').textContent=r.total+' orders, '+money(r.revenue)+(toShip?' · '+toShip+' to ship':'');
-      $('#or-list').innerHTML=r.orders.length?r.orders.map(o=>`<tr><td>${day(o.at)}</td><td><button class="link-btn" data-manage="${esc(o.id)}" title="Status, refund, notes, delete">#${esc(String(o.id).slice(-8).toUpperCase())}</button></td><td>${o.email?`<a href="#" data-email="${esc(o.email)}">${esc(o.name||o.email)}</a>`:esc(o.name||'–')}</td><td>${esc(o.items)}</td><td class="num">${money(o.total)}</td><td class="num">${o.discount?money(o.discount)+(o.code?'<br><span class="muted">'+esc(o.code)+'</span>':''):'–'}</td><td>${statusChip(o)}</td><td>${shipCell(o)}</td><td>${o.source==='offline'?'<span class="chip">Offline</span>':'<span class="chip rep">Online</span>'}</td></tr>`).join(''):'<tr><td colspan="9" class="muted">No orders in this period. Orders appear here once they are paid.</td></tr>';
+      $('#or-list').innerHTML=r.orders.length?r.orders.map(o=>`<tr><td>${day(o.at)}</td><td><button class="link-btn" data-manage="${esc(o.id)}" title="Status, refund, notes, delete">#${esc(String(o.id).slice(-8).toUpperCase())}</button></td><td>${o.email?`<a href="#" data-email="${esc(o.email)}">${esc(o.name||o.email)}</a>`:esc(o.name||'–')}${o.shipTo&&o.shipTo.city?`<br><span class="muted small">${esc([o.shipTo.city,o.shipTo.region].filter(Boolean).join(', '))}</span>`:''}</td><td>${esc(o.items)}</td><td class="num">${money(o.total)}</td><td class="num">${o.discount?money(o.discount)+(o.code?'<br><span class="muted">'+esc(o.code)+'</span>':''):'–'}</td><td>${statusChip(o)}</td><td>${shipCell(o)}</td><td>${o.source==='offline'?'<span class="chip">Offline</span>':'<span class="chip rep">Online</span>'}</td></tr>`).join(''):'<tr><td colspan="9" class="muted">No orders in this period. Orders appear here once they are paid.</td></tr>';
       $('#or-list').querySelectorAll('[data-email]').forEach(a=>a.onclick=(e)=>{e.preventDefault();show('customers');openCustomer(a.dataset.email);});
       $('#or-list').querySelectorAll('[data-ship]').forEach(b=>b.onclick=()=>shipForm(b));
       orderRows=Object.fromEntries(r.orders.map(o=>[o.id,o]));
@@ -609,6 +609,7 @@ a{color:var(--ink)}
     const left=o.total-(o.refunded||0);const ref='#'+String(o.id).slice(-8).toUpperCase();
     const row=document.createElement('tr');row.dataset.detail=id;
     row.innerHTML=`<td colspan="9" style="background:var(--stone)"><div class="grid2" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;padding:8px 0">
+      <div class="stack-sm"><b>Ship to</b><div class="small" data-o="addr">${o.source==='offline'?'<span class="muted">Offline sale. No shipping address.</span>':'<span class="muted">Loading address…</span>'}</div></div>
       <div class="stack-sm"><b>Order ${esc(ref)} status</b>
         ${o.status==='refunded'?'<p class="small muted">Fully refunded. The status stays Refunded.</p>':`<select data-o="status">${['processing','on-hold','completed','cancelled'].map(k=>`<option value="${k}"${o.status===k?' selected':''}>${OSTATUS[k][0]}</option>`).join('')}</select>
         <label class="small" data-o="cwrap" hidden style="flex-direction:row;gap:6px;align-items:center"><input type="checkbox" data-o="crestock" checked style="width:auto"> Put the items back in stock</label>
@@ -635,6 +636,12 @@ a{color:var(--ink)}
         <p class="small muted">For test orders. Removes it from HQ and the customer's history. Does not refund. Square keeps its own payment record.</p><p class="msg small" data-o="dmsg"></p>
       </div></div></td>`;
     tr.after(row);
+    if(o.source!=='offline'){const box=row.querySelector('[data-o="addr"]');
+      const paint=(s)=>{if(!s||!s.line1){box.innerHTML='<span class="muted">No shipping address on this order.</span>';return;}
+        const lines=[s.name,s.line1,s.line2,[s.city,s.region,s.postal].filter(Boolean).join(' '),s.country].filter(Boolean);
+        box.innerHTML=`<p style="margin:0 0 6px;line-height:1.5">${lines.map(esc).join('<br>')}</p>${s.phone?`<p class="muted" style="margin:0 0 6px">${esc(s.phone)}</p>`:''}<button class="btn ghost small" type="button">Copy address</button>`;
+        box.querySelector('button').onclick=async(e)=>{try{await navigator.clipboard.writeText(lines.join('\n'));e.target.textContent='Copied';}catch{e.target.textContent='Copy failed';}};};
+      if(o.shipTo)paint(o.shipTo);else api('?action=orderAddress&id='+encodeURIComponent(id)).then(r=>{o.shipTo=r.shipTo;paint(r.shipTo);}).catch(err=>{box.innerHTML=`<span class="muted">Couldn't load the address: ${esc(err.message)}</span>`;});}
     const f=k=>row.querySelector(`[data-o="${k}"]`);
     const run=async(msgKey,btnKey,body,okText)=>{const m=f(msgKey),b=f(btnKey);b.disabled=true;m.className='msg small';m.textContent='Working…';
       try{const r=await api('',{method:'POST',body:JSON.stringify({...body,orderId:id})});m.textContent=okText(r);setTimeout(loadOrders,900);}
