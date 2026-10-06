@@ -24,7 +24,7 @@ import { square, idem, locationId, pages, isLive, json } from './_shared/square.
 import { groupStats, groupCount } from './_shared/mailerlite.mjs';
 import { readIndex, readLedger, HIGH_VALUE } from './_shared/data.mjs';
 import { recordOfflineSale, recordRestock, recordAdjustment, logCount } from './_shared/ledger.mjs';
-import { cartStats } from './_shared/carts.mjs';
+import { cartStats, STEPS, EXPIRE_AFTER } from './_shared/carts.mjs';
 import { getJSON, dataStartsAt } from './_shared/store.mjs';
 import { stockLevels } from './_shared/inventory.mjs';
 import { PRODUCTS } from './_shared/catalog.mjs';
@@ -433,6 +433,27 @@ export async function customerDetail(email) {
   };
 }
 
+// Who is in the abandoned-cart reminder emails right now, plus carts that finished in the last 14 days.
+export async function cartSequence(now = Date.now()) {
+  const [carts, cust] = await Promise.all([readIndex('carts'), readIndex('customers')]);
+  const nameOf = (e) => cust[e]?.name || null;
+  const itemsText = (items) => (items || []).map((i) => `${i.qty || 1}x ${PRODUCTS.find((p) => p.id === i.id)?.name || i.id}`).join(', ');
+  const all = Object.values(carts);
+  const active = all
+    .filter((c) => c.status === 'open' && now - Date.parse(c.at) < EXPIRE_AFTER)
+    .map((c) => {
+      const next = c.consent ? STEPS.find((s) => s.n > (c.sent || 0)) : null;
+      return { id: c.id, email: c.email, name: nameOf(c.email), at: c.at, value: c.value || 0, items: itemsText(c.items), consent: !!c.consent, sent: c.sent || 0,
+        nextStep: next ? next.n : null, nextAt: next ? new Date(Math.max(now, Date.parse(c.at) + next.after)).toISOString() : null, code: c.code || null };
+    })
+    .sort((a, b) => String(b.at).localeCompare(String(a.at)));
+  const finished = all
+    .filter((c) => c.status !== 'open' && (c.sent || 0) > 0 && now - Date.parse(c.at) < 14 * 86400000)
+    .map((c) => ({ id: c.id, email: c.email, name: nameOf(c.email), at: c.at, value: c.value || 0, items: itemsText(c.items), sent: c.sent || 0, status: c.status, recovered: !!c.recovered }))
+    .sort((a, b) => String(b.at).localeCompare(String(a.at)));
+  return { active, finished, steps: STEPS.length };
+}
+
 export async function ordersList(days, source, now = Date.now()) {
   const since = sinceMs(days, now);
   const list = Object.values(await readIndex('orders'))
@@ -474,6 +495,7 @@ export default async (req) => {
         return json(200, await ordersList(parseDays(url.searchParams.get('days')), src));
       }
       if (action === 'alerts') return json(200, await alerts());
+      if (action === 'cartSequence') return json(200, await cartSequence());
       if (action === 'orderAddress') { // older orders saved before addresses were kept: read it from Square
         const id = url.searchParams.get('id') || '';
         if (!/^[A-Za-z0-9_-]{10,64}$/.test(id)) return json(400, { error: 'Bad order id' });
