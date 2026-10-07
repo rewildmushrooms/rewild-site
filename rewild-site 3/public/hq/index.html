@@ -47,6 +47,8 @@ main{padding:24px 0 60px}
 .tile .value{font-family:Montserrat,sans-serif;font-weight:800;font-size:30px;line-height:1.1;margin-top:6px;font-variant-numeric:tabular-nums}
 .tile .sub{font-size:13px;color:var(--muted);margin-top:2px}
 .panel{background:#fff;border-radius:4px;padding:20px;margin-bottom:12px}
+.live-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#2fbf71;margin-right:8px;vertical-align:2px;animation:lvpulse 1.6s infinite}@keyframes lvpulse{0%{box-shadow:0 0 0 0 rgba(47,191,113,.55)}70%{box-shadow:0 0 0 9px rgba(47,191,113,0)}100%{box-shadow:0 0 0 0 rgba(47,191,113,0)}}
+.lv-big{font-size:44px;font-weight:800;line-height:1}.lv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:14px}.lv-grid ul{list-style:none;margin:6px 0 0;padding:0}.lv-grid li{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--stone);font-size:14px}
 .panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px}
 .cols .panel{margin-bottom:0}
@@ -221,6 +223,11 @@ a{color:var(--ink)}
     </div>
   </div>
   <p class="msg" id="load-msg" role="status"></p>
+
+  <section class="panel" id="live-panel">
+    <div class="panel-head"><h2><span class="live-dot" aria-hidden="true"></span>On the site right now</h2><span class="muted small" id="lv-time"></span></div>
+    <div id="lv-body"><p class="muted" style="margin:0">Checking…</p></div>
+  </section>
 
   <section class="panel" id="alerts-panel">
     <div class="panel-head"><h2>Heads up</h2><span class="muted small" id="al-time"></span><button class="btn ghost small" id="tg-test" type="button">Test Telegram alert</button></div>
@@ -504,13 +511,29 @@ a{color:var(--ink)}
     alertMsg(out.join(' · '));b.disabled=false;loadCoupons();
   };
 
+  // ---- Live visitors (Google Analytics realtime). Refreshes every 30 seconds while Overview is open.
+  async function loadLive(){
+    const box=$('#lv-body');if(!box)return;
+    try{const r=await api('?action=live');
+      if(!r.configured){box.innerHTML='<p class="muted" style="margin:0">Google Analytics isn\'t connected yet.</p>';return;}
+      if(r.error){box.innerHTML=`<p class="muted" style="margin:0">Couldn't load live visitors: ${esc(r.error)}</p>`;return;}
+      const list=(arr,label)=>arr.length?`<ul>${arr.map(x=>`<li><span>${esc(label(x))}</span><b>${x.users}</b></li>`).join('')}</ul>`:'<p class="muted small" style="margin:6px 0 0">Nobody yet.</p>';
+      const ev=r.events||{};const evs=[['add_to_cart','added to cart'],['begin_checkout','started checkout'],['purchase','bought'],['quiz_complete','finished the quiz']].filter(([k])=>ev[k]).map(([k,t])=>`${ev[k]} ${t}`);
+      box.innerHTML=`<div class="row" style="gap:28px;align-items:flex-end;flex-wrap:wrap"><div><div class="lv-big">${r.last30}</div><div class="muted small">visitor${r.last30===1?'':'s'} in the last 30 minutes</div></div><div><div style="font-size:24px;font-weight:700">${r.last5}</div><div class="muted small">in the last 5 minutes</div></div>${evs.length?`<div class="small"><b>Last 30 min:</b> ${esc(evs.join(' · '))}</div>`:''}</div>
+        <div class="lv-grid"><div><b class="small">Pages they're on</b>${list(r.pages,x=>x.page)}</div><div><b class="small">Where they are</b>${list(r.places,x=>[x.city&&x.city!=='(not set)'?x.city:'',x.country].filter(Boolean).join(', '))}</div><div><b class="small">Device</b>${list(r.devices,x=>x.device.charAt(0).toUpperCase()+x.device.slice(1))}</div></div>
+        <p class="muted small" style="margin:12px 0 0">From Google Analytics. Counts only, not names. Visitors who block analytics or decline cookies don't show up.</p>`;
+      $('#lv-time').textContent='updated '+new Date(r.at).toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit',second:'2-digit'});
+    }catch(err){box.innerHTML=`<p class="muted" style="margin:0">Couldn't load live visitors: ${esc(err.message)}</p>`;}
+  }
+  setInterval(()=>{const p=document.querySelector('[data-panel="overview"]');if(p&&!p.hidden&&!document.hidden&&me&&me.role==='owner')loadLive();},30000);
+
   // ---- Tabs
   const loaded={};
   function show(tab){
     document.querySelectorAll('[role=tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab));
     document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==tab);
     if(loaded[tab])return; loaded[tab]=true;
-    if(tab==='overview'){loadSummary();loadAlerts();loadPeople();loadLow();}
+    if(tab==='overview'){loadLive();loadSummary();loadAlerts();loadPeople();loadLow();}
     if(tab==='customers')loadCustomers();
     if(tab==='emails')loadEmails();
     if(tab==='orders')loadOrders();
