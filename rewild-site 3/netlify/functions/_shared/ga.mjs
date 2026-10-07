@@ -40,10 +40,10 @@ async function accessToken({ fetchImpl = fetch } = {}) {
   return j.access_token;
 }
 
-async function runReport(body, opts = {}) {
+async function runReport(body, opts = {}, method = 'runReport') {
   const fetchImpl = opts.fetchImpl || fetch;
   const id = String(process.env.GA_PROPERTY_ID).replace(/\D/g, '');
-  const res = await fetchImpl(`https://analyticsdata.googleapis.com/v1beta/properties/${id}:runReport`, {
+  const res = await fetchImpl(`https://analyticsdata.googleapis.com/v1beta/properties/${id}:${method}`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${await accessToken(opts)}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -58,6 +58,33 @@ async function runReport(body, opts = {}) {
 
 const num = (v) => Number(v || 0);
 const rows = (r, map) => (r.rows || []).map((row) => map(row.dimensionValues || [], (row.metricValues || []).map((m) => num(m.value))));
+
+// Who's on the site right now (Google Analytics realtime: the last 30 minutes). Counts only, never individuals.
+export async function live(opts) {
+  if (!gaConfigured()) return { configured: false };
+  const rt = (body) => runReport(body, opts, 'runRealtimeReport');
+  const users = [{ name: 'activeUsers' }];
+  const top = (dims, limit = 8) => rt({ dimensions: dims.map((name) => ({ name })), metrics: users, orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }], limit });
+  const [tot, five, pages, places, devices, events] = await Promise.all([
+    rt({ metrics: users }),
+    rt({ metrics: users, minuteRanges: [{ startMinutesAgo: 4, endMinutesAgo: 0 }] }),
+    top(['unifiedScreenName']),
+    top(['city', 'country']),
+    top(['deviceCategory'], 4),
+    rt({ dimensions: [{ name: 'eventName' }], metrics: [{ name: 'eventCount' }], dimensionFilter: { filter: { fieldName: 'eventName', inListFilter: { values: ['add_to_cart', 'begin_checkout', 'purchase', 'quiz_complete'] } } } }),
+  ]);
+  const first = (r) => num(r.rows?.[0]?.metricValues?.[0]?.value);
+  return {
+    configured: true,
+    last30: first(tot),
+    last5: first(five),
+    pages: rows(pages, (d, m) => ({ page: (d[0]?.value || '').replace(/\s*\|\s*REWILD.*$/i, '') || '(not set)', users: m[0] })),
+    places: rows(places, (d, m) => ({ city: d[0]?.value, country: d[1]?.value, users: m[0] })),
+    devices: rows(devices, (d, m) => ({ device: d[0]?.value, users: m[0] })),
+    events: Object.fromEntries(rows(events, (d, m) => [d[0]?.value, m[0]])),
+    at: Date.now(),
+  };
+}
 
 export async function traffic(days, opts) {
   if (!gaConfigured()) return { configured: false };
