@@ -111,8 +111,9 @@
       if (!p) pm.innerHTML = '';
       else if (p.pending) pm.innerHTML = `${esc(p.code)} will be checked at checkout. <button type="button" class="link-btn" data-promo-remove>Remove</button>`;
       else if (q.codeNote === 'minimum') { pm.className = 'small err'; pm.innerHTML = `${esc(p.code)} needs an order of ${money(p.minimumAmount)} or more. <button type="button" class="link-btn" data-promo-remove>Remove</button>`; }
+      else if (q.codeBeaten && q.bundleKept && !q.stockUpSaving) pm.innerHTML = `<b>Your bundle price stays.</b> Codes don't stack on the Duo or the All Four set because they're already discounted. <button type="button" class="link-btn" data-promo-remove>Remove code</button>`;
       else if (q.codeBeaten) pm.innerHTML = `<b>Best deal applied.</b> Your bundle and stock-up savings save you more than ${esc(p.code)}, so we used those instead. <button type="button" class="link-btn" data-promo-remove>Remove code</button>`;
-      else pm.innerHTML = `<b>${esc(p.code)} applied: ${p.percentOff ? p.percentOff + '% off' : money(p.amountOff) + ' off'}.</b>${q.bundleSaving || q.stockUpSaving || (q.bags >= 2) ? ' It saves you more than our bundle and stock-up savings, so we used it instead.' : ''} <button type="button" class="link-btn" data-promo-remove>Remove</button>`;
+      else pm.innerHTML = `<b>${esc(p.code)} applied: ${p.percentOff ? p.percentOff + '% off' : money(p.amountOff) + ' off'}.</b>${q.bundleKept ? ' Bundles keep their own price (codes don\'t stack on them).' : q.stockUpSaving || (q.bags >= 2) ? ' It saves you more than the stock-up savings, so we used it instead.' : ''} <button type="button" class="link-btn" data-promo-remove>Remove</button>`;
     }
     const news = $('#cart-news'); if (news) news.checked = !!state.newsletter;
     const aw = $('#addon-wrap');
