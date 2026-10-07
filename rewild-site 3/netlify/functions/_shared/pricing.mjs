@@ -4,8 +4,10 @@
 // Offers (amounts in cents, CAD):
 //   Bundles: priced in the catalog (Duo, All Four set). Their "list value" is the sum of what's inside.
 //   Stock up: 2+ single powder bags (any mix) = 10% off those bags.
-//   Best deal wins: the cart is priced two ways and the lower total is used:
-//     offers = bundle prices + stock up       code = promo code taken off full list value
+//   Best deal wins, item by item: each item gets its offer price or the code price, whichever is lower. Never both.
+//     offer price = bundle price, or the bag price less stock up     code price = code % off the item's full list value
+//   Bundles (Duo, All Four) are already discounted: a % code only touches them if it is MORE than 20%, and then it
+//   replaces the bundle price (25% code = 25% off the full value), it never stacks on it. Dollar-off codes skip bundles.
 //   Tincture add-on (checkout tick box): one tincture at 15% off, only if no tincture is in the cart. Always applies.
 //   Free tincture: when what they pay for products (after discounts, before shipping/tax) reaches $200.
 
@@ -15,6 +17,8 @@ export const OFFERS = {
   freeGift: { id: 'tincture', over: 20000, name: 'Free gift: Rewild Energy Tincture' },
   bundles: { duo: { energy: 1, tincture: 1 }, all4: { energy: 1, clarity: 1, strength: 1, peace: 1 } },
 };
+
+export const BUNDLE_CODE_OVER = 20; // a % code must beat this to touch a bundle
 
 const hasTincture = (items) => items.some((i) => i.id === 'tincture' || i.id === 'duo');
 
@@ -43,14 +47,33 @@ export function priceCart(items, country, catalog, promo = null, addon = false) 
   const stockUpSaving = bags >= su.minBags ? Math.round(bagLines.reduce((a, l) => a + l.unit * l.qty, 0) * su.percent / 100) : 0;
   const offersTotal = itemsTotal - stockUpSaving;
 
-  // Code price (on full list value)
-  let codeTotal = null, codeNote = '';
+  // Code, item by item (best price per item, never stacked)
+  let codeNote = '', useCode = false, bundleKept = false, codeTotal = 0;
   if (promo && lines.length) {
     if (promo.minimumAmount && listTotal < promo.minimumAmount) codeNote = 'minimum';
-    else codeTotal = listTotal - (promo.percentOff ? Math.round(listTotal * promo.percentOff / 100) : Math.min(listTotal, promo.amountOff || 0));
+    else {
+      const suOn = bags >= su.minBags;
+      const isBundle = (l) => !!OFFERS.bundles[l.id];
+      const offerLine = (l) => l.unit * l.qty - (suOn && su.ids.includes(l.id) ? Math.round(l.unit * l.qty * su.percent / 100) : 0);
+      const pct = Number(promo.percentOff) || 0;
+      if (pct) {
+        for (const l of lines) {
+          const off = offerLine(l);
+          const touch = !isBundle(l) || pct > BUNDLE_CODE_OVER;
+          const code = touch ? l.listUnit * l.qty - Math.round(l.listUnit * l.qty * pct / 100) : Infinity;
+          if (code < off) { codeTotal += code; useCode = true; } else { codeTotal += off; if (isBundle(l)) bundleKept = true; }
+        }
+      } else {
+        const nb = lines.filter((l) => !isBundle(l)), bl = lines.filter(isBundle);
+        const nbOffer = nb.reduce((a, l) => a + offerLine(l), 0), nbList = nb.reduce((a, l) => a + l.listUnit * l.qty, 0);
+        const nbCode = nbList - Math.min(nbList, Number(promo.amountOff) || 0);
+        const blTotal = bl.reduce((a, l) => a + offerLine(l), 0);
+        bundleKept = bl.length > 0;
+        if (nb.length && nbCode < nbOffer) { codeTotal = blTotal + nbCode; useCode = true; } else codeTotal = blTotal + nbOffer;
+      }
+    }
   }
-  const useCode = codeTotal != null && codeTotal < offersTotal;
-  const productsTotal = useCode ? codeTotal : offersTotal;
+  const productsTotal = useCode ? Math.min(codeTotal, offersTotal) : offersTotal;
   const discount = itemsTotal - productsTotal; // order-level discount sent to Square (on top of bundle prices)
   const discountName = useCode ? promo.code : stockUpSaving ? su.name : '';
 
@@ -75,7 +98,8 @@ export function priceCart(items, country, catalog, promo = null, addon = false) 
   return {
     lines, itemsTotal, listTotal, bundleSaving, stockUpSaving, bags,
     codeApplied: useCode ? promo.code : null,
-    codeBeaten: !!(promo && codeTotal != null && !useCode), // a code was entered but the offers save more
+    codeBeaten: !!(promo && lines.length && codeNote !== 'minimum' && !useCode), // a code was entered but the offers save more
+    bundleKept, // a bundle in the cart kept its own price (codes don't stack on bundles)
     codeNote, discount, discountName,
     addonEligible, addonApplied, addonUnit, addonFull: byId[OFFERS.addon.id].price,
     gift, paid, shipping, free, total: paid + shipping, quoted: !!ship.quoted, freeOver: ship.freeOver,
