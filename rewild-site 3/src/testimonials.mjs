@@ -17,7 +17,7 @@ export const TESTIMONIALS = [
   {
     id: 'krystal',
     name: 'Krystal J.',
-    detail: "Takes Lion's Mane, Reishi, Chaga + the Energy Tincture",
+    detail: "Uses Lion's Mane, Reishi, Chaga + the Energy Tincture",
     head: 'Such an easy, grounding part of my routine',
     quote: "...Starting my morning with coffee and functional mushrooms has become such an easy and grounding part of my routine. If you've been curious about exploring functional mushrooms, Rewild Mushrooms has definitely become a favourite in my wellness toolkit.",
     products: ['clarity', 'strength', 'peace', 'tincture'],
@@ -29,6 +29,14 @@ export const TESTIMONIALS = [
     head: 'I wanted to shovel the whole street',
     quote: "...during the first snowfall I wanted to shovel my neighbours', the entire street. If it wasn't for having to go to work, I would have.",
     products: ['energy', 'tincture', 'duo'],
+  },
+  {
+    id: 'rebekah',
+    name: 'Rebekah Q.',
+    detail: 'Mushroom powders in her morning coffee or cacao',
+    head: 'An epic addition to my life',
+    quote: 'Rewild Mushrooms has been an epic addition to my life... Adding these mushroom powders into my morning coffee or cacao have been a game changer and it is truly obvious the quality here... This company is going places!',
+    products: ['clarity', 'strength', 'peace', 'energy'],
   },
 ];
 
