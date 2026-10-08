@@ -58,6 +58,32 @@ async function build() {
   const today = new Date().toISOString().slice(0, 10);
   const urls = PAGES.filter((p) => !p.noindex && !p.file).map((p) => `<url><loc>${SITE.url}${p.path}</loc><lastmod>${today}</lastmod></url>`);
   await writeFile(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`);
+  // Google Merchant Center product feed (free Shopping listings). Only products with their own page.
+  const x = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[c]));
+  const FEED_TITLES = {
+    energy: 'Organic Cordyceps Militaris Mushroom Powder, CordyFuel, 100g | REWILD Energy',
+    clarity: "Organic Lion's Mane Mushroom Powder, 100g, Grown in BC | REWILD Clarity",
+    strength: 'Organic Chaga Mushroom Powder, 100g, Grown in BC | REWILD Strength',
+    peace: 'Organic Reishi Mushroom Powder, 100g, Grown in BC | REWILD Peace',
+    tincture: 'Cordyceps Militaris Tincture, Alcohol-Free, 100 ml | REWILD Energy Tincture',
+  };
+  const feedItems = PRODUCTS.filter((p) => FEED_TITLES[p.id]).map((p) => `  <item>
+    <g:id>${x(p.id)}</g:id>
+    <g:title>${x(FEED_TITLES[p.id])}</g:title>
+    <g:description>${x(`${p.seoDescription} ${p.story}`.replace(/™/g, '').replace(/\s*\$\d+ \/ [^.]+\./, ''))}</g:description>
+    <g:link>${SITE.url}/shop/${p.slug}/</g:link>
+    <g:image_link>${SITE.url}${p.image}</g:image_link>
+${(p.gallery || []).filter((g) => g !== p.image).slice(0, 5).map((g) => `    <g:additional_image_link>${SITE.url}${g}</g:additional_image_link>`).join('\n')}
+    <g:availability>in_stock</g:availability>
+    <g:price>${(p.price / 100).toFixed(2)} CAD</g:price>
+    <g:brand>REWILD Mushrooms</g:brand>
+    <g:condition>new</g:condition>
+    <g:identifier_exists>no</g:identifier_exists>
+    <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items</g:google_product_category>
+    <g:product_type>Mushroom powders &gt; ${x(p.commonName)}</g:product_type>
+  </item>`).join('\n');
+  await mkdir(join(dist, 'feeds'), { recursive: true });
+  await writeFile(join(dist, 'feeds/google-products.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">\n<channel>\n  <title>REWILD Mushrooms</title>\n  <link>${SITE.url}</link>\n  <description>REWILD Mushrooms products</description>\n${feedItems}\n</channel>\n</rss>\n`);
   await writeFile(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /hq/\nDisallow: /order-confirmed/\nDisallow: /api/\n\nSitemap: ${SITE.url}/sitemap.xml\n`);
 
   if (problems.length) {
