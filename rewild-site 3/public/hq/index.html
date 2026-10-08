@@ -293,6 +293,10 @@ a{color:var(--ink)}
     <div class="scroll"><table><thead><tr><th>Date</th><th>Customer</th><th>Items</th><th>Ship to</th><th class="num">Total</th><th>US shipping</th><th></th></tr></thead><tbody id="recent"></tbody></table></div>
   </section>
 
+  <section class="panel" id="metrics-panel" style="margin-top:12px"><div class="panel-head"><h2>Metrics sheet (Google Sheets)</h2><span class="muted small" id="mx-time"></span></div>
+    <div id="mx-body" class="small"><p class="muted" style="margin:0">Checking…</p></div>
+  </section>
+
   </div>
 
   <div data-panel="emails" hidden>
@@ -527,13 +531,28 @@ a{color:var(--ink)}
   }
   setInterval(()=>{const p=document.querySelector('[data-panel="overview"]');if(p&&!p.hidden&&!document.hidden&&me&&me.role==='owner')loadLive();},30000);
 
+  // ---- Metrics sheet: setup steps + "Update now"
+  async function loadMetrics(){
+    const box=$('#mx-body');if(!box)return;
+    try{const r=await api('?action=metricsInfo');const lr=r.lastRun;
+      const status=!lr?'<span class="muted">Not run yet.</span>':lr.ok?`<span class="chip rep">Working</span> Last updated ${new Date(lr.at).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})} (${lr.orders} orders).`:`<span class="chip ab">Needs setup</span> ${esc(lr.error)}`;
+      box.innerHTML=`<p style="margin:0 0 10px">${status}</p>
+        <p style="margin:0 0 10px">Rebuilt every night from orders and Google Analytics. Monthly KPIs, Orders, Cohorts, Products and Traffic tabs are written by the website. You fill in the <b>Costs</b> tab (cost per unit, shipping, monthly ad spend) to see profit, margin and cost per new customer.</p>
+        ${lr&&lr.ok?'':`<ol style="margin:0 0 10px;padding-left:18px"><li>Turn on the Google Sheets API for the website's Google key: <a href="${esc(r.enableApiUrl)}" target="_blank" rel="noopener">open Google Cloud</a> and click Enable.</li><li>In the sheet, click Share and add <b>${esc(r.keyEmail||'(Google key not set)')}</b> as <b>Editor</b> (untick "Notify").</li><li>Click Update now below.</li></ol>`}
+        <div class="row" style="gap:8px"><a class="btn small" href="${esc(r.sheetUrl)}" target="_blank" rel="noopener">Open the sheet</a>${r.keyEmail?`<button class="btn ghost small" type="button" id="mx-copy">Copy key email</button>`:''}<button class="btn ghost small" type="button" id="mx-run">Update now</button></div><p class="msg small" id="mx-msg"></p>`;
+      const cp=$('#mx-copy');if(cp)cp.onclick=async()=>{try{await navigator.clipboard.writeText(r.keyEmail);cp.textContent='Copied';}catch{cp.textContent=r.keyEmail;}};
+      $('#mx-run').onclick=async(e)=>{const b=e.currentTarget,m=$('#mx-msg');b.disabled=true;m.className='msg small';m.textContent='Updating… (up to a minute)';
+        try{const x=await api('',{method:'POST',body:JSON.stringify({action:'metricsRun'})});if(x.ok){m.textContent='Done. '+x.orders+' orders written.';setTimeout(loadMetrics,800);}else{m.className='msg small err';m.textContent=x.error;}}catch(err){m.className='msg small err';m.textContent=err.message;}b.disabled=false;};
+    }catch(err){box.innerHTML=`<p class="muted" style="margin:0">${esc(err.message)}</p>`;}
+  }
+
   // ---- Tabs
   const loaded={};
   function show(tab){
     document.querySelectorAll('[role=tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab));
     document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==tab);
     if(loaded[tab])return; loaded[tab]=true;
-    if(tab==='overview'){loadLive();loadSummary();loadAlerts();loadPeople();loadLow();}
+    if(tab==='overview'){loadLive();loadSummary();loadAlerts();loadPeople();loadLow();loadMetrics();}
     if(tab==='customers')loadCustomers();
     if(tab==='emails')loadEmails();
     if(tab==='orders')loadOrders();
