@@ -141,7 +141,7 @@ export const PRODUCTS = [
     alt: 'CordyFuel™ Cordyceps militaris tincture on moss beside a mountain river',
     seoTitle: 'Cordyceps Tincture, Alcohol-Free | CordyFuel™ | REWILD',
     seoDescription:
-      'Alcohol-free Cordyceps militaris tincture made with CordyFuel™. 100% Cordyceps, nothing added, grown in BC. Portable and easy to take. $30 / 100 ml.',
+      'Alcohol-free Cordyceps militaris tincture made with CordyFuel™. 100% Cordyceps, nothing added, grown in BC. Portable and easy to use. $30 / 100 ml.',
     tagline: 'Rewild Energy, without the powder.',
     story:
       'Same CordyFuel™ Cordyceps militaris, in a portable, alcohol-free liquid. Even people who do not love the taste of mushrooms tend to love this one.',

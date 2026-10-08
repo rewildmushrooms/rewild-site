@@ -4,8 +4,9 @@
 //      "Viewer" access to the GA property; read-only).
 import crypto from 'node:crypto';
 
-let tokenCache = { token: null, exp: 0 };
-export const _resetGaCache = () => { tokenCache = { token: null, exp: 0 }; };
+const GA_SCOPE = 'https://www.googleapis.com/auth/analytics.readonly';
+let tokenCache = {}; // one token per scope
+export const _resetGaCache = () => { tokenCache = {}; };
 
 export const gaConfigured = () => !!(process.env.GA_PROPERTY_ID && process.env.GA_SERVICE_ACCOUNT);
 
@@ -20,23 +21,30 @@ function serviceAccount() {
 
 const b64url = (v) => Buffer.from(typeof v === 'string' ? v : JSON.stringify(v)).toString('base64url');
 
-export function signedJwt(sa, now = Math.floor(Date.now() / 1000)) {
+export function signedJwt(sa, now = Math.floor(Date.now() / 1000), scope = GA_SCOPE) {
   const head = b64url({ alg: 'RS256', typ: 'JWT' });
-  const claim = b64url({ iss: sa.client_email, scope: 'https://www.googleapis.com/auth/analytics.readonly', aud: 'https://oauth2.googleapis.com/token', iat: now, exp: now + 3600 });
+  const claim = b64url({ iss: sa.client_email, scope, aud: 'https://oauth2.googleapis.com/token', iat: now, exp: now + 3600 });
   const sig = crypto.createSign('RSA-SHA256').update(`${head}.${claim}`).sign(sa.private_key).toString('base64url');
   return `${head}.${claim}.${sig}`;
 }
 
-async function accessToken({ fetchImpl = fetch } = {}) {
-  if (tokenCache.token && Date.now() < tokenCache.exp - 60000) return tokenCache.token;
+// The same Google key (service account) is reused for the metrics Google Sheet, with a different scope.
+export function serviceAccountInfo() {
+  if (!process.env.GA_SERVICE_ACCOUNT) return null;
+  try { const sa = serviceAccount(); return { email: sa.client_email, project: sa.project_id || null }; } catch { return null; }
+}
+
+export async function accessToken({ fetchImpl = fetch } = {}, scope = GA_SCOPE) {
+  const c = tokenCache[scope];
+  if (c && Date.now() < c.exp - 60000) return c.token;
   const res = await fetchImpl('https://oauth2.googleapis.com/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion: signedJwt(serviceAccount()) }).toString(),
+    body: new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion: signedJwt(serviceAccount(), undefined, scope) }).toString(),
   });
   const j = await res.json().catch(() => ({}));
   if (!res.ok || !j.access_token) throw new Error(`Google sign-in failed: ${j.error_description || j.error || res.status}`);
-  tokenCache = { token: j.access_token, exp: Date.now() + (j.expires_in || 3600) * 1000 };
+  tokenCache[scope] = { token: j.access_token, exp: Date.now() + (j.expires_in || 3600) * 1000 };
   return j.access_token;
 }
 
@@ -84,6 +92,14 @@ export async function live(opts) {
     events: Object.fromEntries(rows(events, (d, m) => [d[0]?.value, m[0]])),
     at: Date.now(),
   };
+}
+
+// Visitors per month for the metrics sheet (last 13 months, including this one).
+export async function monthlyTraffic(opts) {
+  if (!gaConfigured()) return {};
+  const d = new Date(); const start = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() - 12, 1)).toISOString().slice(0, 10);
+  const r = await runReport({ dateRanges: [{ startDate: start, endDate: 'today' }], dimensions: [{ name: 'yearMonth' }], metrics: [{ name: 'activeUsers' }, { name: 'sessions' }, { name: 'screenPageViews' }], limit: 20 }, opts);
+  return Object.fromEntries(rows(r, (dv, m) => [`${dv[0].value.slice(0, 4)}-${dv[0].value.slice(4, 6)}`, { visitors: m[0], sessions: m[1], pageviews: m[2] }]));
 }
 
 export async function traffic(days, opts) {
