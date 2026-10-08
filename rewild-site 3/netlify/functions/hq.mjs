@@ -35,6 +35,7 @@ import { inventory, setStock } from './_shared/inventory.mjs';
 import { checkLowStock, lowStockThreshold } from './_shared/lowstock.mjs';
 import { checkPassword } from './_shared/auth.mjs';
 import { traffic, live } from './_shared/ga.mjs';
+import { metricsInfo, updateMetricsSheet } from './_shared/metrics.mjs';
 import { markShipped } from './_shared/shipping.mjs';
 import { setOrderStatus, addOrderNote, refundOrder, deleteOrder } from './_shared/orderadmin.mjs';
 import { sendTelegram } from './_shared/telegram.mjs';
@@ -496,6 +497,7 @@ export default async (req) => {
       }
       if (action === 'alerts') return json(200, await alerts());
       if (action === 'cartSequence') return json(200, await cartSequence());
+      if (action === 'metricsInfo') return json(200, await metricsInfo());
       if (action === 'live') { try { return json(200, await live()); } catch (e) { return json(200, { configured: true, error: e.message }); } }
       if (action === 'orderAddress') { // older orders saved before addresses were kept: read it from Square
         const id = url.searchParams.get('id') || '';
@@ -536,6 +538,7 @@ export default async (req) => {
       if (b.action === 'refundOrder') { console.log('refund', member.id, b.orderId, b.amount || 'all'); return json(200, await refundOrder(b, member)); }
       if (b.action === 'deleteOrder') { console.log('order deleted', member.id, b.orderId); return json(200, await deleteOrder(b, member)); }
       if (b.action === 'shippingInvoice') return json(200, { ok: true, ...(await sendShippingInvoice(b)) });
+      if (b.action === 'metricsRun') return json(200, await updateMetricsSheet());
       if (b.action === 'testAlert') return json(200, await sendTelegram('✅ REWILD order alerts are working. New website orders will show up here.'));
       return json(400, { error: 'Unknown action' });
     }
