@@ -14,6 +14,7 @@ import { orderCode, partnerForOrder } from './team.mjs';
 import { putIndex, appendLedger, customerSummary, orderSummary } from './data.mjs';
 import { markPurchased, useRecoveryCode, RECOVERY_RE } from './carts.mjs';
 import { sendTelegram, orderAlertText, telegramReady } from './telegram.mjs';
+import { recordReferralOrder, referralFor, sharePage } from './referrals.mjs';
 
 const amt = (m) => Number(m?.amount || 0);
 export const emailKey = (e) => String(e || '').trim().toLowerCase();
@@ -125,6 +126,9 @@ export async function recordPaidOrder(order, opts, deps = {}) {
   if (!steps.code && rec.code && RECOVERY_RE.test(rec.code)) {
     try { await useRecoveryCode(rec.code, order.id); steps.code = true; } catch (e) { console.error('code mark failed', e.message); }
   }
+  if (!steps.referral && rec.code && !RECOVERY_RE.test(rec.code)) {
+    try { await recordReferralOrder(rec); steps.referral = true; } catch (e) { console.error('referral record failed', e.message); }
+  }
   let customer = null;
   if (email) {
     customer = mergeCustomer(await getJSON('customers', email), rec);
@@ -183,7 +187,10 @@ export function mailerliteFields(c) {
   };
 }
 export async function syncCustomer(c) {
-  try { await addSubscriber(c.email, mailerliteFields(c), { groups: [] }); }
+  const fields = mailerliteFields(c);
+  // Their friend code, for MailerLite emails ({$referral_code}, {$referral_link}).
+  try { const r = await referralFor(c.email, c.name); if (r) { fields.referral_code = r.code; fields.referral_link = sharePage((process.env.SITE_URL || 'https://rewildmushrooms.com').replace(/\/$/, ''), r.code); } } catch (e) { console.error('referral code failed', e.message); }
+  try { await addSubscriber(c.email, fields, { groups: [] }); }
   catch (e) { if (!/422/.test(e.message)) throw e; } // fields not created yet in MailerLite
 }
 

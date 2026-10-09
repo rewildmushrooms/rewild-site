@@ -14,7 +14,8 @@ export const STEPS = [
 export const CODE_HOURS = 24;
 export const EXPIRE_AFTER = 7 * 24 * 60 * 60 * 1000; // stop tracking a cart after a week
 export const RECOVERY_PERCENT = 15;
-export const RECOVERY_RE = /^COMEBACK-[A-Z0-9]{6}$/;
+// One-time codes made by the website: COMEBACK- (cart reminders, win-back), THANKS- (review thank-you), REWARD- (referral reward).
+export const RECOVERY_RE = /^(COMEBACK|THANKS|REWARD)-[A-Z0-9]{6}$/;
 
 const cartSummary = (c) => ({ id: c.id, email: c.email, at: c.createdAt, value: c.value, items: c.items, status: c.status, consent: c.consent, sent: c.sent.length, recovered: !!c.recovered, code: c.code || null, orderId: c.orderId || null });
 
@@ -75,6 +76,15 @@ export async function createRecoveryCode(cart, now = Date.now(), hours = CODE_HO
   do code = 'COMEBACK-' + crypto.randomBytes(4).toString('hex').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6).padEnd(6, '7');
   while (await getJSON('onetime', code));
   const rec = { code, cartId: cart.id || null, email: cart.email, source, percentOff: RECOVERY_PERCENT, createdAt: new Date(now).toISOString(), expiresAt: Math.floor((now + hours * 3600000) / 1000), used: false };
+  await setJSON('onetime', code, rec);
+  return rec;
+}
+// Any one-time code: { prefix, percentOff | amountOff, min (cents), days, email, source }
+export async function createOnetimeCode({ prefix, percentOff = null, amountOff = null, min = null, days, email, source }, now = Date.now()) {
+  let code;
+  do code = `${prefix}-` + crypto.randomBytes(6).toString('base64').toUpperCase().replace(/[^A-Z2-9]/g, '').replace(/[IO]/g, '').padEnd(6, '7').slice(0, 6);
+  while (await getJSON('onetime', code));
+  const rec = { code, email: email || null, source, percentOff, amountOff, min, createdAt: new Date(now).toISOString(), expiresAt: Math.floor((now + days * 86400000) / 1000), used: false };
   await setJSON('onetime', code, rec);
   return rec;
 }

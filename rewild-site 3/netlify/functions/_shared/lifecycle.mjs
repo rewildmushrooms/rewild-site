@@ -8,6 +8,7 @@ import { getJSON, setJSON } from './store.mjs';
 import { readIndex, putIndex, customerSummary } from './data.mjs';
 import { PRODUCT_BY_ID } from './catalog.mjs';
 import { createRecoveryCode, RECOVERY_PERCENT } from './carts.mjs';
+import { referralFor, sharePage, REFERRAL } from './referrals.mjs';
 
 const DAY = 86400000;
 // How long one unit lasts with daily use (website FAQ: a 100g bag is about 2 to 3 months; a tincture bottle 5 to 10 servings).
@@ -46,7 +47,7 @@ export function dueEmail(c, now = Date.now()) {
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
 const firstName = (c) => String(c?.name || '').trim().split(/\s+/)[0] || '';
 
-export function lifecycleEmail(kind, c, { site, code, optout }) {
+export function lifecycleEmail(kind, c, { site, code, optout, refCode }) {
   const last = lastOrder(c);
   const ids = Object.keys(last?.items || {}).filter((id) => PRODUCT_BY_ID[id]);
   const names = ids.map((id) => PRODUCT_BY_ID[id].name);
@@ -67,8 +68,9 @@ export function lifecycleEmail(kind, c, { site, code, optout }) {
         cta: `Shop with ${RECOVERY_PERCENT}% off`,
         link: `${site}/shop/?${cart ? `cart=${encodeURIComponent(cart)}&` : ''}code=${encodeURIComponent(code?.code || '')}&utm_source=email&utm_medium=lifecycle&utm_campaign=winback`,
       };
+  const ps = kind === 'reorder' && refCode ? `P.S. Your friend code ${refCode} gives a friend $${REFERRAL.friendOff / 100} off their first order of $${REFERRAL.min / 100}+, and you get $${REFERRAL.rewardOff / 100} when they order: ${sharePage(site, refCode)}` : '';
   const foot = "You're getting this because you ordered from rewildmushrooms.com and said yes to emails.";
-  const text = [copy.head, '', ...copy.body.flatMap((p) => [p, '']), `${copy.cta}: ${copy.link}`, '', 'Return to your natural state.', '~ The REWILD crew', '', '---', foot, `Stop these emails: ${optout}`, 'REWILD Mushrooms, Box 18, Crescent Valley, BC V0G 1H0'].join('\n');
+  const text = [copy.head, '', ...copy.body.flatMap((p) => [p, '']), `${copy.cta}: ${copy.link}`, '', ...(ps ? [ps, ''] : []), 'Return to your natural state.', '~ The REWILD crew', '', '---', foot, `Stop these emails: ${optout}`, 'REWILD Mushrooms, Box 18, Crescent Valley, BC V0G 1H0'].join('\n');
   const html = `<!doctype html><html><body style="margin:0;background:#F3F2EE;font-family:Helvetica,Arial,sans-serif;color:#121310">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3F2EE;padding:24px 0"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border-radius:4px">
@@ -77,6 +79,7 @@ export function lifecycleEmail(kind, c, { site, code, optout }) {
 ${copy.body.map((p) => `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#3D3F38">${esc(p)}</p>`).join('')}
 ${code ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 18px"><tr><td align="center" style="border:2px dashed #121310;padding:14px 8px;font-size:22px;font-weight:800;letter-spacing:.06em">${esc(code.code)}</td></tr></table>` : ''}
 <a href="${esc(copy.link)}" style="display:inline-block;background:#E8C800;color:#121310;text-decoration:none;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:15px 26px;border-radius:2px">${esc(copy.cta)}</a>
+${ps ? `<p style="margin:24px 0 0;font-size:15px;line-height:1.6;color:#3D3F38">${esc(ps)}</p>` : ''}
 <p style="margin:28px 0 0;font-size:15px;line-height:1.5">Return to your natural state.<br>~ The REWILD crew</p></td></tr>
 <tr><td style="padding:24px 28px;font-size:12px;line-height:1.5;color:#6B6D64">${esc(foot)} <a href="${esc(optout)}" style="color:#6B6D64">Stop these emails</a>.<br>REWILD Mushrooms, Box 18, Crescent Valley, BC V0G 1H0</td></tr>
 </table></td></tr></table></body></html>`;
@@ -100,7 +103,9 @@ export async function runLifecycle(now = Date.now(), { send, site }) {
     let code = null;
     if (kind === 'winback') code = await createRecoveryCode({ id: null, email }, now, WINBACK_CODE_HOURS, 'winback');
     const optout = await optoutLink(site, email, c);
-    const msg = lifecycleEmail(kind, c, { site, code, optout });
+    let refCode = null;
+    if (kind === 'reorder') { try { refCode = (await referralFor(email, c.name))?.code || null; } catch (e) { console.error('referral code failed', e.message); } }
+    const msg = lifecycleEmail(kind, c, { site, code, optout, refCode });
     await send({ to: email, subject: msg.subject, text: msg.text, html: msg.html, fromName: 'REWILD Mushrooms', replyTo: 'hello@rewildmushrooms.com', unsubscribe: msg.unsubscribe });
     c.lifecycle = { ...(c.lifecycle || {}), [kind === 'reorder' ? 'reorderFor' : 'winbackFor']: last.id, [kind + 'At']: new Date(now).toISOString() };
     await setJSON('customers', email, c);

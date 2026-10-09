@@ -9,6 +9,7 @@
 import { square, idem, pages } from './square.mjs';
 import { getJSON, setJSON } from './store.mjs';
 import { getRecoveryCode, RECOVERY_RE } from './carts.mjs';
+import { getReferral, REFERRAL } from './referrals.mjs';
 
 export const CODE_RE = /^[A-Z0-9_-]{3,30}$/;
 export const normCode = (c) => String(c || '').trim().toUpperCase();
@@ -115,10 +116,26 @@ export async function validatePromo(code, subtotal, opts, now = Date.now(), emai
     if (!r) throw bad(`${code} is not a valid code.`);
     if (r.used) throw bad(`${code} has already been used.`);
     if (now / 1000 > r.expiresAt) throw bad(`${code} has expired.`);
-    const promo = { id: null, code, percentOff: r.percentOff, amountOff: null, active: true, expiresAt: r.expiresAt, minimumAmount: null, oneTime: true };
+    const promo = { id: null, code, percentOff: r.percentOff || null, amountOff: r.amountOff || null, active: true, expiresAt: r.expiresAt, minimumAmount: r.min || null, oneTime: true };
+    if (promo.minimumAmount && subtotal < promo.minimumAmount) throw bad(`${code} needs an order of $${(promo.minimumAmount / 100).toFixed(0)} or more.`);
     return { promo, discount: discountFor(promo, subtotal) };
   }
-  const promo = (await listPromos(opts)).find((p) => p.code === code);
+  let promo = (await listPromos(opts)).find((p) => p.code === code);
+  if (!promo) {
+    // A customer's refer-a-friend code: $20 off a first order of $75+.
+    const ref = await getReferral(code);
+    if (ref && ref.active !== false) {
+      const key = String(email || '').trim().toLowerCase();
+      if (key && key === ref.email) throw bad('That\u2019s your own friend code. Share it with friends and you\u2019ll get $20 when they order.');
+      if (key) {
+        const c = await getJSON('customers', key);
+        if ((c?.orderCount || 0) > 0) throw bad(`${code} is a friend code for first orders. Welcome back! It can\u2019t be used on this order.`);
+      }
+      promo = { id: null, code, percentOff: null, amountOff: REFERRAL.friendOff, active: true, expiresAt: null, minimumAmount: REFERRAL.min, referral: true, referrer: ref.first || null };
+      if (subtotal < promo.minimumAmount) throw bad(`${code} needs an order of $${(promo.minimumAmount / 100).toFixed(0)} or more.`);
+      return { promo, discount: discountFor(promo, subtotal) };
+    }
+  }
   if (!promo || !promo.active) throw bad(`${code} is not a valid code.`);
   if (promo.expiresAt && now / 1000 > promo.expiresAt) throw bad(`${code} has expired.`);
   if (promo.minimumAmount && subtotal < promo.minimumAmount) throw bad(`${code} needs an order of $${(promo.minimumAmount / 100).toFixed(0)} or more.`);
@@ -144,7 +161,8 @@ const cleanNote = (n) => String(n || '').replace(/\s+/g, ' ').trim().slice(0, 30
 export async function createPromo(b, opts) {
   const code = normCode(b.code);
   if (!CODE_RE.test(code)) throw bad('Code must be 3 to 30 letters, numbers, - or _.');
-  if (RECOVERY_RE.test(code)) throw bad('Codes starting with COMEBACK- are reserved for reminder emails.');
+  if (RECOVERY_RE.test(code)) throw bad('Codes starting with COMEBACK-, THANKS- or REWARD- are reserved for website emails.');
+  if (await getReferral(code)) throw bad(`${code} is already a customer\u2019s friend code.`);
   const pct = b.percentOff ? Number(b.percentOff) : null;
   const amt = b.amountOff ? Math.round(Number(b.amountOff) * 100) : null;
   if (!(pct > 0 && pct <= 100) && !(amt > 0)) throw bad('Enter a percent off (1 to 100) or a dollar amount off.');
