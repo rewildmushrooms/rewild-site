@@ -36,6 +36,9 @@ import { checkLowStock, lowStockThreshold } from './_shared/lowstock.mjs';
 import { checkPassword } from './_shared/auth.mjs';
 import { traffic, live } from './_shared/ga.mjs';
 import { metricsInfo, updateMetricsSheet } from './_shared/metrics.mjs';
+import { listReviews, updateReview, runReviewRequests } from './_shared/reviews.mjs';
+import { listReferrals, setRewardStatus } from './_shared/referrals.mjs';
+import { sendMail, mailConfigured } from './_shared/mailer.mjs';
 import { markShipped } from './_shared/shipping.mjs';
 import { setOrderStatus, addOrderNote, refundOrder, deleteOrder } from './_shared/orderadmin.mjs';
 import { sendTelegram } from './_shared/telegram.mjs';
@@ -498,6 +501,8 @@ export default async (req) => {
       if (action === 'alerts') return json(200, await alerts());
       if (action === 'cartSequence') return json(200, await cartSequence());
       if (action === 'metricsInfo') return json(200, await metricsInfo());
+      if (action === 'reviews') return json(200, await listReviews());
+      if (action === 'referrals') return json(200, await listReferrals());
       if (action === 'live') { try { return json(200, await live()); } catch (e) { return json(200, { configured: true, error: e.message }); } }
       if (action === 'orderAddress') { // older orders saved before addresses were kept: read it from Square
         const id = url.searchParams.get('id') || '';
@@ -539,6 +544,13 @@ export default async (req) => {
       if (b.action === 'deleteOrder') { console.log('order deleted', member.id, b.orderId); return json(200, await deleteOrder(b, member)); }
       if (b.action === 'shippingInvoice') return json(200, { ok: true, ...(await sendShippingInvoice(b)) });
       if (b.action === 'metricsRun') return json(200, await updateMetricsSheet());
+      if (b.action === 'reviewUpdate') return json(200, await updateReview(b));
+      if (b.action === 'rewardStatus') return json(200, await setRewardStatus(b.code, b.orderId, b.status));
+      if (b.action === 'reviewBackfill') {
+        if (!mailConfigured()) return json(400, { error: 'Email is not set up.' });
+        const site = (process.env.SITE_URL || 'https://rewildmushrooms.com').replace(/\/$/, '');
+        return json(200, await runReviewRequests(Date.now(), { send: sendMail, site, backfillDays: Math.min(90, Math.max(1, Number(b.days) || 60)) }));
+      }
       if (b.action === 'testAlert') return json(200, await sendTelegram('✅ REWILD order alerts are working. New website orders will show up here.'));
       return json(400, { error: 'Unknown action' });
     }

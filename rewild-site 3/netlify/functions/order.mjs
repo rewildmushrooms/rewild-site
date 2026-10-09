@@ -6,13 +6,24 @@ import { json } from './_shared/square.mjs';
 import { isPaid, orderRef, buyerName } from './_shared/orders.mjs';
 import { fetchOrder, recordPaidOrder } from './_shared/record.mjs';
 import { orderCode } from './_shared/team.mjs';
+import { referralFor, REFERRAL } from './_shared/referrals.mjs';
+import { buyerEmail } from './_shared/orders.mjs';
+import { getJSON } from './_shared/store.mjs';
 
 export async function handleOrder(id, deps = {}, opts) {
   const order = await (deps.fetchOrder || fetchOrder)(id, opts);
   if (!isPaid(order)) return null;
   try { await recordPaidOrder(order, opts, deps); } catch (err) { console.error('record order failed', err.message); }
   const name = buyerName(order);
+  // Their own friend code for the thank-you page (give $20, get $20).
+  let referral = null;
+  try {
+    const email = (await getJSON('orders', order.id))?.email || String((await buyerEmail(order, opts)) || '').toLowerCase();
+    const ref = email ? await (deps.referralFor || referralFor)(email, name) : null;
+    if (ref) referral = { code: ref.code, friendOff: REFERRAL.friendOff, min: REFERRAL.min };
+  } catch (err) { console.error('referral code failed', err.message); }
   return {
+    referral,
     orderId: order.id,
     firstName: name.split(' ')[0] || null,
     total: Number(order.total_money?.amount || 0),
