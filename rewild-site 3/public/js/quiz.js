@@ -99,6 +99,18 @@
     gift: 'A thoughtful gift for someone doing meaningful things in the world.',
   };
 
+  // Day and timing answers nudge these mushrooms (first gets +2, second +1).
+  const DAY_NUDGE = { physical: ['energy', 'strength'], focus: ['clarity'], juggling: ['peace', 'clarity'], creative: ['clarity', 'peace'], family: ['energy', 'peace'], shift: ['energy', 'peace'], travel: ['strength', 'energy'], study: ['clarity', 'energy'] };
+  const WHEN_NUDGE = { morning: ['energy', 'clarity'], afternoon: ['clarity', 'energy'], training: ['energy'], night: ['peace'] };
+  const DAY_FIT = { physical: 'long, physical days', focus: 'long stretches of desk work', juggling: 'juggling-it-all days', creative: 'creative days', family: 'busy family days', shift: 'shift work and odd hours', travel: 'life on the move', study: 'days spent learning' };
+  const WHEN_FIT = { morning: 'first thing in the day', afternoon: 'the afternoon', training: 'before activity', night: 'the evening' };
+  const MUSH = { energy: 'Cordyceps', clarity: "Lion's Mane", strength: 'Chaga', peace: 'Reishi' };
+  const SIZE_LINE = { one: 'You asked to start simple, so we kept it to one.', two: 'You asked for two things at once, so your stack has two.', full: 'You asked for your whole day supported, so your stack has all four.' };
+  // "Why this stack" panel. On for /build-your-stack/?preview while Jade reviews it; set data-reasons="1" on #quiz-app to switch it on for everyone.
+  const REASONS = app.dataset.reasons === '1' || new URLSearchParams(location.search).has('preview');
+  const andList = (arr) => arr.map((x, i) => (i ? x.charAt(0).toLowerCase() + x.slice(1) : x)).join(' and ');
+  const label = (key, v) => ((Q.find((q) => q.key === key) || { opts: [] }).opts.find((o) => o[0] === v) || [])[1] || v;
+
   const A = { why: [], want: [], day: [], when: [], coffee: [], how: [], format: [], start: [] };
   let step = 0;
   let lastPct = 0;
@@ -174,8 +186,8 @@
     const score = { energy: 0, clarity: 0, strength: 0, peace: 0 };
     A.want.forEach((w, i) => { const k = WANT_MAP[w]; if (k) score[k] += i === 0 ? 10 : 8; });
     const day = A.day[0], when = A.when[0];
-    ({ physical: ['energy', 'strength'], focus: ['clarity'], juggling: ['peace', 'clarity'], creative: ['clarity', 'peace'], family: ['energy', 'peace'], shift: ['energy', 'peace'], travel: ['strength', 'energy'], study: ['clarity', 'energy'] }[day] || []).forEach((k, i) => (score[k] += i ? 1 : 2));
-    ({ morning: ['energy', 'clarity'], afternoon: ['clarity', 'energy'], training: ['energy'], night: ['peace'] }[when] || []).forEach((k, i) => (score[k] += i ? 1 : 2));
+    (DAY_NUDGE[day] || []).forEach((k, i) => (score[k] += i ? 1 : 2));
+    (WHEN_NUDGE[when] || []).forEach((k, i) => (score[k] += i ? 1 : 2));
     const ranked = Object.keys(score).sort((a, b) => score[b] - score[a]);
     const n = { one: 1, two: 2, full: 4 }[A.start[0]] || 2;
     let pickIds = ranked.slice(0, n);
@@ -188,6 +200,34 @@
     }
     const addLater = n === 1 ? ranked[1] : null;
     return { pickIds, duo, addLater, ranked };
+  }
+
+  // Plain-language reasons for each pick, plus any goal the stack doesn't cover yet.
+  function reasonsHtml(pickIds, duo) {
+    const n = A.start[0];
+    const items = pickIds.map((id) => {
+      const k = id === 'tincture' ? 'energy' : id;
+      const goals = A.want.filter((w) => WANT_MAP[w] === k).map((w) => label('want', w));
+      const fits = [];
+      if ((DAY_NUDGE[A.day[0]] || []).includes(k)) fits.push(DAY_FIT[A.day[0]]);
+      if ((WHEN_NUDGE[A.when[0]] || []).includes(k)) fits.push(WHEN_FIT[A.when[0]]);
+      let why = goals.length ? `Matches what you asked for: <strong>${esc(andList(goals))}</strong>.` : n === 'full' ? 'Rounds out your day.' : 'Your other answers point here.';
+      if (fits.length) why += ` Also suits ${esc(fits.join(' and '))}.`;
+      if (id === 'tincture') why += ' Comes as the tincture because you said you\u2019d mostly use it on the go or would rather skip the mushroom taste.';
+      if (k === 'energy' && duo) why += ' Comes as the Duo, powder at home and tincture on the go, because you said both.';
+      return `<li><b>${esc(id === 'tincture' ? 'Energy Tincture' : WORD[k])} <span class="muted" style="font-weight:400">(${esc(MUSH[k])})</span></b><span>${why}</span></li>`;
+    });
+    const covered = pickIds.map((id) => (id === 'tincture' ? 'energy' : id));
+    const missed = A.want.filter((w) => WANT_MAP[w] && !covered.includes(WANT_MAP[w]));
+    const missLine = missed.length ? `<li><b>Not in your stack yet</b><span>You also picked <strong>${esc(andList(missed.map((w) => label('want', w))))}</strong>. That matches ${esc([...new Set(missed.map((w) => WORD[WANT_MAP[w]]))].join(' and '))}. ${esc(SIZE_LINE[n] || '')} Add it when you\u2019re ready.</span></li>` : '';
+    const groups = ['energy', 'clarity', 'strength', 'peace'].map((k) => `${Object.keys(WANT_MAP).filter((w) => WANT_MAP[w] === k).map((w) => label('want', w)).join(' and ').replace(/ and (\w)/, (m, c) => ' and ' + c.toLowerCase())} \u2192 ${WORD[k]} (${MUSH[k]})`);
+    return `<div class="quiz-why">
+      <h3>Why this stack</h3>
+      <ul>${items.join('')}${missLine}</ul>
+      ${!missed.length && SIZE_LINE[n] ? `<p class="muted" style="margin:12px 0 0">${esc(SIZE_LINE[n])}</p>` : ''}
+      ${A.why[0] === 'new' ? '<p style="margin:12px 0 0;font-size:16px">New to mushrooms? <a class="link" href="/start-here/">Start here</a> for the three-minute version.</p>' : ''}
+      <details><summary>How we match</summary><p class="muted" style="margin:10px 0 6px">Each goal you can pick matches one of our four mushrooms, by name:</p><ul style="gap:4px">${groups.map((g) => `<li>${esc(g)}</li>`).join('')}</ul><p class="muted" style="margin:10px 0 0">Your goals count most. Your typical day and when you'd use it break ties. The last question sets how many we suggest. Matches are based on our product names, not health advice.</p></details>
+    </div>`;
   }
 
   function renderResult() {
@@ -204,7 +244,7 @@
     const howLine = hasTincture ? (duo ? 'Powder at home: ½ teaspoon in your usual drink or food. Tincture on the go: straight or in a drink.' : 'Drink the tincture straight or add it to a drink.' + (pickIds.length > 1 ? ' ' + (HOW[A.how[0]] || '') : '')) : HOW[A.how[0]] || '';
     const fmtNote = !pickIds.includes('energy') && !pickIds.includes('tincture') && (A.format[0] === 'go' || A.format[0] === 'taste') ? 'Our tincture currently comes in Energy only. The powders mix easily into water or a smoothie on the go.' : '';
     const qs = new URLSearchParams(Object.entries(A).map(([k, v]) => [k, v.join('+')])).toString();
-    try { history.replaceState(null, '', location.pathname + '?' + qs + location.hash); } catch (e) {}
+    try { history.replaceState(null, '', location.pathname + '?' + qs + (REASONS && !app.dataset.reasons ? '&preview' : '') + location.hash); } catch (e) {}
 
     app.innerHTML = `
       <div class="quiz-progress" aria-hidden="true"><span style="width:100%"></span></div>
@@ -223,6 +263,7 @@
         <p class="small" role="status" data-qmsg></p>
       </form>
       <div class="grid-3" style="margin-top:8px">${cartIds.map(card).join('')}</div>
+      ${REASONS ? reasonsHtml(pickIds, duo) : ''}
       <div class="stat" style="background:var(--stone);margin-top:8px">
         <h3 style="font-size:20px;margin-bottom:10px">How to use it</h3>
         <ul class="ticks">
