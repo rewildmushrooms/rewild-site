@@ -691,3 +691,25 @@ p{text-wrap:pretty}
 .quiz-why summary{cursor:pointer;font-weight:600}
 @media (max-width:900px){.why-grid{grid-template-columns:1fr 1fr}}
 @media (max-width:700px){.why-grid{grid-template-columns:1fr;gap:22px}.ask-row{grid-template-columns:1fr;gap:4px}.ask-head{display:none}}
+/* Refer a friend, review form, verified reviews (Oct 2026) */
+.refer-card{background:var(--stone);border-radius:var(--radius);padding:24px;display:grid;gap:12px}
+.refer-code{font-size:clamp(28px,4vw,40px);font-weight:800;letter-spacing:.06em;border:2px dashed var(--ink);padding:12px 18px;margin:0;justify-self:start;display:inline-block}
+.copy-row{display:flex;gap:8px;flex-wrap:wrap}.copy-row input{flex:1 1 220px;min-width:0;padding:12px;border:1px solid var(--line);border-radius:4px;font-size:15px;background:#fff}
+.refer-steps{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.refer-steps li{display:flex;gap:18px;padding:20px 0;border-top:1px solid var(--line)}.refer-steps li:last-child{border-bottom:1px solid var(--line)}
+.refer-steps b{display:block;font-size:20px;margin-bottom:4px}.refer-steps span:not(.why-n){color:var(--muted);font-size:16px}
+.rv-stars{border:0;padding:0;margin:0;display:inline-flex;flex-direction:row-reverse;justify-content:flex-end;gap:4px}
+.rv-stars legend{font-size:14px;font-weight:600;margin-bottom:6px;width:100%;float:left}
+.rv-stars input{position:absolute;opacity:0;width:1px;height:1px}
+.rv-stars label{font-size:40px;line-height:1;color:#D9D8D2;cursor:pointer;transition:color .15s,transform .15s}
+.rv-stars label:hover,.rv-stars label:hover~label,.rv-stars input:checked~label{color:#E8C800}
+.rv-stars input:focus-visible+label{outline:2px solid var(--ink);outline-offset:2px}
+.rv-stars label:active{transform:scale(1.15)}
+.rv-products{border:0;padding:0;margin:0;display:grid;gap:8px}.rv-products legend{font-size:14px;font-weight:600;margin-bottom:6px}
+.rv-products label,.rv-consent{display:flex;gap:10px;align-items:center;font-size:16px}
+.rv-products input,.rv-consent input{width:18px;height:18px}
+.vreviews{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.vreview{margin:0;background:var(--stone);border-radius:var(--radius);padding:22px;display:grid;gap:8px;align-content:start}
+.vreview h3{font-size:19px;margin:0}.vreview blockquote{margin:0;font-size:16px;line-height:1.55}
+.vreview figcaption{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:14px;color:var(--muted)}.vreview figcaption b{color:var(--ink)}
+.vr-badge{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#1E7F4F}
