@@ -278,7 +278,19 @@
   if (urlRef && /^[a-z0-9_-]{2,30}$/i.test(urlRef)) { try { localStorage.setItem('rewild_ref', JSON.stringify({ ref: urlRef.toLowerCase(), at: Date.now() })); } catch (e) {} }
   // Shareable links like /shop/?code=SEAN20 apply the code automatically.
   const urlCode = new URLSearchParams(location.search).get('code');
-  if (urlCode) setTimeout(() => { applyCode(urlCode, true); toast(urlCode.toUpperCase() + ' will be applied in your cart.'); }, 200);
+  if (urlCode) setTimeout(() => {
+    applyCode(urlCode, true);
+    const c = urlCode.toUpperCase();
+    // Friend codes (refer a friend) get a friendlier welcome that says who sent them.
+    if (/^[A-Z]{2,10}-[A-Z2-9]{4}$/.test(c)) {
+      fetch('/api/refer?code=' + encodeURIComponent(c)).then((r) => (r.ok ? r.json() : null)).then((d) => {
+        const who = d && d.first ? d.first : 'A friend';
+        const t = $('#toast'); if (!t) return;
+        t.textContent = `${who} sent you $20 off your first order of $75 or more. It's saved in your cart.`;
+        t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 6000);
+      }).catch(() => toast(c + ' will be applied in your cart.'));
+    } else toast(c + ' will be applied in your cart.');
+  }, 200);
   // Email links like /shop/?cart=energy,tincture put that stack in the cart (if not there already) and open it.
   const urlCart = new URLSearchParams(location.search).get('cart');
   if (urlCart) setTimeout(() => { urlCart.split(',').map((x) => x.trim().split(':')).forEach(([id, q]) => { if (byId[id] && !state.items.some((i) => i.id === id)) add(id, q || 1); }); open(); }, 150);
