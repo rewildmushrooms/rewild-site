@@ -671,3 +671,23 @@ p{text-wrap:pretty}
 }
 .footer-stack .footer-col{flex:none}
 @media (max-width:700px){.footer-top{padding-top:56px;padding-bottom:28px}.footer-top>div:first-child{margin-bottom:-8px}}
+/* Draft pages + Why REWILD block (Oct 2026) */
+.draft-bar{background:#FFE58A;color:#121310;font-size:14px;line-height:1.4;padding:10px 16px;text-align:center}
+.why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:28px}
+.why-item{border-top:2px solid var(--ink);padding-top:18px}
+.why-item h3{font-size:21px;line-height:1.2;margin:10px 0 8px}
+.why-item p{font-size:16px;color:var(--muted);margin:0}
+.why-n{font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--muted)}
+.ask-table{display:grid;border-top:1px solid var(--line)}
+.ask-row{display:grid;grid-template-columns:1fr 1.3fr 1.3fr;gap:24px;padding:18px 0;border-bottom:1px solid var(--line);font-size:16px}
+.ask-head{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:12px 0}
+.ask-us{font-weight:600}
+.quiz-why{background:var(--stone);border-radius:var(--radius);padding:22px;margin-top:8px}
+.quiz-why h3{font-size:20px;margin:0 0 12px}
+.quiz-why ul{list-style:none;padding:0;margin:0;display:grid;gap:12px;font-size:16px}
+.quiz-why li b{display:block}
+.quiz-why .muted{font-size:15px}
+.quiz-why details{margin-top:14px;font-size:15px}
+.quiz-why summary{cursor:pointer;font-weight:600}
+@media (max-width:900px){.why-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:700px){.why-grid{grid-template-columns:1fr;gap:22px}.ask-row{grid-template-columns:1fr;gap:4px}.ask-head{display:none}}
