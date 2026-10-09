@@ -1,6 +1,6 @@
-// Draft pages built from the advisor review (Oct 2026): audience journeys.
-// DRAFTS: noindex, left out of the sitemap, and not linked from anywhere on the site.
-// To publish one: delete `draft: true` from it and add links (nav, footer, home, shop).
+// Audience pages built from the advisor review (Oct 2026): Start here (new to mushrooms), Why REWILD (people who
+// already use mushrooms), Wholesale (+ the price list shown after the form) and Partners. Live since Oct 2026.
+// draft(page, note) still works for future pages: noindex, out of the sitemap, with a yellow review bar.
 import { SITE } from './site.mjs';
 import { esc } from './layout.mjs';
 import { reviewsSection } from './testimonials.mjs';
@@ -38,7 +38,7 @@ const ASK = [
   ['What else is in it?', 'Nothing. No fillers, flavours, sweeteners, colours or preservatives.', 'Check the ingredient list for carriers, flavours and "proprietary blends".'],
   ['Is it a blend?', 'No. One mushroom per bag, so you always know what you’re using.', 'Blends can hide small amounts of each mushroom behind a long list.'],
 ];
-const whyPage = draft({
+const whyPage = ({
   path: '/why-rewild/',
   title: 'Why REWILD | BC-Grown, Lab-Tested Mushroom Powder',
   description: 'How REWILD compares: grown in BC by a named grower, whole mushroom with nothing added, every lot tested with the numbers published. Questions to ask any brand.',
@@ -77,7 +77,7 @@ ${reviewsSection({ eyebrow: 'From people who switched', tone: 'stone' })}
   <p class="lead">${GUARANTEE}</p>
   <div class="row" style="justify-content:center"><a class="btn btn-yellow" href="/shop/">Shop all mushrooms</a><a class="btn btn-outline" href="/build-your-stack/">Build your stack</a></div>
 </div></section>`,
-}, 'The "Why REWILD" block at the top of this page (four numbered points) is also what would go on the homepage and Shop page.');
+});
 
 /* ---------- /start-here/ : for people new to mushrooms ---------- */
 const FOUR = [
@@ -94,7 +94,7 @@ const NEW_FAQS = [
   ['How long until I notice something?', 'Everyone is different, so we won’t promise you anything. Most people use one every day for a few weeks before deciding whether it’s for them. That’s why every order has a 14-day money-back guarantee.'],
   ['I take medication or I’m pregnant. Can I use them?', 'Please check with your healthcare practitioner first. Our products are foods, and this site is not medical advice.'],
 ];
-const startHere = draft({
+const startHere = ({
   path: '/start-here/',
   title: 'New to Functional Mushrooms? Start Here | REWILD',
   description: "A plain-language intro to functional mushrooms: what Cordyceps, Lion's Mane, Chaga and Reishi are, how people use them, and how to choose your first one.",
@@ -165,11 +165,11 @@ ${reviewsSection({ eyebrow: 'Why Rewilders keep coming back', title: 'In their w
   <div class="row" style="margin-top:32px"><a class="btn btn-yellow" href="/build-your-stack/">Build your stack</a><a class="btn btn-outline" href="/learn/">Read the mushroom guides</a></div>
   <p class="small muted" style="margin-top:20px">REWILD mushroom powders are sold as foods. This page is for general education and is not medical advice.</p>
 </div></section>`,
-}, 'Planned links: main menu (Learn), homepage hero, quiz answer "I\'m curious and new to this", Google ads for newcomer searches.');
+});
 
 /* ---------- /wholesale/ : retailers ---------- */
 const formCss = 'class="stack" style="margin-top:8px;gap:16px"';
-const wholesale = draft({
+const wholesale = ({
   path: '/wholesale/',
   title: 'Wholesale Mushroom Powder for Canadian Retailers | REWILD',
   description: 'Stock REWILD in your store, café or studio: organic mushroom powders grown in BC, single-species labels, every lot lab tested. Apply for wholesale pricing.',
@@ -220,10 +220,10 @@ const wholesale = draft({
   </form>
   <p class="small muted" style="margin-top:16px">Prefer email? <a href="mailto:${SITE.email}?subject=Wholesale">${SITE.email}</a></p>
 </div></section>`,
-}, 'After the form is sent, applicants land on /wholesale/prices/ with the price list. Optional before publishing: an opening order minimum. Planned link: footer.');
+});
 
 /* ---------- /partners/ : affiliates, ambassadors, creators ---------- */
-const partners = draft({
+const partners = ({
   path: '/partners/',
   title: 'Partner With REWILD | Ambassadors and Creators',
   description: 'Coaches, guides, athletes and creators: share REWILD with your community. Your own code, a commission on every order and product to try.',
@@ -278,11 +278,12 @@ const partners = draft({
     <button type="submit" class="btn btn-dark" style="align-self:flex-start">Send application</button>
   </form>
 </div></section>`,
-}, 'Jade to confirm before publishing: the customer discount, the commission rate and payout method. Planned link: footer.');
+});
 
 /* ---------- /wholesale/prices/ : shown after the wholesale form is sent (noindex, unlinked) ---------- */
 const WHOLESALE_IDS = ['energy', 'clarity', 'strength', 'peace', 'tincture'];
-const wholesalePrices = draft({
+const wholesalePrices = ({
+  noindex: true, // only reached after sending the wholesale form
   path: '/wholesale/prices/',
   title: 'Wholesale Price List | REWILD',
   description: 'REWILD wholesale price list for approved retailers.',
@@ -299,6 +300,6 @@ const wholesalePrices = draft({
   <p class="small muted" style="margin-top:16px">Prices in Canadian dollars, before shipping and tax. Lot reports (COAs) are available for every product on request.</p>
   <p>Questions in the meantime? Email <a class="link" href="mailto:${SITE.email}?subject=Wholesale">${SITE.email}</a>.</p>
 </div></section>`,
-}, 'Applicants only reach this page after sending the wholesale form. It is not password protected, so anyone with the link could see it.');
+});
 
 export const DRAFT_PAGES = [startHere, whyPage, wholesale, wholesalePrices, partners];

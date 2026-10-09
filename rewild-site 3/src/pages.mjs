@@ -8,7 +8,8 @@ import { cordyfuelPage } from './cordyfuel.mjs';
 import { fieldGuide } from './fieldguide.mjs';
 import { resources } from './resources.mjs';
 import { GUIDES, GUIDE_BY_PRODUCT, GROWN, CLEAN, MICRO, HEAVY } from './learn.mjs';
-import { DRAFT_PAGES } from './drafts.mjs';
+import { DRAFT_PAGES, WHY_SECTION } from './drafts.mjs';
+import { referPage, reviewPage } from './refer.mjs';
 
 const powders = PRODUCTS.filter((p) => !p.isTincture && !p.isBundle);
 const SELLABLE = PRODUCTS.filter((p) => !p.isBundle);
@@ -136,10 +137,11 @@ ${CORDYFUEL_SECTION}
       <h2 class="h2" style="font-size:clamp(30px,3.6vw,46px)">Which mushrooms belong in your life?</h2>
       <p class="lead" style="font-size:18px">Mushrooms are tools. Not miracles. Not shortcuts.</p>
     </div>
-    <div class="stack-sm" style="gap:10px;align-items:flex-start"><a class="btn btn-outline" href="/shop/">Shop all</a><span class="small muted">Not sure? <a class="link" href="/build-your-stack/">Build your stack</a>.</span></div>
+    <div class="stack-sm" style="gap:10px;align-items:flex-start"><a class="btn btn-outline" href="/shop/">Shop all</a><span class="small muted">Not sure? <a class="link" href="/build-your-stack/">Build your stack</a>.</span><span class="small muted">New to mushrooms? <a class="link" href="/start-here/">Start here</a>.</span></div>
   </div>
   <div class="grid-4 home-products">${powders.map((p) => productCard(p)).join('')}</div>
 </div></section>
+${WHY_SECTION}
 ${reviewsSection()}
 <section class="section fringe stack-trip" id="stack"><div class="wrap split">
   <div class="stack">
@@ -214,6 +216,7 @@ const shop = {
     </div>
   </div>
 </div></section>
+${WHY_SECTION.replace('section why-band', 'section why-band stone')}
 ${CORDYFUEL_SECTION}
 <section class="section dark tincture-feature" id="tincture"><div class="wrap split">
   <div class="tf-media"><img class="cover" src="/img/tincture-river-wide.webp" alt="Rewild Energy alcohol-free Cordyceps militaris tincture, powered by CordyFuel™, on moss beside a mountain river" width="1400" height="933" loading="lazy"><span class="tf-badge">New</span></div>
@@ -412,6 +415,12 @@ function productPage(p) {
 </div></section>
 ${p.isTincture ? FALLS_BAND : ''}
 ${howToUse(p)}
+<section class="section tight vreviews-band" id="reviews" data-product="${p.id}" hidden><div class="wrap">
+  <div class="stack-sm" style="gap:10px;margin-bottom:28px"><p class="eyebrow">Verified buyers</p><h2 class="h3" style="font-size:clamp(26px,3vw,34px)">What customers say about ${esc(p.name)}.</h2><p class="small muted" data-vr-sum></p></div>
+  <div class="vreviews" data-vr-list></div>
+  <p class="small muted" style="margin-top:20px">Reviews from people who bought from rewildmushrooms.com, in their own words. Everyone who leaves a review gets 15% off their next order, whatever they say. Reviews are about personal experience and are not medical advice.</p>
+</div></section>
+<script src="/js/reviews.js?v=${SITE.build}" defer></script>
 <section class="section tight stone"><div class="narrow">
   <h2 class="h3" style="margin-bottom:20px">Questions</h2>
   ${faqHtml(faqs)}
@@ -436,7 +445,7 @@ const quiz = {
   <p class="lead" style="color:var(--on-dark);max-width:620px">Eight quick questions about how you actually live. About a minute. You'll get your stack, and when and how to use it.</p>
 </div></section>
 <section class="section tight"><div class="wrap narrow-quiz" id="quiz">
-  <div id="quiz-app" class="stack" aria-live="polite"><noscript><p>Please turn on JavaScript to use the quiz, or <a href="/shop/">browse the shop</a>.</p></noscript></div>
+  <div id="quiz-app" class="stack" aria-live="polite" data-reasons="1"><noscript><p>Please turn on JavaScript to use the quiz, or <a href="/shop/">browse the shop</a>.</p></noscript></div>
 </div></section>`,
   scripts: `<script src="/js/quiz.js?v=${SITE.build}" defer></script>`,
 };
@@ -743,6 +752,7 @@ const FAQS = [
   ['How much is shipping?', `$20 flat rate in Canada, free on orders of $175 or more. US shipping and duties are quoted per order by email after you check out.`],
   ['Do you ship to the United States?', 'Yes. Choose United States in your cart. After you order, we email a quote for shipping and duties that you can pay online before it ships.'],
   ['What if I don\u2019t like it?', `Every order comes with our 100% Risk-Free Guarantee. ${GUARANTEE_TEXT} <a href="/shipping/#guarantee">How it works</a>.`],
+  ['Do you have a referral program?', 'Yes. Give $20, get $20. Every customer gets a friend code: your friend gets $20 off their first order of $75 or more, and you get $20 off your next order once theirs is in. <a href="/refer/">Get your friend code</a>.'],
   ['I have a promo code. Where do I enter it?', 'Open your cart and type it in the promo code box, then tap Apply. You will see the discount before you check out.'],
   ['Can I use a promo code with bundle or stock-up savings?', 'Codes don\u2019t combine with the All Four Set price or the 10% stock-up saving. You never have to work it out: your cart checks both and always applies whichever saves you more, and tells you which one it used. The tincture add-on and the free tincture on orders of $200+ still apply either way.'],
   ['Is CordyFuel™ caffeinated?', 'No. CordyFuel™ is pure Cordyceps militaris with no caffeine or stimulants added.'],
@@ -922,6 +932,11 @@ const confirmed = {
   <div id="oc-details" class="lead">Your order is in. A receipt is on its way to your inbox.</div>
   <p class="muted">Canadian orders ship within 1 to 3 business days.</p>
   <div class="row" style="justify-content:center"><a class="btn btn-dark" href="/journal/">Read the journal</a><a class="btn btn-outline" href="/shop/">Back to the shop</a></div>
+  <div class="refer-card" id="oc-refer" hidden style="text-align:left;margin-top:28px">
+    <p class="eyebrow">Give $20. Get $20.</p>
+    <p style="margin:0 0 10px">Know someone who'd love this too? Your friend code <b id="oc-ref-code"></b> gives them $20 off their first order of $75 or more. When their order is in, we send you $20 off your next one.</p>
+    <a class="btn btn-outline" id="oc-ref-link" href="/refer/">Share my code</a>
+  </div>
 </div></section>`,
   scripts: `<script>
 (function(){
@@ -937,6 +952,7 @@ const confirmed = {
     var items=(o.items||[]).map(function(i){return i.qty+' × '+i.name}).join(', ');
     var el=document.getElementById('oc-details');
     el.textContent='Order '+o.orderRef+': '+items+'. Total $'+(o.total/100).toFixed(2)+' CAD. A receipt is on its way to your inbox.';
+    if(o.referral&&o.referral.code){document.getElementById('oc-ref-code').textContent=o.referral.code;document.getElementById('oc-ref-link').href='/refer/?c='+encodeURIComponent(o.referral.code);document.getElementById('oc-refer').hidden=false;}
     if(window.gtag){ var k='rewild_ga_'+o.orderId, seen=false; try{seen=!!localStorage.getItem(k);localStorage.setItem(k,'1');}catch(e){}
       if(!seen) window.gtag('event','purchase',{transaction_id:o.orderId,currency:'CAD',value:o.total/100,shipping:(o.shipping||0)/100,coupon:o.code||undefined,
         items:(o.items||[]).map(function(i){return {item_id:i.id||i.name,item_name:i.name,price:i.price/100,quantity:i.qty}})}); }
@@ -977,5 +993,7 @@ export const PAGES = [
   confirmed,
   fieldGuide,
   ...DRAFT_PAGES,
+  referPage,
+  reviewPage,
   notFound,
 ];

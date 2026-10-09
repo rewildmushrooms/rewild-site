@@ -29,7 +29,7 @@ const LEARN_LINKS = [
   ['/learn/reishi/', 'Reishi'],
   ['/learn/chaga/', 'Chaga'],
 ];
-const isLearnPath = (p) => p.startsWith('/learn/') || p.startsWith('/journal/') || p === '/resources/' || JOURNAL_PATHS.has(p);
+const isLearnPath = (p) => p === '/start-here/' || p === '/why-rewild/' || p.startsWith('/learn/') || p.startsWith('/journal/') || p === '/resources/' || JOURNAL_PATHS.has(p);
 
 export const icons = {
   cart: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>',
@@ -76,7 +76,7 @@ export function layout(page) {
   const image = SITE.url + (page.image || '/img/og-default.jpg');
   const ld = [].concat(page.jsonld || []);
   const cur = (href) => (href === '/' ? page.path === '/' : page.path === href || page.path.startsWith(href)) ? ' aria-current="page"' : '';
-  const learnMenu = `<div class="nav-group"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="learn-menu"${isLearnPath(page.path) ? ' aria-current="page"' : ''}>Learn <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button><div class="nav-sub" id="learn-menu"><span class="sub-label">Mushroom guides</span>${LEARN_LINKS.map(([h, l]) => `<a href="${h}"${cur(h)}>${l}</a>`).join('')}<hr><a href="/journal/"${page.path === '/journal/' ? ' aria-current="page"' : ''}>Journal</a><a href="/learn/"${page.path === '/learn/' ? ' aria-current="page"' : ''}>All guides</a><a href="/resources/"${page.path === '/resources/' ? ' aria-current="page"' : ''}>Books &amp; videos</a></div></div>`;
+  const learnMenu = `<div class="nav-group"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="learn-menu"${isLearnPath(page.path) ? ' aria-current="page"' : ''}>Learn <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button><div class="nav-sub" id="learn-menu"><a href="/start-here/"${cur('/start-here/')}><span class="new-tag">New here?</span> Start here</a><hr><span class="sub-label">Mushroom guides</span>${LEARN_LINKS.map(([h, l]) => `<a href="${h}"${cur(h)}>${l}</a>`).join('')}<hr><a href="/journal/"${page.path === '/journal/' ? ' aria-current="page"' : ''}>Journal</a><a href="/learn/"${page.path === '/learn/' ? ' aria-current="page"' : ''}>All guides</a><a href="/why-rewild/"${cur('/why-rewild/')}>Why REWILD</a><a href="/resources/"${page.path === '/resources/' ? ' aria-current="page"' : ''}>Books &amp; videos</a></div></div>`;
   const shopMenu = `<div class="nav-group"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="shop-menu"${page.path.startsWith('/shop/') ? ' aria-current="page"' : ''}>Shop <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button><div class="nav-sub shop-sub" id="shop-menu">${SHOP_LINKS.map(([h, l, tag]) => `<a href="${h}"${page.path === h ? ' aria-current="page"' : ''}>${tag ? `<span class="new-tag">${tag}</span>` : ''}${l}</a>`).join('')}<hr><a href="/shop/"${page.path === '/shop/' ? ' aria-current="page"' : ''}>Shop all</a></div></div>`;
   const navHtml = NAV.map(([href, label, hot]) => href === 'LEARN' ? learnMenu : href === 'SHOP' ? shopMenu : `<a href="${href}"${hot ? ' class="nav-hot"' : ''}${cur(href)}>${label}</a>`).join('');
   return `<!doctype html>
@@ -150,6 +150,7 @@ ${page.body}
       </nav>
       <div class="footer-stack">
       <nav class="footer-col" aria-label="Learn"><p class="footer-h">Learn</p>
+        <a href="/start-here/">New here? Start here</a>
         <a href="/learn/">Mushroom guides</a>
         <a href="/cordyfuel/">CordyFuel™, Decoded</a>
         <a href="/lab-results/">Lab Results</a>
@@ -159,10 +160,14 @@ ${page.body}
       <nav class="footer-col" aria-label="About"><p class="footer-h">About</p>
         <a href="/our-story/">Our Story</a>
         <a href="/manifesto/">The Manifesto</a>
+        <a href="/why-rewild/">Why REWILD</a>
+        <a href="/wholesale/">Wholesale</a>
+        <a href="/partners/">Partners</a>
       </nav>
       </div>
       <nav class="footer-col" aria-label="Help"><p class="footer-h">Help</p>
         <a href="/shipping/">Shipping &amp; Returns</a>
+        <a href="/refer/">Refer a friend · Get $20</a>
         <a href="/faq/">FAQ</a>
         <a href="/contact/">Contact</a>
         <a href="/privacy/">Privacy</a>
