@@ -8,6 +8,7 @@ import { cordyfuelPage } from './cordyfuel.mjs';
 import { fieldGuide } from './fieldguide.mjs';
 import { resources } from './resources.mjs';
 import { GUIDES, GUIDE_BY_PRODUCT, GROWN, CLEAN, MICRO, HEAVY } from './learn.mjs';
+import { DRAFT_PAGES } from './drafts.mjs';
 
 const powders = PRODUCTS.filter((p) => !p.isTincture && !p.isBundle);
 const SELLABLE = PRODUCTS.filter((p) => !p.isBundle);
@@ -975,5 +976,6 @@ export const PAGES = [
   terms,
   confirmed,
   fieldGuide,
+  ...DRAFT_PAGES,
   notFound,
 ];
