@@ -153,6 +153,7 @@ a{color:var(--ink)}
     <button role="tab" data-tab="commissions" aria-selected="false">Commissions</button>
     <button role="tab" data-tab="codes" aria-selected="false">Promo codes</button>
     <button role="tab" data-tab="emails" data-owner aria-selected="false">Emails</button>
+    <button role="tab" data-tab="reviews" data-owner aria-selected="false">Reviews &amp; referrals</button>
   </nav>
 
   <div data-panel="inventory" hidden>
@@ -312,6 +313,23 @@ a{color:var(--ink)}
       <h3 style="margin:22px 0 8px;font-size:16px">Finished in the last 14 days</h3>
       <div class="scroll"><table><thead><tr><th>Started</th><th>Customer</th><th>Cart</th><th class="num">Value</th><th>Emails sent</th><th>Outcome</th></tr></thead><tbody id="cs-done"></tbody></table></div>
       <p class="msg" id="cs-msg" role="status"></p>
+    </section>
+  </div>
+
+  <div data-panel="reviews" hidden>
+    <section class="panel">
+      <div class="panel-head"><h2>Reviews</h2><span class="muted small" id="rv-sum"></span></div>
+      <p class="muted" style="margin-top:0">Customers get one email 14 days after you mark their order shipped (18 days after the order if it never was). Every review gets a one-time 15% thank-you code. Nothing shows on the website until you approve it, and only if the customer said we could share it. Trim anything that reads like a health claim before approving (use "..." where you cut).</p>
+      <div class="row" style="gap:8px;margin-bottom:12px"><button class="btn ghost small" id="rv-backfill">Ask recent customers (last 60 days, once)</button><span class="msg small" id="rv-bmsg" role="status"></span></div>
+      <div id="rv-list"></div>
+      <p class="msg" id="rv-msg" role="status"></p>
+    </section>
+    <section class="panel">
+      <div class="panel-head"><h2>Refer a friend</h2><span class="muted small">Give $20, get $20 · rewildmushrooms.com/refer/</span></div>
+      <p class="muted" style="margin-top:0">Every customer gets a friend code (like JADE-7K3Q) on their thank-you page and in the review and reorder emails. Friends get $20 off a first order of $75+. 21 days after the friend's order (if it isn't refunded), the website emails the customer a one-time $20 REWARD code. Orders shipping to the customer's own address wait here for you.</p>
+      <div class="tiles" id="rf-tiles"></div>
+      <div class="scroll"><table><thead><tr><th>Friend code</th><th>Customer</th><th>Friend's order</th><th class="num">Paid</th><th>Reward</th><th></th></tr></thead><tbody id="rf-list"></tbody></table></div>
+      <p class="msg" id="rf-msg" role="status"></p>
     </section>
   </div>
 
@@ -555,6 +573,7 @@ a{color:var(--ink)}
     if(tab==='overview'){loadLive();loadSummary();loadAlerts();loadPeople();loadLow();loadMetrics();}
     if(tab==='customers')loadCustomers();
     if(tab==='emails')loadEmails();
+    if(tab==='reviews'){loadReviews();loadReferrals();}
     if(tab==='orders')loadOrders();
     if(tab==='codes')loadCoupons();
     if(tab==='inventory'){loadInventory();loadLedger();}
@@ -765,9 +784,13 @@ a{color:var(--ink)}
     ['Send my stack','Quiz signup','Quiz takers','MailerLite','on',ML+'/automations/200334682160629341',''],
     ['Quiz follow-ups (day 3, day 7)','After Send my stack','Quiz takers','MailerLite','on',ML+'/automations/200335962880869997',''],
     ['Welcome series (5 emails over 7 days)','Popup or footer signup','New subscribers (not quiz, not buyers)','MailerLite','draft',ML+'/automations/200429692856043018','20% code, founder story, how to take it, reviews, code reminder. Turn on at launch'],
-    ['After purchase: thank you + 2-week check-in','1 hour after a paid order','Buyers who said yes to emails','MailerLite','draft',ML+'/automations/200429698944075642','Turn on at launch'],
-    ['Reorder reminder','About 5 days before their order runs out','Buyers who said yes to emails','Website','on','','Once per order. Links to a pre-filled cart'],
+    ['After purchase: thank you + day-30 check-in','1 hour, then 30 days after a paid order','Buyers who said yes to emails','MailerLite','on',ML+'/automations/200429698944075642','Day 30 is a check-in plus refer a friend (reviews are asked by the website at about day 16)'],
+    ['Reorder reminder','About 5 days before their order runs out','Buyers who said yes to emails','Website','on','','Once per order. Links to a pre-filled cart. P.S. with their friend code'],
     ['Win-back (15% code, 7 days)','120 days with no new order','Buyers who said yes to emails','Website','on','','One-time code for that customer only'],
+    ['Review request','14 days after Mark shipped (18 days after the order if not marked)','Every buyer, once per order (not after Stop these emails)','Website','on','','Links to /review/. P.S. with their friend code'],
+    ['Review thank-you (15% code, 60 days)','They leave a review','The reviewer','Website','on','','One-time code, for any review, good or bad'],
+    ['Refer a friend: your code','They ask on /refer/','Past buyers','Website','on','','Their friend code and share page'],
+    ['Refer a friend: your $20','21 days after a friend orders with their code (no refund)','The customer who shared','Website','on','','One-time $20 off $75+, valid 6 months'],
     ['Low stock alert','A product hits 10','rewildmushrooms@protonmail.com','Website','on','','Once per product until restocked'],
     ['HQ password reset','Forgot password in HQ','Team member','Website','on','',''],
     ['Contact form message','Someone uses the contact form','rewildmushrooms@protonmail.com','Netlify','on','https://app.netlify.com/projects/rewild-mushrooms/forms','Netlify: Forms > notifications'],
@@ -788,6 +811,52 @@ a{color:var(--ink)}
   function loadEmails(){
     loadCartSeq();
     $('#em-list').innerHTML=EMAILS.map(([n,w,to,by,st,url,note])=>`<tr><td><strong>${esc(n)}</strong>${note?'<br><span class="muted small">'+esc(note)+'</span>':''}</td><td>${esc(w)}</td><td>${esc(to)}</td><td>${esc(by)}</td><td>${ST[st]||''}</td><td>${url?`<a class="btn ghost small" href="${esc(url)}" target="_blank" rel="noopener">Edit</a>`:by==='Website'?'<span class="muted small">Ask Claude</span>':''}</td></tr>`).join('');
+  }
+
+  // ---- Reviews
+  const PNAME={energy:'Energy',clarity:'Clarity',strength:'Strength',peace:'Peace',tincture:'Energy Tincture'};
+  async function loadReviews(){
+    const m=$('#rv-msg');m.className='msg';m.textContent='Loading…';
+    try{
+      const r=await api('?action=reviews');m.textContent='';
+      $('#rv-sum').textContent=r.list.length?`${r.list.length} review${r.list.length===1?'':'s'} · ${r.average} average · ${r.pending} waiting`:'';
+      const ST={pending:'<span class="chip hv">Waiting</span>',approved:'<span class="chip rep">On the website</span>',hidden:'<span class="chip">Hidden</span>'};
+      $('#rv-list').innerHTML=r.list.length?r.list.map(v=>`<div class="panel" style="background:var(--stone);margin:0 0 10px" data-rv="${esc(v.id)}">
+        <div class="row" style="justify-content:space-between;gap:8px"><div><strong>${'★'.repeat(v.rating)}${'☆'.repeat(5-v.rating)}</strong> ${ST[v.status]||''} ${v.consent?'':'<span class="chip ab">Private: not for the website</span>'}</div><span class="muted small">${new Date(v.createdAt).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'})} · ${esc(v.email)} · code ${esc(v.thanksCode||'')}</span></div>
+        <div class="stack-sm" style="margin-top:10px"><input data-f="title" value="${esc(v.title)}" placeholder="Headline (optional)" maxlength="80">
+        <textarea data-f="text" rows="4" maxlength="1500">${esc(v.text)}</textarea>
+        ${v.originalText?`<details class="small"><summary class="muted">Original wording</summary><p class="muted">${esc(v.originalText)}</p></details>`:''}
+        <div class="row" style="gap:8px"><input data-f="name" value="${esc(v.name)}" maxlength="40" style="flex:1"><input data-f="location" value="${esc(v.location||'')}" placeholder="Location" maxlength="40" style="flex:1"></div>
+        <p class="small muted" style="margin:0">Shows on: ${v.products.map(id=>esc(PNAME[id]||id)).join(', ')}</p>
+        <div class="row" style="gap:8px">${v.consent&&v.status!=='approved'?'<button class="btn small" data-rvs="approved">Approve and show</button>':''}${v.status!=='hidden'?'<button class="btn ghost small" data-rvs="hidden">Hide</button>':''}<button class="btn ghost small" data-rvs="">Save edits</button></div></div></div>`).join(''):'<p class="muted">No reviews yet. The first requests go out 14 days after an order is marked shipped.</p>';
+      document.querySelectorAll('[data-rvs]').forEach(b=>b.onclick=async()=>{
+        const card=b.closest('[data-rv]');const body={action:'reviewUpdate',id:card.dataset.rv};
+        card.querySelectorAll('[data-f]').forEach(i=>body[i.dataset.f]=i.value);
+        if(b.dataset.rvs)body.status=b.dataset.rvs;
+        b.disabled=true;
+        try{await api('',{method:'POST',body:JSON.stringify(body)});loadReviews();}catch(err){m.className='msg err';m.textContent=err.message;b.disabled=false;}
+      });
+    }catch(err){m.className='msg err';m.textContent=err.message;}
+  }
+  $('#rv-backfill').onclick=async(e)=>{
+    const b=e.currentTarget,m=$('#rv-bmsg');
+    if(!confirm('Email a review request to customers whose orders came due in the last 60 days and who have not been asked yet?'))return;
+    b.disabled=true;m.className='msg small';m.textContent='Sending…';
+    try{const r=await api('',{method:'POST',body:JSON.stringify({action:'reviewBackfill',days:60})});m.textContent=`Sent ${r.sent} request${r.sent===1?'':'s'}.`;}catch(err){m.className='msg small err';m.textContent=err.message;}
+    b.disabled=false;
+  };
+  async function loadReferrals(){
+    const m=$('#rf-msg');m.className='msg';m.textContent='Loading…';
+    try{
+      const r=await api('?action=referrals');m.textContent='';
+      const tile=(l,v)=>`<div class="tile" style="background:var(--stone)"><div class="label">${l}</div><div class="value">${v}</div></div>`;
+      $('#rf-tiles').innerHTML=tile('Friend codes made',r.codes)+tile('Friends who ordered',r.friends)+tile('Friend sales',money(r.sales))+tile('Rewards sent',r.issued)+tile('Waiting 21 days',r.waiting)+tile('Need your OK',r.check);
+      const RS={pending:'Waiting',check:'<span class="chip ab">Check</span>',issued:'<span class="chip rep">Sent</span>',void:'<span class="chip">None</span>'};
+      const rows=r.list.flatMap(c=>c.rewards.map(w=>`<tr><td><strong>${esc(c.code)}</strong></td><td>${esc(c.first||'')}<br><span class="muted small">${esc(c.email)}</span></td><td>${esc(w.friendName||'')} <span class="muted small">${esc(w.friend)}</span><br><span class="muted small">${new Date(w.at).toLocaleDateString('en-CA',{month:'short',day:'numeric'})}${w.note?' · '+esc(w.note):''}</span></td><td class="num">${money(w.total||0)}</td><td>${RS[w.status]||esc(w.status)}${w.status==='pending'?'<br><span class="muted small">from '+new Date(w.unlockAt).toLocaleDateString('en-CA',{month:'short',day:'numeric'})+'</span>':''}${w.rewardCode?'<br><span class="muted small">'+esc(w.rewardCode)+'</span>':''}</td><td>${w.status==='check'?`<button class="btn small" data-rw="pending" data-code="${esc(c.code)}" data-order="${esc(w.orderId)}">Approve</button> <button class="btn ghost small" data-rw="void" data-code="${esc(c.code)}" data-order="${esc(w.orderId)}">Turn down</button>`:''}</td></tr>`));
+      $('#rf-list').innerHTML=rows.length?rows.join(''):'<tr><td colspan="6" class="muted">No friend orders yet.</td></tr>';
+      document.querySelectorAll('[data-rw]').forEach(b=>b.onclick=async()=>{b.disabled=true;
+        try{await api('',{method:'POST',body:JSON.stringify({action:'rewardStatus',code:b.dataset.code,orderId:b.dataset.order,status:b.dataset.rw})});loadReferrals();}catch(err){m.className='msg err';m.textContent=err.message;b.disabled=false;}});
+    }catch(err){m.className='msg err';m.textContent=err.message;}
   }
 
   // ---- Inventory
