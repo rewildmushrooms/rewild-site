@@ -1,12 +1,16 @@
 // REWILD Metrics Google Sheet: rebuilt every night from our own order records + Google Analytics.
 // Tabs written by the website: Monthly KPIs, Orders, Cohorts, Products, Traffic.
-// Tab YOU fill in (never overwritten): Costs (cost per unit, shipping cost, monthly ad spend).
+// Tab YOU fill in (never overwritten): Costs (cost per unit, your postage cost per order, monthly ad spend).
+// Money: customers pay the shipping charge at checkout, so it counts as income; your real postage is a cost.
+// Sales tax is collected for the government, so it is never counted as revenue. Square's processing fee is
+// read from Square for each order (saved on the order) and counted as a cost.
 // Customer emails never go into the sheet; customers are numbered (C001, C002...).
 import { readIndex } from './data.mjs';
 import { getJSON, setJSON } from './store.mjs';
 import { accessToken, monthlyTraffic, serviceAccountInfo, gaConfigured } from './ga.mjs';
 import { groupStats } from './mailerlite.mjs';
 import { PRODUCTS } from './catalog.mjs';
+import { square } from './square.mjs';
 
 export const METRICS_SHEET_ID = '1WoZDS9rj7tbbHHqOkxaxpLP624AIcF5nzew-uSMZolM';
 export const sheetUrl = () => `https://docs.google.com/spreadsheets/d/${METRICS_SHEET_ID}/edit`;
@@ -38,7 +42,7 @@ const COSTS_TEMPLATE = [
   ['Product id', 'Product', 'Cost per unit'],
   ...PRODUCTS.filter((p) => !p.isBundle).map((p) => [p.id, `${p.name} (${p.size})`, '']),
   ['', '', ''],
-  ['Shipping', 'Average shipping + packaging cost per order', ''],
+  ['Shipping', 'Postage + packaging YOU pay per shipped order (customers pay the shipping charge at checkout)', ''],
   ['', '', ''],
   ['Month (YYYY-MM)', 'Ad spend', 'Other marketing spend'],
 ];
@@ -73,13 +77,41 @@ export function parseCosts(values = []) {
   return { unit, shipping, spend };
 }
 
+const blank = () => ({ orders: 0, gross: 0, discount: 0, refunded: 0, net: 0, units: 0, newC: 0, repeatOrders: 0, cogs: 0, ship: 0, shipIn: 0, tax: 0, fees: 0 });
+// Estimate only until Square's real fee is read (see readSquareFees).
+export const estFee = (total) => (total ? Math.round(total * 0.029) + 30 : 0);
+
+// Reads Square's real processing fee for orders that don't have it yet and saves it on the order.
+// Fees can take a little while to appear, so orders under an hour old are skipped. At most 40 per run.
+export async function readSquareFees(records, opts = {}, now = Date.now()) {
+  let read = 0;
+  for (const r of records) {
+    if (read >= 40) break;
+    if (!r || r.deleted || r.squareFee != null || (r.source || 'online') === 'offline' || !r.total) continue;
+    if (now - Date.parse(r.createdAt || 0) < 3600000) continue;
+    try {
+      const { order } = await square('GET', `/orders/${encodeURIComponent(r.id)}`, null, opts);
+      const ids = (order?.tenders || []).map((t) => t.payment_id || t.id).filter(Boolean);
+      let fee = 0, found = false;
+      for (const pid of ids) {
+        const { payment } = await square('GET', `/payments/${encodeURIComponent(pid)}`, null, opts);
+        for (const f of payment?.processing_fee || []) { fee += Number(f.amount_money?.amount || 0); found = true; }
+      }
+      read += 1;
+      if (found) { r.squareFee = fee; await setJSON('orders', r.id, r); }
+    } catch (e) { console.error('square fee read failed', r.id, e.message); read += 1; }
+  }
+  return read;
+}
+
 // Pure: turns order records into sheet rows (easy to test).
 export function buildRows(records, traffic = {}, costs = { unit: {}, shipping: 0, spend: {} }, list = null, now = new Date()) {
   const orders = records.filter((r) => r && !r.deleted && r.createdAt && r.state !== 'CANCELED').sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   const custNo = {}, firstMonth = {}, monthsBought = {};
   let n = 0;
   const key = (r) => r.email || r.name || r.id;
-  const rowsOrders = [['Date', 'Order', 'Source', 'Customer #', 'New or repeat', 'Products', 'Units', 'Gross ($)', 'Discount ($)', 'Code', 'Refunded ($)', 'Net ($)', 'Province/State', 'Country']];
+  const rowsOrders = [['Date', 'Order', 'Source', 'Customer #', 'New or repeat', 'Products', 'Units', 'Product sales ($)', 'Discount ($)', 'Code', 'Refunded ($)', 'Product revenue ($)', 'Shipping charged ($)', 'Tax collected ($)', 'Customer paid ($)', 'Square fee ($)', 'Province/State', 'Country']];
+  let feesEstimated = false;
   const byMonth = {};
   const prodMonth = {}; // month -> id -> units
   for (const r of orders) {
@@ -88,14 +120,19 @@ export function buildRows(records, traffic = {}, costs = { unit: {}, shipping: 0
     if (isNew) { custNo[k] = 'C' + String(++n).padStart(3, '0'); firstMonth[k] = m; monthsBought[k] = new Set(); }
     monthsBought[k].add(m);
     const units = (r.items || []).reduce((a, i) => a + (Number(i.qty) || 0), 0);
-    const gross = (r.total || 0) + (r.discount || 0);
-    const net = (r.total || 0) - (r.refunded || 0);
+    const online = (r.source || 'online') !== 'offline';
+    const shipIn = r.shipping || 0, tax = r.tax || 0;
+    const products = Math.max(0, (r.total || 0) - shipIn - tax); // what they paid for products, after discounts
+    const gross = products + (r.discount || 0);
+    const net = products - (r.refunded || 0);
+    const fee = online ? (r.squareFee != null ? r.squareFee : estFee(r.total)) : 0;
+    if (online && r.squareFee == null && r.total) feesEstimated = true;
     rowsOrders.push([r.createdAt.slice(0, 10), String(r.id).slice(-8).toUpperCase(), r.source || 'online', custNo[k], isNew ? 'New' : 'Repeat',
-      (r.items || []).map((i) => `${i.qty}x ${i.name}`).join(', '), units, $(gross), $(r.discount), r.code || '', $(r.refunded), $(net), r.shipTo?.region || '', r.shipTo?.country || r.country || '']);
-    const b = (byMonth[m] = byMonth[m] || { orders: 0, gross: 0, discount: 0, refunded: 0, net: 0, units: 0, newC: 0, repeatOrders: 0, cogs: 0, ship: 0 });
-    b.orders++; b.gross += gross; b.discount += r.discount || 0; b.refunded += r.refunded || 0; b.net += net; b.units += units;
+      (r.items || []).map((i) => `${i.qty}x ${i.name}`).join(', '), units, $(gross), $(r.discount), r.code || '', $(r.refunded), $(net), $(shipIn), $(tax), $(r.total), online ? $(fee) + (r.squareFee == null ? ' (est.)' : '') : '', r.shipTo?.region || '', r.shipTo?.country || r.country || '']);
+    const b = (byMonth[m] = byMonth[m] || blank());
+    b.orders++; b.gross += gross; b.discount += r.discount || 0; b.refunded += r.refunded || 0; b.net += net; b.units += units; b.shipIn += shipIn; b.tax += tax; b.fees += fee;
     if (isNew) b.newC++; else b.repeatOrders++;
-    b.ship += costs.shipping * 100;
+    if (online) b.ship += costs.shipping * 100;
     for (const [id, q] of Object.entries(r.units || {})) b.cogs += (costs.unit[id] || 0) * 100 * q;
     for (const i of r.items || []) { if (!i.id) continue; (prodMonth[m] = prodMonth[m] || {})[i.id] = (prodMonth[m][i.id] || 0) + (Number(i.qty) || 0); }
   }
@@ -104,25 +141,28 @@ export function buildRows(records, traffic = {}, costs = { unit: {}, shipping: 0
   const startM = [orders[0] && month(orders[0].createdAt), ...Object.keys(traffic)].filter(Boolean).sort()[0] || month(now.toISOString());
   for (let d = new Date(startM + '-01T00:00:00Z'); month(d.toISOString()) <= month(now.toISOString()); d.setUTCMonth(d.getUTCMonth() + 1)) months.push(month(d.toISOString()));
   const haveCosts = Object.values(costs.unit).some((v) => v > 0);
-  const kpis = [['Month', 'Orders', 'Gross sales ($)', 'Discounts ($)', 'Refunds ($)', 'Net revenue ($)', 'Avg order ($)', 'Units', 'New customers', 'Repeat orders', 'Repeat order %', 'Visitors', 'Conversion %',
-    'Product cost ($)', 'Shipping cost ($)', 'Gross profit ($)', 'Gross margin %', 'Ad spend ($)', 'Other marketing ($)', 'Cost per new customer ($)', 'Revenue per ad $']];
+  const kpis = [['Month', 'Orders', 'Product sales ($)', 'Discounts ($)', 'Refunds ($)', 'Product revenue ($)', 'Shipping charged ($)', 'Revenue incl. shipping ($)', 'Avg order excl. tax ($)', 'Tax collected ($, not revenue)', 'Units', 'New customers', 'Repeat orders', 'Repeat order %', 'Visitors', 'Conversion %',
+    'Product cost ($)', 'Postage you paid ($)', 'Square fees ($)', 'Gross profit ($)', 'Gross margin %', 'Ad spend ($)', 'Other marketing ($)', 'Profit after marketing ($)', 'Cost per new customer ($)', 'Revenue per ad $']];
   for (const m of months) {
-    const b = byMonth[m] || { orders: 0, gross: 0, discount: 0, refunded: 0, net: 0, units: 0, newC: 0, repeatOrders: 0, cogs: 0, ship: 0 };
+    const b = byMonth[m] || blank();
     const v = traffic[m]?.visitors ?? '';
     const sp = costs.spend[m] || { ads: 0, other: 0 };
-    const profit = b.net - b.cogs - b.ship;
-    kpis.push([m, b.orders, $(b.gross), $(b.discount), $(b.refunded), $(b.net), b.orders ? $(b.net / b.orders) : '', b.units, b.newC, b.repeatOrders, pct(b.repeatOrders, b.orders), v, v ? pct(b.orders, v) : '',
-      haveCosts ? $(b.cogs) : '', costs.shipping ? $(b.ship) : '', haveCosts ? $(profit) : '', haveCosts && b.net ? pct(profit, b.net) : '',
-      sp.ads || '', sp.other || '', sp.ads && b.newC ? Math.round((sp.ads / b.newC) * 100) / 100 : '', sp.ads ? Math.round(($(b.net) / sp.ads) * 100) / 100 : '']);
+    const revenue = b.net + b.shipIn;
+    const profit = revenue - b.cogs - b.ship - b.fees;
+    const afterMkt = profit - (sp.ads + sp.other) * 100;
+    kpis.push([m, b.orders, $(b.gross), $(b.discount), $(b.refunded), $(b.net), $(b.shipIn), $(revenue), b.orders ? $(revenue / b.orders) : '', $(b.tax), b.units, b.newC, b.repeatOrders, pct(b.repeatOrders, b.orders), v, v ? pct(b.orders, v) : '',
+      haveCosts ? $(b.cogs) : '', costs.shipping ? $(b.ship) : '', $(b.fees), haveCosts ? $(profit) : '', haveCosts && revenue ? pct(profit, revenue) : '',
+      sp.ads || '', sp.other || '', haveCosts ? $(afterMkt) : '', sp.ads && b.newC ? Math.round((sp.ads / b.newC) * 100) / 100 : '', sp.ads ? Math.round(($(revenue) / sp.ads) * 100) / 100 : '']);
   }
   // Snapshot block under the monthly table
   const buyers = Object.keys(custNo);
   const repeaters = buyers.filter((k) => monthsBought[k].size > 1 || orders.filter((r) => key(r) === k).length > 1);
-  const netAll = orders.reduce((a, r) => a + (r.total || 0) - (r.refunded || 0), 0);
+  const netAll = orders.reduce((a, r) => a + Math.max(0, (r.total || 0) - (r.tax || 0)) - (r.refunded || 0), 0); // incl. shipping charged, excl. tax
   kpis.push([], ['Snapshot', `Updated ${now.toISOString().slice(0, 16).replace('T', ' ')} UTC`],
     ['Customers (all time)', buyers.length], ['Customers who bought more than once', repeaters.length], ['Repeat customer rate %', pct(repeaters.length, buyers.length)],
-    ['Net revenue (all time, $)', $(netAll)], ['Average revenue per customer ($)', buyers.length ? $(netAll / buyers.length) : ''],
+    ['Revenue incl. shipping, excl. tax (all time, $)', $(netAll)], ['Average revenue per customer ($)', buyers.length ? $(netAll / buyers.length) : ''],
     ['Email list (MailerLite, active)', list ?? '']);
+  kpis.push([], ['How this is counted: customers pay the shipping charge, so it is income; your real postage (Costs tab) is a cost. Sales tax is not revenue. Square fees come from Square for each order' + (feesEstimated ? '; orders marked (est.) on the Orders tab use 2.9% + 30 cents until Square reports the real fee.' : '.')]);
   if (!haveCosts) kpis.push([], ['Fill in the Costs tab to see product cost, profit, margin and cost per new customer.']);
 
   // Cohorts: of customers who first bought in month X, % who bought again in a later month within N months
@@ -152,6 +192,7 @@ export async function updateMetricsSheet(opts = {}) {
     await ensureTabs(opts);
     const idx = await readIndex('orders');
     const records = (await Promise.all(Object.keys(idx).map(async (id) => (await getJSON('orders', id)) || null))).filter(Boolean);
+    try { await readSquareFees(records); } catch (e) { console.error('square fees failed', e.message); }
     const [traffic, costsRaw, list] = await Promise.all([
       gaConfigured() ? monthlyTraffic().catch(() => ({})) : {},
       gs('GET', `/values/${encodeURIComponent("'Costs'!A1:C80")}`, null, opts).then((r) => r.values || []),

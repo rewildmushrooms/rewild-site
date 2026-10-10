@@ -64,8 +64,8 @@ export function orderRecord(o, email, name) {
   };
 }
 
-// What HQ adds to an order (shipping, status, notes, refunds, restock). Kept when Square sends the order again.
-export const hqFields = (prev) => Object.fromEntries(['shipment', 'hqStatus', 'notes', 'refundLog', 'restocked'].filter((k) => prev?.[k] != null).map((k) => [k, prev[k]]));
+// What HQ and the website add to an order (shipping, status, notes, refunds, restock, review link, Square fee). Kept when Square sends the order again.
+export const hqFields = (prev) => Object.fromEntries(['shipment', 'hqStatus', 'notes', 'refundLog', 'restocked', 'review', 'squareFee'].filter((k) => prev?.[k] != null).map((k) => [k, prev[k]]));
 
 // Customer totals are rebuilt from the orders map, so re-running never double counts.
 export function mergeCustomer(c, rec, now = new Date().toISOString()) {
