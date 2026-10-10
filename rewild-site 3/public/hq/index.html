@@ -319,7 +319,7 @@ a{color:var(--ink)}
   <div data-panel="reviews" hidden>
     <section class="panel">
       <div class="panel-head"><h2>Reviews</h2><span class="muted small" id="rv-sum"></span></div>
-      <p class="muted" style="margin-top:0">Customers get one email 14 days after you mark their order shipped (18 days after the order if it never was). Every review gets a one-time 15% thank-you code. Nothing shows on the website until you approve it, and only if the customer said we could share it. Trim anything that reads like a health claim before approving (use "..." where you cut).</p>
+      <p class="muted" style="margin-top:0">Customers get one email 14 days after you mark their order shipped (18 days after the order if it never was). Every review gets a one-time 15% thank-you code. Nothing shows on the website until you approve it (here, or from the \u201cNew review\u201d email sent to rewildmushrooms@protonmail.com), and only if the customer said we could share it. Trim anything that reads like a health claim before approving (use "..." where you cut).</p>
       <div class="row" style="gap:8px;margin-bottom:12px"><button class="btn ghost small" id="rv-backfill">Ask recent customers (last 60 days, once)</button><span class="msg small" id="rv-bmsg" role="status"></span></div>
       <div id="rv-list"></div>
       <p class="msg" id="rv-msg" role="status"></p>
@@ -789,6 +789,7 @@ a{color:var(--ink)}
     ['Win-back (15% code, 7 days)','120 days with no new order','Buyers who said yes to emails','Website','on','','One-time code for that customer only'],
     ['Review request','14 days after Mark shipped (18 days after the order if not marked)','Every buyer, once per order (not after Stop these emails)','Website','on','','Links to /review/. P.S. with their friend code'],
     ['Review thank-you (15% code, 60 days)','They leave a review','The reviewer','Website','on','','One-time code, for any review, good or bad'],
+    ['New review: approve it?','Someone leaves a review','rewildmushrooms@protonmail.com','Website','on','','Link opens a page to edit the wording, then Approve and post or Hide'],
     ['Refer a friend: your code','They ask on /refer/','Past buyers','Website','on','','Their friend code and share page'],
     ['Refer a friend: your $20','21 days after a friend orders with their code (no refund)','The customer who shared','Website','on','','One-time $20 off $75+, valid 6 months'],
     ['Low stock alert','A product hits 10','rewildmushrooms@protonmail.com','Website','on','','Once per product until restocked'],
