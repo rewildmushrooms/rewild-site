@@ -15,6 +15,8 @@ import { email as emailHtml, firstNameOf } from './emailtpl.mjs';
 import { referralFor, sharePage, REFERRAL } from './referrals.mjs';
 import { optoutLink } from './lifecycle.mjs';
 import { sendTelegram, telegramReady } from './telegram.mjs';
+import { SITE_EMAIL } from './config.mjs';
+import { esc } from './emailtpl.mjs';
 
 export const REVIEW = { afterShipDays: 14, afterOrderDays: 18, staleDays: 10, gapDays: 30, thanksPercent: 15, thanksDays: 60 };
 const DAY = 86400000;
@@ -135,6 +137,7 @@ export async function submitReview(b, { send, site } = {}, deps = {}) {
     id: 'r_' + crypto.randomBytes(6).toString('hex'),
     orderId: rec.id, email: rec.email, rating, title: clean(b.title, 80), text, name, location: clean(b.location, 40),
     products: products.length ? products : inOrder, consent: !!b.consent, status: 'pending', createdAt: new Date().toISOString(),
+    adminToken: crypto.randomBytes(16).toString('hex'), // for the approve link in Jade's email
   };
   const code = await createOnetimeCode({ prefix: 'THANKS', percentOff: REVIEW.thanksPercent, days: REVIEW.thanksDays, email: rec.email, source: 'review' });
   review.thanksCode = code.code;
@@ -149,10 +152,46 @@ export async function submitReview(b, { send, site } = {}, deps = {}) {
     try { const m = thanksEmail(rec, code, site, ref?.code); await send({ to: rec.email, subject: m.subject, text: m.text, html: m.html, fromName: 'REWILD Mushrooms', replyTo: 'hello@rewildmushrooms.com' }); }
     catch (e) { console.error('thanks email failed', e.message); }
   }
+  if (send) {
+    try { const m = approvalEmail(review, site); await send({ to: deps.adminEmail || SITE_EMAIL, subject: m.subject, text: m.text, html: m.html, fromName: 'REWILD website', replyTo: rec.email }); }
+    catch (e) { console.error('approval email failed', e.message); }
+  }
   if (deps.sendTelegram || telegramReady()) {
     try { await (deps.sendTelegram || sendTelegram)(`⭐ New ${rating}-star review from ${name}${review.consent ? '' : ' (private, not for the website)'}. Approve it in HQ > Reviews.`); } catch (e) { console.error('telegram failed', e.message); }
   }
   return { ok: true, code: code.code, percentOff: REVIEW.thanksPercent, expiresAt: code.expiresAt, referral: ref ? { code: ref.code, page: sharePage(site || '', ref.code) } : null };
+}
+
+// Email to Jade for every new review, with one link to approve (or edit, or hide) it.
+const stars = (n) => '★'.repeat(n) + '☆'.repeat(5 - n);
+export const adminLink = (site, r) => `${site}/api/review-admin?id=${encodeURIComponent(r.id)}&t=${r.adminToken}`;
+export function approvalEmail(r, site) {
+  const link = adminLink(site, r);
+  const prods = r.products.map((id) => PRODUCT_BY_ID[id]?.name || id).join(', ');
+  const subject = `${stars(r.rating)} New review from ${r.name}${r.consent ? ': approve it?' : ' (private)'}`;
+  const text = [`New ${r.rating}-star review on rewildmushrooms.com`, '', r.title ? `"${r.title}"` : '', r.text, '', `${r.name}${r.location ? ', ' + r.location : ''} · ${prods}`, `Order ${String(r.orderId).slice(-8).toUpperCase()} · ${r.email}`, '',
+    r.consent ? `Approve, edit or hide it here: ${link}` : `They did NOT allow us to post it, so it stays private. Read it in HQ > Reviews & referrals: ${site}/hq/`, '', 'Nothing goes on the website until you approve it.'].join('\n');
+  const html = `<!doctype html><html><body style="margin:0;background:#F3F2EE;font-family:Helvetica,Arial,sans-serif;color:#121310"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:24px 0"><tr><td align="center"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border-radius:4px">
+<tr><td style="background:#121310;padding:16px 24px;color:#fff;font-weight:800;letter-spacing:.3em;font-size:14px">REWILD · NEW REVIEW</td></tr>
+<tr><td style="padding:24px">
+<p style="margin:0 0 6px;font-size:26px;color:#C9A800;letter-spacing:2px">${stars(r.rating)}</p>
+${r.title ? `<p style="margin:0 0 8px;font-size:19px;font-weight:700">${esc(r.title)}</p>` : ''}
+<p style="margin:0 0 14px;font-size:16px;line-height:1.6;color:#3D3F38;white-space:pre-line">${esc(r.text)}</p>
+<p style="margin:0 0 4px;font-size:14px"><b>${esc(r.name)}</b>${r.location ? ' · ' + esc(r.location) : ''}</p>
+<p style="margin:0 0 18px;font-size:13px;color:#6B6D64">${esc(prods)} · order ${esc(String(r.orderId).slice(-8).toUpperCase())} · ${esc(r.email)}</p>
+${r.consent ? `<a href="${esc(link)}" style="display:inline-block;background:#E8C800;color:#121310;text-decoration:none;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:14px 22px;border-radius:2px">Review and approve</a>
+<p style="margin:14px 0 0;font-size:13px;color:#6B6D64">Opens a page where you can fix the wording (trim anything that sounds like a health claim), then Approve and post, or Hide.</p>`
+    : `<p style="margin:0;font-size:14px;color:#9B2C2C"><b>Private:</b> they did not allow us to post it, so it stays off the website.</p>`}
+</td></tr><tr><td style="padding:16px 24px;font-size:12px;color:#6B6D64">Nothing goes on the website until you approve it. Their 15% thank-you code (${esc(r.thanksCode || '')}) has already been sent.</td></tr></table></td></tr></table></body></html>`;
+  return { subject, text, html };
+}
+
+// The approve page (/api/review-admin): checks the review's secret token instead of an HQ login.
+export async function reviewByToken(id, t) {
+  if (!/^r_[a-f0-9]{12}$/.test(id || '') || !/^[a-f0-9]{32}$/.test(t || '')) throw bad('That link is not right.');
+  const r = (await loadDoc()).list.find((x) => x.id === id);
+  if (!r || !r.adminToken || !crypto.timingSafeEqual(Buffer.from(r.adminToken), Buffer.from(t))) throw bad('That link has expired. Use HQ > Reviews & referrals instead.');
+  return r;
 }
 
 // Public list for product pages: approved, and the customer said we could show it.
