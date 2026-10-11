@@ -27,18 +27,24 @@
   // Prices come from /js/pricing.js, the same engine the checkout uses.
   const P = window.REWILD_PRICING;
   const catalog = { byId, shipping: C.shipping };
+  // Flash sale (see pricing.mjs SALES): the early-access key comes from sale.js; the checkout checks it again.
+  const earlyKey = () => { try { return localStorage.getItem('rewild_early') || ''; } catch (e) { return ''; } };
+  const sale = () => (P.activeSale ? P.activeSale(Date.now(), !!earlyKey()) : null);
+  const cap = () => { const s = sale(); return s ? s.maxEach : 20; };
   function quote() {
     const promo = state.promo && !state.promo.pending ? state.promo : null;
-    return P.priceCart(state.items, state.country, catalog, promo, !!state.addon);
+    return P.priceCart(state.items, state.country, catalog, promo, !!state.addon, sale());
   }
+  window.addEventListener('rewild:sale', () => render());
+  window.addEventListener('rewild:sale-left', () => render());
 
   function save() { store.write(state); render(); }
   function count() { return state.items.reduce((a, i) => a + i.qty, 0); }
 
   function add(id, qty) {
-    qty = Math.max(1, Math.min(20, parseInt(qty, 10) || 1));
+    qty = Math.max(1, Math.min(cap(), parseInt(qty, 10) || 1));
     const ex = state.items.find((i) => i.id === id);
-    if (ex) ex.qty = Math.min(20, ex.qty + qty); else state.items.push({ id, qty });
+    if (ex) ex.qty = Math.min(cap(), ex.qty + qty); else state.items.push({ id, qty });
     save();
   }
   function setQty(id, qty) {
@@ -46,7 +52,7 @@
     const before = (state.items.find((i) => i.id === id) || {}).qty || 0;
     if (qty < before) ga('remove_from_cart', [gaItem(id, before - Math.max(0, qty))]);
     if (qty <= 0) state.items = state.items.filter((i) => i.id !== id);
-    else { const ex = state.items.find((i) => i.id === id); if (ex) ex.qty = Math.min(20, qty); }
+    else { const ex = state.items.find((i) => i.id === id); if (ex) ex.qty = Math.min(cap(), qty); }
     save();
   }
 
@@ -74,14 +80,15 @@
     if (state.items.length === 0) {
       body.innerHTML = '<div class="empty"><p>Your cart is empty.</p><p style="margin-top:16px"><a class="btn btn-outline" href="/shop/">Shop mushrooms</a></p><p class="small muted" style="margin-top:12px">Not sure where to start? <a class="link" href="/build-your-stack/">Build your stack</a>.</p></div>';
     } else {
+      const saleLine = (id) => (q.sale ? q.lines.find((l) => l.id === id) : null);
       const lineHtml = (p, i) => `<div class="line"><img src="${p.image}" alt="" width="72" height="72">
           <div><div class="name">${esc(p.name)}</div><div class="sub">${esc(p.format)}</div>
           <div class="row" style="gap:12px;margin-top:6px"><div class="qty" role="group" aria-label="Quantity for ${esc(p.name)}">
           <button type="button" data-dec="${p.id}" aria-label="Decrease">&minus;</button><input type="number" min="0" max="20" value="${i.qty}" data-qty="${p.id}" aria-label="Quantity"><button type="button" data-inc="${p.id}" aria-label="Increase">+</button></div>
           <button type="button" class="remove" data-remove="${p.id}">Remove</button></div></div>
-          <div class="price">${money(p.price * i.qty)}</div></div>`;
+          <div class="price">${saleLine(p.id) ? `<s class="muted">${money(saleLine(p.id).listUnit * i.qty)}</s><br>${money(saleLine(p.id).saleUnit * i.qty)}` : money(p.price * i.qty)}</div></div>`;
       const gift = byId[P.OFFERS.freeGift.id];
-      const sg = P.suggestion(state.items, catalog);
+      const sg = P.suggestion(state.items, catalog, q.sale);
       body.innerHTML = state.items.map((i) => lineHtml(byId[i.id], i)).join('') +
         (q.gift ? `<div class="line gift-line"><img src="${gift.image}" alt="" width="72" height="72"><div><div class="name">Free gift: ${esc(gift.name)}</div><div class="sub">Yours free on orders of $200 or more</div></div><div class="price">Free</div></div>` : '') +
         (sg ? `<div class="sugg"><div><b>${esc(sg.text)}</b><span>${esc(sg.sub)}</span></div><button type="button" class="btn btn-outline small" data-sugg="${esc(sg.kind)}" data-sugg-add="${esc(sg.add)}" data-sugg-swap="${esc((sg.swap || []).join(','))}">${esc(sg.cta)}</button></div>` : '');
@@ -91,7 +98,7 @@
     if (prog) {
       if (state.items.length) {
         prog.hidden = false;
-        const done = q.quoted ? 'You get a free tincture with this order.' : 'You get free shipping and a free tincture.';
+        const done = q.sale ? (q.quoted ? 'Launch party prices applied.' : 'You get free shipping.') : q.quoted ? 'You get a free tincture with this order.' : 'You get free shipping and a free tincture.';
         prog.querySelector('p').textContent = !q.next ? done : q.next.kind === 'shipping' ? `${money(q.next.short)} away from free shipping in Canada.` : `${money(q.next.short)} away from a free Rewild Energy Tincture.`;
         prog.querySelector('.progress span').style.width = (q.next ? q.next.pct : 100) + '%';
       } else prog.hidden = true;
@@ -108,7 +115,8 @@
     const pm = $('#promo-msg');
     if (pm) {
       pm.className = 'small';
-      if (!p) pm.innerHTML = '';
+      if (q.sale) pm.innerHTML = `<b>Launch party: ${q.sale.percent}% off everything.</b> Codes are paused until it ends. Limit ${q.sale.maxEach} of each per order.`;
+      else if (!p) pm.innerHTML = '';
       else if (p.pending) pm.innerHTML = `${esc(p.code)} will be checked at checkout. <button type="button" class="link-btn" data-promo-remove>Remove</button>`;
       else if (q.codeNote === 'minimum') { pm.className = 'small err'; pm.innerHTML = `${esc(p.code)} needs an order of ${money(p.minimumAmount)} or more. <button type="button" class="link-btn" data-promo-remove>Remove</button>`; }
       else if (q.codeBeaten && q.bundleKept && !q.stockUpSaving) pm.innerHTML = `<b>Your bundle price stays.</b> Codes don't stack on the Duo or the All Four set because they're already discounted. <button type="button" class="link-btn" data-promo-remove>Remove code</button>`;
@@ -125,7 +133,14 @@
     const ct = $('#co-total'); if (ct) ct.textContent = `${count() + (q.addonApplied ? 1 : 0) + (q.gift ? 1 : 0)} item${count() === 1 && !q.addonApplied && !q.gift ? '' : 's'} · ${money(q.total)} CAD${q.quoted ? ' + shipping' : ''}${q.savings > 0 ? ` · you save ${money(q.savings)}` : ''}`;
     if (!state.items.length) $('#cart-drawer').classList.remove('step-email');
     $('#cart-ship-note').textContent = state.country === 'US' ? 'US shipping and duties vary by parcel. After you order, we email a quote you can pay online before we ship.' : '';
-    $('#checkout-btn').disabled = state.items.length === 0;
+    // Launch party limits: per-order cap and stock left
+    const err0 = $('#cart-error');
+    const left = window.RewildSale && window.RewildSale.left();
+    let block = '';
+    if (q.sale && q.overCap && q.overCap.length) block = `Launch party limit: ${q.sale.maxEach} of each product per order (bundles count what's inside). Please lower ${q.overCap.map((id) => byId[id] ? byId[id].word || byId[id].name : id).join(', ')}.`;
+    else if (q.sale && left) { const short = Object.keys(q.units || {}).find((id) => id in left && q.units[id] > left[id]); if (short) block = left[short] === 0 ? `${byId[short].word || byId[short].name} is sold out at the launch party price. Please remove it.` : `Only ${left[short]} ${byId[short].word || byId[short].name} left at the launch party price.`; }
+    if (err0 && (block || err0.dataset.sale)) { err0.textContent = block; if (block) err0.dataset.sale = '1'; else delete err0.dataset.sale; }
+    $('#checkout-btn').disabled = state.items.length === 0 || !!block;
   }
 
   // Step 1: email (+ optional marketing consent), then Square.
@@ -142,7 +157,7 @@
     try { localStorage.setItem('rewild_email', email); } catch (x) {}
     btn.disabled = true; const label = btn.textContent; btn.textContent = 'Opening secure checkout…';
     try {
-      const res = await fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, items: state.items, country: state.country, code: state.promo && !state.promo.pending ? state.promo.code : undefined, ref: partnerRef(), newsletter: !!state.newsletter, addon: !!state.addon && quote().addonEligible }) });
+      const res = await fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, items: state.items, country: state.country, code: state.promo && !state.promo.pending ? state.promo.code : undefined, ref: partnerRef(), newsletter: !!state.newsletter, addon: !!state.addon && quote().addonEligible, early: earlyKey() || undefined }) });
       let data = {};
       try { data = await res.json(); } catch (x) {}
       if (!res.ok || !data.url) throw new Error(data.error || 'Checkout is unavailable right now. Please try again in a minute.');
@@ -162,7 +177,7 @@
     if (!state.items.length) { state.promo = { code, pending: true }; save(); return; }
     if (pm && !quiet) { pm.className = 'small'; pm.textContent = 'Checking…'; }
     try {
-      const res = await fetch('/api/promo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code, items: state.items, country: state.country }) });
+      const res = await fetch('/api/promo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code, items: state.items, country: state.country, early: earlyKey() || undefined }) });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Could not check that code.');
       state.promo = { code: data.code, percentOff: data.percentOff, amountOff: data.amountOff, minimumAmount: data.minimumAmount };
