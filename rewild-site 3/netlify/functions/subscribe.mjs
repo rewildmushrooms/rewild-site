@@ -16,11 +16,12 @@ export default async (req) => {
   const email = String(body.email || '').trim().toLowerCase();
   if (!isEmail(email)) return json(400, { error: 'Please enter a valid email address.' });
   try {
-    const source = body.source === 'quiz' ? 'quiz' : body.source === 'popup' ? 'popup' : 'footer';
+    const source = ['quiz', 'popup', 'launch'].includes(body.source) ? body.source : 'footer';
     const fields = { signup_source: source === 'quiz' ? 'quiz' : 'website', marketing_consent: 'yes', marketing_consent_source: source, marketing_consent_at: new Date().toISOString().slice(0, 10) };
     const q = body.quiz && typeof body.quiz === 'object' ? body.quiz : null;
     if (q) for (const k of ['stack', 'stack_names', 'how_to', 'why', 'want', 'day', 'when', 'coffee', 'how', 'format', 'start']) if (q[k]) fields['quiz_' + k] = String(q[k]).slice(0, k === 'how_to' ? 250 : 80);
-    const groups = [process.env.MAILERLITE_GROUP_ID, q && process.env.MAILERLITE_QUIZ_GROUP_ID].filter(Boolean);
+    const LAUNCH_GROUP = '201059337792128079'; // Launch party early access (Oct 2026)
+    const groups = [process.env.MAILERLITE_GROUP_ID, q && process.env.MAILERLITE_QUIZ_GROUP_ID, source === 'launch' && LAUNCH_GROUP].filter(Boolean);
     try {
       await addSubscriber(email, fields, { groups });
     } catch (e) {

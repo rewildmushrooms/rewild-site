@@ -4,6 +4,7 @@
 // (the browser is never trusted for amounts).
 import { PRODUCTS, PRODUCT_BY_ID, SHIPPING } from './_shared/catalog.mjs';
 import { priceCart, OFFERS } from './_shared/pricing.mjs';
+import { saleFor, checkSaleCart } from './_shared/sale.mjs';
 import { square, idem, locationId, json } from './_shared/square.mjs';
 import { validatePromo, orderDiscount, discountFor } from './_shared/promos.mjs';
 import { SITE_EMAIL } from './_shared/config.mjs';
@@ -19,9 +20,12 @@ export async function buildPaymentLink(body, siteUrl, opts) {
   const catalog = { byId: PRODUCT_BY_ID, shipping: Object.fromEntries(Object.entries(SHIPPING).map(([k, v]) => [k, { flatRate: v.flatRate, freeOver: v.freeOver, quoted: !!v.quotedAfterOrder }])) };
   const base = priceCart(body?.items, country, catalog);
   if (base.lines.length === 0) throw Object.assign(new Error('Your cart is empty.'), { status: 400 });
+  // Flash sale: everything at the sale price, no codes. Limits and stock left are checked here.
+  const sale = saleFor(Date.now(), body?.early);
+  if (sale) await checkSaleCart(sale, base.lines, catalog);
   let promo = null;
-  if (body?.code) promo = (await validatePromo(body.code, base.listTotal, opts, Date.now(), body?.email || '')).promo;
-  const q = priceCart(body?.items, country, catalog, promo, !!body?.addon); // best deal wins, add-on, free gift
+  if (body?.code && !sale) promo = (await validatePromo(body.code, base.listTotal, opts, Date.now(), body?.email || '')).promo;
+  const q = priceCart(body?.items, country, catalog, promo, !!body?.addon, sale); // best deal wins, add-on, free gift
   const partnerCode = promo && partnerByCode(promo.code) ? promo.code : null; // partner keeps credit even if the offers beat their code
   const ship = SHIPPING[country];
   const lineItem = (id, qty, amount, name, note) => ({ name, quantity: String(qty), base_price_money: { amount, currency: CUR }, metadata: { rewild_id: id, ...(note ? { offer: note } : {}) } });
@@ -45,6 +49,7 @@ export async function buildPaymentLink(body, siteUrl, opts) {
       ...(q.codeApplied ? { promo: q.codeApplied } : {}),
       ...(partnerCode && !q.codeApplied ? { partner_code: partnerCode } : {}),
       ...(ref ? { ref } : {}),
+      ...(sale ? { sale: sale.id } : {}),
     },
   };
   if (q.discount > 0) order.discounts = [{ uid: 'offers', name: q.discountName, scope: 'ORDER', type: 'FIXED_AMOUNT', amount_money: { amount: q.discount, currency: CUR } }];
