@@ -177,7 +177,7 @@ export const cordyfuelPage = {
   <p class="lp-stamp">Simple. Traceable. Tested.</p>
 </div></section>
 
-${reviewsSection({ eyebrow: 'What people are saying', title: 'Rewilders, in their own words.', ids: ['michelle', 'jesse', 'krystal'] })}
+${reviewsSection({ eyebrow: 'What people are saying', title: 'Rewilders, in their own words.', ids: ['michelle', 'anna', 'jesse', 'krystal'] })}
 
 <section class="section lp"><div class="lp-col">
   <p class="eyebrow">How to use it</p>

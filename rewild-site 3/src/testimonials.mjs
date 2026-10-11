@@ -23,6 +23,14 @@ export const TESTIMONIALS = [
     products: ['clarity', 'strength', 'peace', 'tincture'],
   },
   {
+    id: 'anna',
+    name: 'Anna P.',
+    detail: 'Rewild Energy (CordyFuel™) in her morning coffee',
+    head: 'In my coffee every morning',
+    quote: 'I have been putting your CordyFuel™ in my coffee every morning... I like it!!',
+    products: ['energy', 'duo'],
+  },
+  {
     id: 'jesse',
     name: 'Jesse F.',
     detail: "Men's Coach · Calgary, AB",
@@ -70,5 +78,5 @@ export function reviewsSection({ eyebrow = 'What Rewilders are saying', title = 
 export function productReview(productId) {
   const t = TESTIMONIALS.find((x) => x.quote && x.products.includes(productId));
   if (!t) return '';
-  return `<figure class="review review-compact"><div class="review-stars" aria-hidden="true">★★★★★</div><blockquote>"${esc(t.head)}." ${esc(t.quote.length > 170 ? t.quote.slice(0, t.quote.lastIndexOf(' ', 165)) + '...' : t.quote)}</blockquote><figcaption><b>${esc(t.name)}</b><span>${esc(t.detail)}</span></figcaption></figure>`;
+  return `<figure class="review review-compact"><div class="review-stars" aria-hidden="true">★★★★★</div><blockquote>"${esc(t.head)}${/[.!?]$/.test(t.head) ? '' : '.'}" ${esc(t.quote.length > 170 ? t.quote.slice(0, t.quote.lastIndexOf(' ', 165)) + '...' : t.quote)}</blockquote><figcaption><b>${esc(t.name)}</b><span>${esc(t.detail)}</span></figcaption></figure>`;
 }
