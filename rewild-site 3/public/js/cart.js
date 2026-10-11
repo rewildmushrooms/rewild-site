@@ -98,8 +98,8 @@
     if (prog) {
       if (state.items.length) {
         prog.hidden = false;
-        const done = q.sale ? (q.quoted ? 'Launch party prices applied.' : 'You get free shipping.') : q.quoted ? 'You get a free tincture with this order.' : 'You get free shipping and a free tincture.';
-        prog.querySelector('p').textContent = !q.next ? done : q.next.kind === 'shipping' ? `${money(q.next.short)} away from free shipping in Canada.` : `${money(q.next.short)} away from a free Rewild Energy Tincture.`;
+        const done = q.sale ? (q.sale.tierOn ? `You unlocked ${q.sale.percent}% off everything${q.quoted ? '' : ' + free shipping'}.` : q.quoted ? 'Launch party prices applied.' : 'You get free shipping.') : q.quoted ? 'You get a free tincture with this order.' : 'You get free shipping and a free tincture.';
+        prog.querySelector('p').textContent = !q.next ? done : q.next.kind === 'shipping' ? `${money(q.next.short)} away from free shipping in Canada.` : q.next.kind === 'tier' ? `Add ${money(q.next.short)} more (at regular prices) to get ${q.next.percent}% off your whole order.` : `${money(q.next.short)} away from a free Rewild Energy Tincture.`;
         prog.querySelector('.progress span').style.width = (q.next ? q.next.pct : 100) + '%';
       } else prog.hidden = true;
     }
@@ -115,7 +115,7 @@
     const pm = $('#promo-msg');
     if (pm) {
       pm.className = 'small';
-      if (q.sale) pm.innerHTML = `<b>Launch party: ${q.sale.percent}% off everything.</b> Codes are paused until it ends. Limit ${q.sale.maxEach} of each per order.`;
+      if (q.sale) pm.innerHTML = `<b>Launch party: ${q.sale.percent}% off everything${q.sale.tier && !q.sale.tierOn ? ` (${q.sale.tier.percent}% off orders of $${q.sale.tier.at / 100}+)` : ''}.</b> Codes are paused until it ends. Limit ${q.sale.maxEach} of each per order.`;
       else if (!p) pm.innerHTML = '';
       else if (p.pending) pm.innerHTML = `${esc(p.code)} will be checked at checkout. <button type="button" class="link-btn" data-promo-remove>Remove</button>`;
       else if (q.codeNote === 'minimum') { pm.className = 'small err'; pm.innerHTML = `${esc(p.code)} needs an order of ${money(p.minimumAmount)} or more. <button type="button" class="link-btn" data-promo-remove>Remove</button>`; }
