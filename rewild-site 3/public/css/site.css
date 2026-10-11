@@ -714,7 +714,7 @@ p{text-wrap:pretty}
 .vreview figcaption{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:14px;color:var(--muted)}.vreview figcaption b{color:var(--ink)}
 .vr-badge{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#1E7F4F}
 /* Flash sale (launch party) */
-.announce.sale-on{background:var(--accent);color:var(--ink)}
+.announce.sale-on{background:linear-gradient(90deg,#22B573,#2F7FE0);color:var(--ink)}
 .announce.sale-on .cd{font-variant-numeric:tabular-nums;font-weight:800}
 .sale-price{color:var(--ember)}
 .big-price s,.price s{opacity:.55;font-weight:400}
