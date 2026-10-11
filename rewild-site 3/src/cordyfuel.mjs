@@ -1,7 +1,7 @@
 // /cordyfuel/  "What is CordyFuel™?" long-form sales page for Rewild Energy.
 // Rules: CordyFuel™ is NuCelium's trademark. Our products are "Rewild Energy" and
 // "Rewild Energy Tincture", powered by CordyFuel™. Never call a REWILD product CordyFuel™.
-// The 14.87 mg/g Cordy Cup sample figure appears on this page only (Jade, 2026-10-03).
+// Cordy Cup and cordycepin claims: only what NuCelium states publicly (Jade, 2026-10-11). 7.1 mg/g is from REWILD's own COA.
 import { SITE } from './site.mjs';
 import { PRODUCT_BY_ID, money } from '../netlify/functions/_shared/catalog.mjs';
 import { reviewsSection } from './testimonials.mjs';
@@ -80,13 +80,13 @@ export const cordyfuelPage = {
 <section class="section dark lp"><div class="lp-col">
   <p class="eyebrow">2025 Cordy Cup winner</p>
   <h2 class="h2">This one is different.</h2>
-  <p>In 2025, CordyFuel™ was entered into the Cordy Cup, an international competition that independently tests Cordyceps products for potency.</p>
+  <p>In 2025, CordyFuel™ was entered into the Cordy Cup.</p>
   <p class="lp-big" style="color:#fff">It won.</p>
-  <p>Best Fruiting Body / Full Spectrum. The winning sample measured:</p>
-  <div class="lp-number"><b>14.87 <small>mg/g</small></b><span>cordycepin</span></div>
+  <p>Best Fruiting Body / Full Spectrum. Our grower, NuCelium, reports it as the highest bioactive potency ever recorded in the competition's history. Every batch is standardized to:</p>
+  <div class="lp-number"><b>3+ <small>mg/g</small></b><span>cordycepin</span></div>
   <div class="stats lp-stats">
-    <div class="stat inverse"><b>11X+</b><span>the competition average in that event</span></div>
-    <div class="stat inverse"><b style="color:var(--on-dark-2)">1.34</b><span>mg/g, the competition average</span></div>
+    <div class="stat inverse"><b>7.1</b><span>mg/g, our highest independent lab result to date</span></div>
+    <div class="stat inverse"><b>Every</b><span>batch third-party verified before release</span></div>
   </div>
   ${pull('No clever formulation required.<br>Just an exceptionally potent mushroom.')}
   <div class="row">${cta('Shop Rewild Energy', true)}</div>

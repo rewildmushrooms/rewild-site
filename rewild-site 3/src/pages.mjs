@@ -65,7 +65,7 @@ const CORDYFUEL_SECTION = `<section class="section stone" id="cordyfuel"><div cl
     <div class="stats">
       <div class="stat inverse"><b>3+ mg/g</b><span>Cordycepin minimum. Every batch. Third-party verified.</span></div>
       <div class="stat"><b>7.1 mg/g</b><span>Our highest independent lab result to date</span></div>
-      <div class="stat"><b style="color:#6B6D64">0.1 to 0.5</b><span>mg/g, where most commercial Cordyceps tests</span></div>
+      <div class="stat"><b>2025</b><span>Cordy Cup winner, Best Fruiting Body / Full Spectrum</span></div>
     </div>
     <p>Every batch is third-party tested. Want to see the lab report? <a class="link" href="/contact/?subject=Lab%20results">Just ask</a> and we'll send it.</p>
     <div class="offer" id="cordyfuel-options" role="group" aria-label="Choose your Rewild Energy">
@@ -163,7 +163,7 @@ ${reviewsSection()}
     <h2 class="h2">Rewild Energy,<br>without the powder.</h2>
     <p class="small" style="font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">100 ml · 5 to 10 servings per bottle</p>
     <p class="lead">Same CordyFuel™ Cordyceps. A different way to enjoy it. Simple, portable and easy to work into your day. Even people who don't love the taste of mushrooms tend to love this one.</p>
-    <p>Made with CordyFuel™ <em>Cordyceps militaris</em>. Alcohol-free. Drink it straight, or add it to whatever you're already drinking.</p>
+    <p>Made with CordyFuel™ <em>Cordyceps militaris</em>. Alcohol-free. Nothing added. Drink it straight, or add it to whatever you're already drinking.</p>
     <div class="row"><button type="button" class="btn btn-dark" data-add="tincture">Add the tincture · $30</button><a class="btn btn-outline" href="/shop/cordyceps-tincture/">Details</a></div>
   </div>
   <div><img class="cover wide" src="/img/tincture-river-wide.webp" alt="CordyFuel™ Cordyceps militaris tincture on moss beside a mountain river in the Kootenays" width="1400" height="933" loading="lazy"></div>

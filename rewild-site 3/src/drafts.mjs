@@ -66,7 +66,7 @@ ${WHY_SECTION}
   <div class="stack">
     <p class="eyebrow ember">The proof, in numbers</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Cordyceps you can measure.</h2>
-    <p class="lead">Cordycepin is the compound Cordyceps militaris is known for, so it's the one we use to judge quality. Every lot of CordyFuel™ has to reach 3 mg/g before it ships. Our best independent result so far is 7.1 mg/g. Most commercial Cordyceps tests at 0.1 to 0.5 mg/g.</p>
+    <p class="lead">Cordycepin is the compound Cordyceps militaris is known for, so it's the one we use to judge quality. Every lot of CordyFuel™ has to reach 3 mg/g before it ships. Our best independent result so far is 7.1 mg/g.</p>
     <p class="small muted">CordyFuel™ is a trademark of NuCelium, our BC grower.</p>
     <div class="row"><a class="btn btn-dark" href="/shop/cordyceps-militaris-powder/">Shop Rewild Energy</a><a class="btn btn-outline" href="/lab-results/">All lab results</a></div>
   </div>
