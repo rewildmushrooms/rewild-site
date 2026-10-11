@@ -231,7 +231,7 @@ details.faq .answer{padding-top:12px;color:var(--text)}
 /* Forms */
 .field{display:flex;flex-direction:column;gap:6px}
 .field label{font-size:14px;font-weight:600}
-input[type=email],input[type=text],input[type=password],input[type=number],input[type=date],select,textarea{min-height:48px;padding:0 14px;font:inherit;font-size:16px;border:1.5px solid #C9C8C1;border-radius:2px;background:#fff;color:var(--ink)}
+input[type=email],input[type=text],input[type=password],input[type=number],input[type=date],input[type=tel],input[type=url],input[type=search],select,textarea{min-height:48px;padding:0 14px;font:inherit;font-size:16px;border:1.5px solid #C9C8C1;border-radius:2px;background:#fff;color:var(--ink)}
 textarea{padding:12px 14px;min-height:120px}
 .signup{display:flex;flex-wrap:wrap;gap:12px}
 .signup input{flex:1 1 240px;min-height:52px}
@@ -731,3 +731,15 @@ html.ann-sticky .buybox{top:calc(100px + var(--ann-h,0px))}
 .lp-price{font-size:20px;margin:8px 0 0}.lp-price s{opacity:.5;font-weight:400;margin-right:6px}.lp-price b{color:var(--ember)}
 .lp-left{color:var(--ember);font-weight:700;margin:4px 0 0}
 .lp-grid .card .actions{padding-top:0}
+
+/* Mobile: product page sticky add-to-cart, tighter top, no iOS zoom on cart inputs */
+.mbar{position:fixed;left:0;right:0;bottom:0;z-index:35;display:flex;align-items:center;gap:12px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--line);box-shadow:0 -6px 20px rgba(18,19,16,.08)}
+.mbar[hidden]{display:none}
+.mbar-txt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.mbar-txt b{font-family:var(--display);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mbar-txt span{font-size:15px}
+.mbar .btn{flex:0 0 auto;min-height:48px;padding:0 22px}
+@media (max-width:700px){.section.tight.pdp-sec{padding-top:20px}.pdp-sec .breadcrumb{margin-bottom:14px}.pdp{gap:24px}#promo-code{font-size:16px}details>summary{padding-top:8px;padding-bottom:8px}}
+/* Mobile cart: the whole drawer scrolls so line items are never squeezed out of view */
+@media (max-width:700px),(max-height:760px){.drawer{overflow-y:auto;-webkit-overflow-scrolling:touch}.drawer-head{position:sticky;top:0;background:#fff;z-index:2;padding:14px 20px}.drawer-body{flex:none;overflow:visible;padding:8px 20px}.drawer-foot{padding:14px 20px calc(18px + env(safe-area-inset-bottom));gap:10px}.drawer-foot .promo-rule{font-size:12.5px}}
+@media (max-width:700px){.page-hero.hero-photo.launch-hero{background:linear-gradient(180deg,rgba(18,19,16,.62),rgba(18,19,16,.92)),url(/img/banner-tincture-larches-v2.webp) 70% center/cover no-repeat,#121310}.page-hero.launch-hero .wrap{padding-top:44px;padding-bottom:52px}.launch-hero .h1{font-size:44px!important}.launch-hero .lead{font-size:17px}}
