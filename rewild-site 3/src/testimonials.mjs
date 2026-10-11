@@ -35,7 +35,7 @@ export const TESTIMONIALS = [
     name: 'Jesse F.',
     detail: "Men's Coach · Calgary, AB",
     head: 'I wanted to shovel the whole street',
-    quote: "...during the first snowfall I wanted to shovel my neighbours', the entire street. If it wasn't for having to go to work, I would have.",
+    quote: "It gave me so much energy, that during the first snowfall I wanted to shovel my neighbours', the entire street. If it wasn't for having to go to work, I would have.",
     products: ['energy', 'tincture', 'duo'],
   },
   {
