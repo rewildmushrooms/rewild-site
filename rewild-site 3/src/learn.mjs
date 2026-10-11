@@ -129,8 +129,8 @@ export const GUIDE_BY_PRODUCT = Object.fromEntries(GUIDES.map((g) => [g.productI
 
 export const GROWN = [
   ['Grown in BC', 'Cultivated indoors by our partner grower in British Columbia, using solid-state fermentation on certified organic grain.'],
-  ['The whole organism', 'Each powder contains the fruiting body, mycelium, stroma, natural fibre and the compounds the mycelium releases as it grows, together with the organic grain it grew on.'],
-  ['DNA verified', 'Every lot is identified by DNA (qPCR) and must match an authenticated reference sample of the species on the label.'],
+  ['The whole organism', 'Each powder contains the mycelium, the fruiting body where the species forms one, natural fibre and the compounds the mycelium releases as it grows, together with the organic grain it grew on.'],
+  ['DNA verified', 'Every lot is confirmed to be the species on the label, by DNA testing or chemical fingerprinting, against an authenticated reference sample.'],
   ['Made to last', 'Water activity is kept under 0.6 so the powder stays dry and stable for three years from production.'],
 ];
 

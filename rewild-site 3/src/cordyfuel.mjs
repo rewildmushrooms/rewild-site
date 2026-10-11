@@ -18,7 +18,7 @@ const pull = (text, by = '') =>
 
 const FAQ = [
   ['What is CordyFuel™?', 'CordyFuel™ is a full-spectrum Cordyceps militaris (fruiting body and mycelium) grown in Coldstream, British Columbia, and standardized to a minimum of 3 mg/g cordycepin in every batch. It won Best Fruiting Body / Full Spectrum at the 2025 Cordy Cup. Rewild Energy and Rewild Energy Tincture are powered by CordyFuel™.'],
-  ['Is CordyFuel™ a blend?', 'No. It is 100% Cordyceps militaris. No proprietary blend, nothing added, nothing else in the bag.'],
+  ['Is CordyFuel™ a blend?', 'No. It is a single species, Cordyceps militaris, grown on organic sorghum and milled whole. No proprietary blend and nothing added.'],
   ['How do I take Rewild Energy?', 'Powder: ½ teaspoon in a smoothie, elixir, soup, tea, coffee, or hot water and honey. In a warm drink, add a little coconut oil or butter and blend it so the powder mixes in smooth. Tincture: drink it straight or add it to a drink, 5 to 10 servings per bottle.'],
 ];
 
@@ -74,7 +74,7 @@ export const cordyfuelPage = {
   <p class="lp-big">But not all Cordyceps is the same.</p>
   <p>CordyFuel™ is grown in British Columbia using a carefully selected strain of <em>Cordyceps militaris</em> and cultivated for unusually high levels of naturally occurring cordycepin.</p>
   <p>Nothing is hidden behind a proprietary blend. What you see is what you get.</p>
-  <p class="lp-stamp">100% Cordyceps militaris.<span>That's it.</span></p>
+  <p class="lp-stamp">One mushroom.<span>Nothing added.</span></p>
 </div></section>
 
 <section class="section dark lp"><div class="lp-col">

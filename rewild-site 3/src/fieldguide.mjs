@@ -5,7 +5,7 @@ import { PRODUCT_BY_ID } from '../netlify/functions/_shared/catalog.mjs';
 
 const PICKS = [
   { id: 'energy', when: 'Mornings and before you move', taste: 'Mild and slightly sweet. Caramel, toasty.', how: 'Most people use it earlier in the day, before training or a long afternoon. It disappears into coffee, matcha, smoothies and oats.', learn: '/learn/cordyceps/' },
-  { id: 'clarity', when: 'Workdays and deep focus time', taste: 'Gentle and savoury. Delicate, earthy.', how: 'Many people add it to their morning cup, or before deep work. Works in coffee, tea, soups, sauces and smoothies.', learn: '/learn/lions-mane/' },
+  { id: 'clarity', when: 'Workdays and quiet mornings', taste: 'Gentle and savoury. Delicate, earthy.', how: 'Many people add it to their morning cup, or before deep work. Works in coffee, tea, soups, sauces and smoothies.', learn: '/learn/lions-mane/' },
   { id: 'strength', when: 'Any time of day', taste: 'Smooth and a little smoky. Toasty, nutty.', how: 'Try it in coffee, as a tea with a splash of milk and maple, or stirred into a smoothie.', learn: '/learn/chaga/' },
   { id: 'peace', when: 'The quiet end of the day', taste: 'Bitter and bold. Herbal, woody.', how: 'Pair it with something rich: hot cacao, a chai, golden milk or a dark roast. Many people save it for the evening.', learn: '/learn/reishi/' },
 ];

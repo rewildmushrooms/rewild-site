@@ -111,7 +111,7 @@ export const POSTS = [
     imageAlt: 'Bright orange Cordyceps militaris fruiting bodies',
     title: 'From Grain To Powder: How Our Cordyceps Is Grown In BC',
     seoTitle: 'How Cordyceps Militaris Is Grown In BC | CordyFuel™ | REWILD Journal',
-    description: 'How the CordyFuel™ Cordyceps militaris in Rewild Energy is grown in BC: organic sorghum, 4 to 6 weeks of growing, whole-organism harvest, milling and lab tests.',
+    description: 'How the CordyFuel™ Cordyceps militaris in Rewild Energy is grown in BC: organic sorghum, several weeks of growing, whole-organism harvest, milling and lab tests.',
     date: '2026-10-05',
     modified: '2026-10-05',
     readMins: 5,
@@ -129,7 +129,7 @@ export const POSTS = [
 <li><strong>Bag.</strong> The grain is cooled and portioned into grow bags.</li>
 <li><strong>Sterilize.</strong> The bags go back through the autoclave so nothing unwanted survives.</li>
 <li><strong>Inoculate.</strong> Each bag is seeded with living mycelium from a fully mature bag.</li>
-<li><strong>Grow.</strong> The Cordyceps grows for 4 to 6 weeks. Bright orange fruiting bodies push up out of the grain.</li>
+<li><strong>Grow.</strong> The Cordyceps grows for several weeks. Bright orange fruiting bodies push up out of the grain.</li>
 <li><strong>Harvest.</strong> The bags are opened onto trays and the whole colonized block is broken apart.</li>
 <li><strong>Dry.</strong> Everything goes into the dryer together: the mycelium, the young and mature fruiting bodies, and the compounds they released into the grain.</li>
 <li><strong>Mill.</strong> The dried material is milled into a fine powder.</li>
@@ -140,7 +140,7 @@ export const POSTS = [
 <p>It also means the powder honestly includes some of the grain the mycelium grew on. We'd rather tell you that than pretend otherwise. (There's more on this in <a href="/fruiting-body-vs-mycelium-whats-the-difference-in-functional-mushroom-products/">fruiting body vs mycelium</a>.)</p>
 <h2>How Every Batch Is Checked</h2>
 <p>CordyFuel™ is standardized to a minimum of 3 mg/g of cordycepin in every batch, verified by third-party testing before release. Each lot is also checked for species identity, beta-glucans and polysaccharides, seven microbial tests and gluten.</p>
-<p>In 2025, CordyFuel™ won Best Fruiting Body / Full Spectrum at the Cordy Cup in Sweden. We're proud to sell it.</p>
+<p>In 2025, CordyFuel™ won Best Fruiting Body / Full Spectrum at the Cordy Cup. We're proud to sell it.</p>
 <p>You can see the current numbers for every product on our <a href="/lab-results/">lab results</a> page.</p>
 <h2>Why This Matters To Us</h2>
 <p>We started REWILD because we wanted to know exactly what was in our mug. Who grew it. Where. On what. How it was tested. Knowing the answer to every one of those questions is the whole point.</p>

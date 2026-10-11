@@ -61,7 +61,7 @@ const CORDYFUEL_SECTION = `<section class="section stone" id="cordyfuel"><div cl
   <div class="stack">
     <p class="eyebrow ember">If you try one thing, start here</p>
     <h2 class="h2">This is<br>Rewild Energy.</h2>
-    <p class="lead">Rewild Energy is powered by CordyFuel™ <em>Cordyceps militaris</em>. In 2025 CordyFuel™ won Best Fruiting Body / Full Spectrum at the Cordy Cup in Sweden. The numbers are hard to ignore.</p>
+    <p class="lead">Rewild Energy is powered by CordyFuel™ <em>Cordyceps militaris</em>. In 2025 CordyFuel™ won Best Fruiting Body / Full Spectrum at the Cordy Cup. The numbers are hard to ignore.</p>
     <div class="stats">
       <div class="stat inverse"><b>3+ mg/g</b><span>Cordycepin minimum. Every batch. Third-party verified.</span></div>
       <div class="stat"><b>7.1 mg/g</b><span>Our highest independent lab result to date</span></div>
@@ -163,7 +163,7 @@ ${reviewsSection()}
     <h2 class="h2">Rewild Energy,<br>without the powder.</h2>
     <p class="small" style="font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">100 ml · 5 to 10 servings per bottle</p>
     <p class="lead">Same CordyFuel™ Cordyceps. A different way to enjoy it. Simple, portable and easy to work into your day. Even people who don't love the taste of mushrooms tend to love this one.</p>
-    <p>100% Cordyceps militaris. Alcohol-free. Nothing added. Drink it straight, or add it to whatever you're already drinking.</p>
+    <p>Made with CordyFuel™ <em>Cordyceps militaris</em>. Alcohol-free. Drink it straight, or add it to whatever you're already drinking.</p>
     <div class="row"><button type="button" class="btn btn-dark" data-add="tincture">Add the tincture · $30</button><a class="btn btn-outline" href="/shop/cordyceps-tincture/">Details</a></div>
   </div>
   <div><img class="cover wide" src="/img/tincture-river-wide.webp" alt="CordyFuel™ Cordyceps militaris tincture on moss beside a mountain river in the Kootenays" width="1400" height="933" loading="lazy"></div>
@@ -225,7 +225,7 @@ ${CORDYFUEL_SECTION}
     <p class="eyebrow">Alcohol-free Cordyceps tincture</p>
     <h2 class="h2">Rewild Energy,<br>without the powder.</h2>
     <p class="lead" style="color:var(--on-dark)">The same award-winning CordyFuel™ <em>Cordyceps militaris</em>, in a bottle that goes wherever you go. Even people who don't love the taste of mushrooms tend to love this one.</p>
-    <ul class="lp-badges" aria-label="At a glance"><li>Alcohol-free</li><li>100% Cordyceps militaris</li><li>Caffeine-free</li><li>Grown in BC</li></ul>
+    <ul class="lp-badges" aria-label="At a glance"><li>Alcohol-free</li><li>Made with CordyFuel™</li><li>Caffeine-free</li><li>Grown in BC</li></ul>
     <ul class="ticks" style="font-size:17px">
       <li>Drink it straight, or add it to water, coffee or a smoothie</li>
       <li>Fits in a pocket, a gym bag or a ski jacket</li>
@@ -260,22 +260,22 @@ const PRODUCT_DETAILS = {
     faqs: [
       ['What is cordycepin?', 'Cordycepin is a naturally occurring compound found in Cordyceps militaris. We use it as a marker of quality and consistency: every batch of CordyFuel™ is tested and standardized to a minimum of 3 mg/g.'],
       ['Does CordyFuel™ contain caffeine?', 'No. CordyFuel™ is pure Cordyceps militaris powder with no caffeine or stimulants added.'],
-      ['Cordyceps militaris vs Cordyceps sinensis?', 'Wild Cordyceps sinensis is rare and expensive. Cordyceps militaris is a related species that can be cultivated, and it naturally contains cordycepin. CordyFuel™ is 100% Cordyceps militaris.'],
+      ['Cordyceps militaris vs Cordyceps sinensis?', 'Wild Cordyceps sinensis is rare and expensive. Cordyceps militaris is a related species that can be cultivated, and it naturally contains cordycepin. CordyFuel™ is Cordyceps militaris, a single species.'],
     ],
   },
   clarity: {
     intro: `<p>Lion's Mane (<em>Hericium erinaceus</em>) grows in long, cascading white spines on hardwood trees. It has been eaten and respected in traditional kitchens for generations.</p><p>Ours is grown in British Columbia as a full-spectrum powder: fruiting body and mycelium together. Mild, a little sweet and easy to add to coffee, tea or a smoothie.</p>`,
-    ticks: ['Whole mushroom food powder · Full spectrum', "100% Lion's Mane, nothing else in the bag", 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added'],
+    ticks: ['Whole mushroom food powder · Full spectrum', 'Just the mushroom and the grain it grew on', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added'],
     faqs: [["What does Lion's Mane taste like?", 'Mild and slightly sweet. It disappears into coffee, cacao and smoothies.']],
   },
   strength: {
     intro: `<p>Chaga (<em>Inonotus obliquus</em>) has quietly grown in northern forests for thousands of years, taking its character from its host and the forest around it.</p><p>Ours is grown in British Columbia as a full-spectrum powder. Earthy, rich and a little vanilla-like. Perfect in coffee, tea or broth.</p>`,
-    ticks: ['Whole mushroom food powder · Full spectrum', '100% Chaga, nothing else in the bag', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added'],
+    ticks: ['Whole mushroom food powder · Full spectrum', 'Just the mushroom and the grain it grew on', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added'],
     faqs: [['Is your Chaga wild harvested?', 'No. It is cultivated indoors by our partner grower in British Columbia, so no wild birch forests are stripped and every batch can be tested and traced.']],
   },
   peace: {
     intro: `<p>Reishi (<em>Ganoderma lucidum</em>) has been revered for centuries as the mushroom of stillness. Glossy, woody and deeply rooted in tradition.</p><p>Ours is grown in British Columbia as a full-spectrum powder. Bitter and grounding. Many people enjoy it in an evening tea or cacao.</p>`,
-    ticks: ['Whole mushroom food powder · Full spectrum', '100% Reishi, nothing else in the bag', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added'],
+    ticks: ['Whole mushroom food powder · Full spectrum', 'Just the mushroom and the grain it grew on', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added'],
     faqs: [['Reishi tastes bitter. How do I use it?', 'Pair it with something rich: cacao, a little honey, or a nut milk latte. A small amount goes a long way.']],
   },
   tincture: {
@@ -289,7 +289,7 @@ const COMMON_FAQS = [
   ['What does full spectrum mean?', 'It means the powder includes both the fruiting body (the mushroom you can see) and the mycelium (the root-like network). Ours is grown on certified organic sorghum in British Columbia by our partner grower. <a href="/fruiting-body-vs-mycelium-whats-the-difference-in-functional-mushroom-products/">Read more</a>.'],
   ['How long does a bag last?', 'A 100g bag holds roughly 70 to 100 half-teaspoon servings, so about two to three months of daily use.'],
   ['What if I don\u2019t like it?', `Our 100% Risk-Free Guarantee has you covered. ${GUARANTEE_TEXT} <a href="/shipping/#guarantee">How it works</a>.`],
-  ['How should I store it?', 'In a cool, dry place away from direct sunlight. Reseal the pouch after use. Best within 3 years of purchase.'],
+  ['How should I store it?', 'In a cool, dry place away from direct sunlight. Reseal the pouch after use. Best within 3 years of production.'],
   ['Is this medical advice?', 'No. REWILD mushroom powders are sold as foods, not medicine. Talk to your healthcare practitioner before use if you are pregnant, nursing or taking medication.'],
 ];
 
@@ -405,11 +405,11 @@ function productPage(p) {
   <div class="stack">
     <h2 class="h3" style="font-size:24px">On the label</h2>
     <dl class="spec">
-      <dt>Ingredients</dt><dd>${p.isTincture ? `CordyFuel™ ${esc(p.latin)} (alcohol-free tincture)` : `Full spectrum (fruiting body + mycelium) ${esc(p.commonName)} mushroom powder (<em>${esc(p.latin)}</em>)`}</dd>
+      <dt>Ingredients</dt><dd>${p.isTincture ? `CordyFuel™ ${esc(p.latin)} (alcohol-free tincture)` : `Full spectrum ${p.id === 'strength' ? '' : '(fruiting body + mycelium) '}${esc(p.commonName)} mushroom powder (<em>${esc(p.latin)}</em>)`}</dd>
       <dt>How to use</dt><dd>${p.isTincture ? USE_TEXT.tincture : USE_TEXT.powder}</dd>
       <dt>Grown</dt><dd>British Columbia, Canada${p.isTincture ? '' : ', on certified organic sorghum'}, by our partner grower</dd>
       <dt>Storage</dt><dd>Cool, dry place away from direct sunlight. Reseal after use.</dd>
-      <dt>Best before</dt><dd>Use within 3 years of purchase.</dd>
+      <dt>Best before</dt><dd>3 years from production.</dd>
       <dt>Testing</dt><dd>Third-party tested. ${lab && lab.pdf ? `<a href="${lab.pdf}">Read the current COA</a>.` : '<a href="/lab-results/">See lab results</a>.'}</dd>
       ${GUIDE_BY_PRODUCT[p.isTincture ? 'energy' : p.id] ? `<dt>Learn more</dt><dd><a href="/learn/${GUIDE_BY_PRODUCT[p.isTincture ? 'energy' : p.id].slug}/">The ${esc(GUIDE_BY_PRODUCT[p.isTincture ? 'energy' : p.id].name)} guide</a>: what it is, where it grows and how it's tested.</dd>` : ''}
     </dl>

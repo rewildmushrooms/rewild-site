@@ -48,7 +48,7 @@ export const PROCESS = [
   ['Bag', 'The grain is cooled and portioned into grow bags.'],
   ['Sterilize', 'Bags go back through the autoclave so nothing unwanted survives.'],
   ['Inoculate', 'Each bag is seeded with living mycelium from a fully mature bag.'],
-  ['Grow', 'The mushrooms grow for 4 to 6 weeks, depending on the species.'],
+  ['Grow', 'The mushrooms grow for several weeks, depending on the species.'],
   ['Harvest', 'Bags are opened onto trays and the whole colonized block is broken apart.'],
   ['Dry', 'Everything goes into a dryer: mycelium, primordia, fruiting bodies and the compounds they release.'],
   ['Mill', 'Dried material is milled into a fine powder.'],
