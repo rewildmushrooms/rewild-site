@@ -743,3 +743,5 @@ html.ann-sticky .buybox{top:calc(100px + var(--ann-h,0px))}
 /* Mobile cart: the whole drawer scrolls so line items are never squeezed out of view */
 @media (max-width:700px),(max-height:760px){.drawer{overflow-y:auto;-webkit-overflow-scrolling:touch}.drawer-head{position:sticky;top:0;background:#fff;z-index:2;padding:14px 20px}.drawer-body{flex:none;overflow:visible;padding:8px 20px}.drawer-foot{padding:14px 20px calc(18px + env(safe-area-inset-bottom));gap:10px}.drawer-foot .promo-rule{font-size:12.5px}}
 @media (max-width:700px){.page-hero.hero-photo.launch-hero{background:linear-gradient(180deg,rgba(18,19,16,.62),rgba(18,19,16,.92)),url(/img/banner-tincture-larches-v2.webp) 70% center/cover no-repeat,#121310}.page-hero.launch-hero .wrap{padding-top:44px;padding-bottom:52px}.launch-hero .h1{font-size:44px!important}.launch-hero .lead{font-size:17px}}
+
+.lp-tier{font-family:var(--display);font-weight:800;font-size:clamp(20px,2.4vw,28px);color:var(--accent);text-transform:uppercase;letter-spacing:.02em;margin:0}.lp-tier b{color:#fff}
