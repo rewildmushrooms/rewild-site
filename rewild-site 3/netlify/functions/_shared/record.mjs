@@ -15,6 +15,7 @@ import { putIndex, appendLedger, customerSummary, orderSummary } from './data.mj
 import { markPurchased, useRecoveryCode, RECOVERY_RE } from './carts.mjs';
 import { sendTelegram, orderAlertText, telegramReady } from './telegram.mjs';
 import { recordReferralOrder, referralFor, sharePage } from './referrals.mjs';
+import { recordSaleUnits } from './sale.mjs';
 
 const amt = (m) => Number(m?.amount || 0);
 export const emailKey = (e) => String(e || '').trim().toLowerCase();
@@ -60,6 +61,7 @@ export function orderRecord(o, email, name) {
     shipTo: shipToFrom(o),
     newsletter: o.metadata?.newsletter === 'yes',
     state: o.state,
+    sale: o.metadata?.sale || null,
     source: 'online',
   };
 }
@@ -125,6 +127,9 @@ export async function recordPaidOrder(order, opts, deps = {}) {
   }
   if (!steps.code && rec.code && RECOVERY_RE.test(rec.code)) {
     try { await useRecoveryCode(rec.code, order.id); steps.code = true; } catch (e) { console.error('code mark failed', e.message); }
+  }
+  if (!steps.sale && rec.sale) {
+    try { await recordSaleUnits(rec.sale, rec.units, rec.id); steps.sale = true; } catch (e) { console.error('sale stock count failed', e.message); }
   }
   if (!steps.referral && rec.code && !RECOVERY_RE.test(rec.code)) {
     try { await recordReferralOrder(rec); steps.referral = true; } catch (e) { console.error('referral record failed', e.message); }

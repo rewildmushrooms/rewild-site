@@ -20,11 +20,45 @@ export const OFFERS = {
 
 export const BUNDLE_CODE_OVER = 20; // a % code must beat this to touch a bundle
 
+// Flash sales. While one is on, every product (bundles too) is that % off its full value, and nothing else applies:
+// no codes, no stock-up, no add-on, no free gift. Free shipping counts what they actually pay. At most maxEach of each
+// product per order (bundles count their parts). stockEach units of each product are sold at the sale price; the
+// checkout checks what is left. Times are UTC. earlyStart: people with the early-access link can buy from then.
+export const SALES = [
+  { id: 'launch40', name: 'Launch party 40% off', percent: 40, earlyStart: '2026-10-17T03:00:00Z', start: '2026-10-17T16:00:00Z', end: '2026-10-19T16:00:00Z', maxEach: 3, stockEach: 40,
+    ids: ['energy', 'clarity', 'strength', 'peace', 'tincture'] },
+];
+// The sale that matters right now (live, or early access, or the next one coming up). phase: 'soon' | 'early' | 'live'
+export function saleNow(now = Date.now(), early = false) {
+  for (const s of SALES) {
+    const es = Date.parse(s.earlyStart || s.start), st = Date.parse(s.start), en = Date.parse(s.end);
+    if (now >= en) continue;
+    if (now >= st) return { ...s, phase: 'live' };
+    if (now >= es) return { ...s, phase: early ? 'live' : 'early' };
+    return { ...s, phase: 'soon' };
+  }
+  return null;
+}
+// The sale to price with: only when it is live for this shopper.
+export const activeSale = (now = Date.now(), early = false) => { const s = saleNow(now, early); return s && s.phase === 'live' ? s : null; };
+// Units of each product in a cart (bundles opened up).
+export function cartUnits(items) {
+  const out = {};
+  for (const it of items || []) {
+    const qty = Math.floor(Number(it.qty)) || 0;
+    const parts = OFFERS.bundles[it.id] || { [it.id]: 1 };
+    for (const [k, n] of Object.entries(parts)) out[k] = (out[k] || 0) + n * qty;
+  }
+  return out;
+}
+
 const hasTincture = (items) => items.some((i) => i.id === 'tincture' || i.id === 'duo');
 
 // items: [{id, qty}]   catalog: { byId: {id: {price}}, shipping: {CA: {flatRate, freeOver, quoted}} }
 // promo: validated code or null { code, percentOff, amountOff, minimumAmount }   addon: true if the add-on box is ticked
-export function priceCart(items, country, catalog, promo = null, addon = false) {
+// sale: activeSale() result or null (see SALES)
+export function priceCart(items, country, catalog, promo = null, addon = false, sale = null) {
+  if (sale) return priceSale(items, country, catalog, sale, promo);
   const byId = catalog.byId;
   const ship = catalog.shipping[country] || catalog.shipping.CA;
   const lines = [];
@@ -108,9 +142,39 @@ export function priceCart(items, country, catalog, promo = null, addon = false) 
   };
 }
 
+function priceSale(items, country, catalog, sale, promo) {
+  const byId = catalog.byId;
+  const ship = catalog.shipping[country] || catalog.shipping.CA;
+  const lines = [];
+  for (const it of items || []) {
+    const p = byId[it.id];
+    const qty = Math.floor(Number(it.qty));
+    if (!p || !(qty >= 1 && qty <= 20)) continue;
+    const parts = OFFERS.bundles[it.id];
+    const listUnit = parts ? Object.entries(parts).reduce((a, [k, n]) => a + byId[k].price * n, 0) : p.price;
+    lines.push({ id: it.id, qty, unit: p.price, listUnit, saleUnit: Math.round(listUnit * (100 - sale.percent) / 100) });
+  }
+  const itemsTotal = lines.reduce((a, l) => a + l.unit * l.qty, 0);
+  const listTotal = lines.reduce((a, l) => a + l.listUnit * l.qty, 0);
+  const productsTotal = lines.reduce((a, l) => a + l.saleUnit * l.qty, 0);
+  const units = cartUnits(lines);
+  const overCap = Object.keys(units).filter((k) => units[k] > sale.maxEach);
+  const free = ship.freeOver != null && productsTotal >= ship.freeOver; // counts what they actually pay
+  const shipping = lines.length === 0 ? 0 : ship.quoted ? 0 : free ? 0 : ship.flatRate;
+  const next = ship.freeOver != null && !ship.quoted && productsTotal < ship.freeOver ? { kind: 'shipping', short: ship.freeOver - productsTotal, pct: Math.min(100, Math.round(productsTotal / ship.freeOver * 100)) } : null;
+  return {
+    lines, itemsTotal, listTotal, bundleSaving: 0, stockUpSaving: 0, bags: 0, codeApplied: null, codeBeaten: false, bundleKept: false,
+    codeNote: promo ? 'sale' : '', discount: itemsTotal - productsTotal, discountName: sale.name,
+    addonEligible: false, addonApplied: false, addonUnit: 0, addonFull: byId[OFFERS.addon.id].price,
+    gift: false, paid: productsTotal, shipping, free, total: productsTotal + shipping, quoted: !!ship.quoted, freeOver: ship.freeOver,
+    savings: listTotal - productsTotal, next, sale: { id: sale.id, percent: sale.percent, maxEach: sale.maxEach }, units, overCap,
+  };
+}
+
 // One cart suggestion ("pairs well with"). Returns null or { kind, ids, add, text, cta }.
 const PAIRS = { energy: 'peace', peace: 'energy', clarity: 'strength', strength: 'clarity' };
-export function suggestion(items, catalog) {
+export function suggestion(items, catalog, sale = null) {
+  if (sale) return null;
   const byId = catalog.byId;
   const ids = new Set((items || []).map((i) => i.id));
   if (ids.has('all4')) return null;
