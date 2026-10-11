@@ -54,5 +54,5 @@ export async function saleInfo(now = Date.now(), early = '') {
   if (!s) return { sale: null };
   const earlyValid = earlyOk(s.id, early);
   const left = await saleRemaining(s).catch(() => null);
-  return { sale: { id: s.id, name: s.name, percent: s.percent, earlyStart: s.earlyStart, start: s.start, end: s.end, maxEach: s.maxEach, stockEach: s.stockEach, phase: s.phase, left, ...(early ? { earlyOk: earlyValid } : {}) } };
+  return { sale: { id: s.id, name: s.name, percent: s.percent, tier: s.tier || null, earlyStart: s.earlyStart, start: s.start, end: s.end, maxEach: s.maxEach, stockEach: s.stockEach, phase: s.phase, left, ...(early ? { earlyOk: earlyValid } : {}) } };
 }

@@ -25,7 +25,7 @@ export const BUNDLE_CODE_OVER = 20; // a % code must beat this to touch a bundle
 // product per order (bundles count their parts). stockEach units of each product are sold at the sale price; the
 // checkout checks what is left. Times are UTC. earlyStart: people with the early-access link can buy from then.
 export const SALES = [
-  { id: 'launch40', name: 'Launch party 40% off', percent: 40, earlyStart: '2026-10-17T03:00:00Z', start: '2026-10-17T16:00:00Z', end: '2026-10-19T16:00:00Z', maxEach: 3, stockEach: 40,
+  { id: 'launch40', name: 'Launch party 33% off', percent: 33, tier: { at: 33300, percent: 40 }, earlyStart: '2026-10-17T03:00:00Z', start: '2026-10-17T16:00:00Z', end: '2026-10-19T16:00:00Z', maxEach: 3, stockEach: 40,
     ids: ['energy', 'clarity', 'strength', 'peace', 'tincture'] },
 ];
 // The sale that matters right now (live, or early access, or the next one coming up). phase: 'soon' | 'early' | 'live'
@@ -152,8 +152,13 @@ function priceSale(items, country, catalog, sale, promo) {
     if (!p || !(qty >= 1 && qty <= 20)) continue;
     const parts = OFFERS.bundles[it.id];
     const listUnit = parts ? Object.entries(parts).reduce((a, [k, n]) => a + byId[k].price * n, 0) : p.price;
-    lines.push({ id: it.id, qty, unit: p.price, listUnit, saleUnit: Math.round(listUnit * (100 - sale.percent) / 100) });
+    lines.push({ id: it.id, qty, unit: p.price, listUnit });
   }
+  // Tier: carts worth $333+ at regular prices get the higher percent on everything.
+  const listValue = lines.reduce((a, l) => a + l.listUnit * l.qty, 0);
+  const tier = sale.tier && listValue >= sale.tier.at;
+  const pct = tier ? sale.tier.percent : sale.percent;
+  for (const l of lines) l.saleUnit = Math.round(l.listUnit * (100 - pct) / 100);
   const itemsTotal = lines.reduce((a, l) => a + l.unit * l.qty, 0);
   const listTotal = lines.reduce((a, l) => a + l.listUnit * l.qty, 0);
   const productsTotal = lines.reduce((a, l) => a + l.saleUnit * l.qty, 0);
@@ -161,13 +166,14 @@ function priceSale(items, country, catalog, sale, promo) {
   const overCap = Object.keys(units).filter((k) => units[k] > sale.maxEach);
   const free = ship.freeOver != null && productsTotal >= ship.freeOver; // counts what they actually pay
   const shipping = lines.length === 0 ? 0 : ship.quoted ? 0 : free ? 0 : ship.flatRate;
-  const next = ship.freeOver != null && !ship.quoted && productsTotal < ship.freeOver ? { kind: 'shipping', short: ship.freeOver - productsTotal, pct: Math.min(100, Math.round(productsTotal / ship.freeOver * 100)) } : null;
+  let next = ship.freeOver != null && !ship.quoted && productsTotal < ship.freeOver ? { kind: 'shipping', short: ship.freeOver - productsTotal, pct: Math.min(100, Math.round(productsTotal / ship.freeOver * 100)) } : null;
+  if (!next && sale.tier && !tier && lines.length) next = { kind: 'tier', short: sale.tier.at - listTotal, pct: Math.min(100, Math.round(listTotal / sale.tier.at * 100)), percent: sale.tier.percent };
   return {
     lines, itemsTotal, listTotal, bundleSaving: 0, stockUpSaving: 0, bags: 0, codeApplied: null, codeBeaten: false, bundleKept: false,
-    codeNote: promo ? 'sale' : '', discount: itemsTotal - productsTotal, discountName: sale.name,
+    codeNote: promo ? 'sale' : '', discount: itemsTotal - productsTotal, discountName: tier ? `Launch party ${pct}% off ($${sale.tier.at / 100}+)` : sale.name,
     addonEligible: false, addonApplied: false, addonUnit: 0, addonFull: byId[OFFERS.addon.id].price,
     gift: false, paid: productsTotal, shipping, free, total: productsTotal + shipping, quoted: !!ship.quoted, freeOver: ship.freeOver,
-    savings: listTotal - productsTotal, next, sale: { id: sale.id, percent: sale.percent, maxEach: sale.maxEach }, units, overCap,
+    savings: listTotal - productsTotal, next, sale: { id: sale.id, percent: pct, base: sale.percent, tier: sale.tier || null, tierOn: !!tier, maxEach: sale.maxEach }, units, overCap,
   };
 }
 
