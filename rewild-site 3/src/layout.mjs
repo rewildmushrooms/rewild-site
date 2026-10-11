@@ -236,6 +236,7 @@ ${page.body}
 </div>
 <script src="/js/catalog.js?v=${SITE.build}"></script>
 <script src="/js/pricing.js?v=${SITE.build}" defer></script>
+<script src="/js/sale.js?v=${SITE.build}" defer></script>
 <script src="/js/cart.js?v=${SITE.build}" defer></script>
 <button type="button" class="to-top" id="to-top" aria-label="Back to top"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 14l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 ${page.scripts || ''}

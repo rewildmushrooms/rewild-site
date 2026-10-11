@@ -10,6 +10,7 @@ import { resources } from './resources.mjs';
 import { GUIDES, GUIDE_BY_PRODUCT, GROWN, CLEAN, MICRO, HEAVY } from './learn.mjs';
 import { DRAFT_PAGES, WHY_SECTION } from './drafts.mjs';
 import { referPage, reviewPage } from './refer.mjs';
+import { launchPage } from './launch.mjs';
 
 const powders = PRODUCTS.filter((p) => !p.isTincture && !p.isBundle);
 const SELLABLE = PRODUCTS.filter((p) => !p.isBundle);
@@ -48,7 +49,7 @@ function productCard(p, { headingLevel = 3 } = {}) {
       <div class="dot-label"><span class="dot" style="background:${p.color}"></span><span>${esc(p.mushroom)}</span></div>
       <${h}><a href="/shop/${p.slug}/">${esc(p.name)}</a></${h}>
       <div class="latin">${esc(p.latin)}</div>
-      <div class="price-line">${esc(p.format)} · <span class="price">${money(p.price)}</span></div>
+      <div class="price-line">${esc(p.format)} · <span class="price" data-pid="${p.id}" data-list="${p.price}">${money(p.price)}</span></div>
     </div>
     <div class="actions"><button type="button" class="btn btn-dark" data-add="${p.id}">Add to cart</button><a class="btn btn-outline" href="/shop/${p.slug}/">Details</a></div>
   </article>`;
@@ -385,11 +386,12 @@ function productPage(p) {
       <h1 class="h1" style="font-size:clamp(38px,4.4vw,58px)">${esc(p.name)}<span class="h1-sub">${esc(p.isTincture ? 'Alcohol-free Cordyceps militaris tincture' : `Organic ${p.commonName} mushroom powder`)}</span></h1>
       <p class="latin" style="font-size:17px">${esc(p.latin)} · ${esc(p.format)}</p>
       <p class="lead">${esc(p.tagline)}</p>
-      <div class="big-price">${money(p.price)} <span class="small muted" style="font-family:var(--body);font-weight:400;letter-spacing:0;text-transform:none">CAD</span></div>
+      <div class="big-price"><span data-pid="${p.id}" data-list="${p.price}">${money(p.price)}</span> <span class="small muted" style="font-family:var(--body);font-weight:400;letter-spacing:0;text-transform:none">CAD</span></div>
       <div class="row">
         <div class="qty" role="group" aria-label="Quantity"><button type="button" data-qty-step="-1" data-target="#qty" aria-label="Decrease">&minus;</button><input id="qty" type="number" min="1" max="20" value="1" aria-label="Quantity"><button type="button" data-qty-step="1" data-target="#qty" aria-label="Increase">+</button></div>
         <button type="button" class="btn btn-yellow" style="flex:1" data-add="${p.id}" data-qty-from="#qty">Add to cart</button>
       </div>
+      <p class="small sale-left" data-sale-left="${p.id}" hidden></p>
       <p class="small muted">Free shipping in Canada over $175 · $20 flat rate under that · <a href="/shipping/">US shipping quoted per order</a></p>
       ${guarantee(' compact')}
       <p class="small muted">Not sure this is the one? <a class="link" href="/build-your-stack/">Build your stack</a>. About a minute.</p>
@@ -995,5 +997,6 @@ export const PAGES = [
   ...DRAFT_PAGES,
   referPage,
   reviewPage,
+  launchPage,
   notFound,
 ];
