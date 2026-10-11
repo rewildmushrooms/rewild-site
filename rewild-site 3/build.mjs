@@ -6,6 +6,7 @@ import { PAGES } from './src/pages.mjs';
 import { layout } from './src/layout.mjs';
 import { SITE } from './src/site.mjs';
 import { PRODUCTS, SHIPPING } from './netlify/functions/_shared/catalog.mjs';
+import { SALES } from './netlify/functions/_shared/pricing.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const dist = join(root, 'dist');
@@ -26,7 +27,7 @@ async function build() {
   await writeFile(join(dist, 'js/catalog.js'), `window.REWILD_CATALOG=${JSON.stringify(browserCatalog)};\n`);
   // Browser copy of the pricing engine (same file the checkout uses, so prices always match).
   const pricingSrc = (await readFile(join(root, 'netlify/functions/_shared/pricing.mjs'), 'utf8')).replace(/^export /gm, '');
-  await writeFile(join(dist, 'js/pricing.js'), `(function(){\n${pricingSrc}\nwindow.REWILD_PRICING={priceCart,suggestion,OFFERS};\n})();\n`);
+  await writeFile(join(dist, 'js/pricing.js'), `(function(){\n${pricingSrc}\nwindow.REWILD_PRICING={priceCart,suggestion,OFFERS,SALES,saleNow,activeSale,cartUnits};\n})();\n`);
 
   const imgDir = join(root, 'public/img');
   const small = new Set((await readdir(imgDir)).filter((f) => f.endsWith('-640.webp')));
@@ -60,6 +61,8 @@ async function build() {
   await writeFile(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`);
   // Google Merchant Center product feed (free Shopping listings). Only products with their own page.
   const x = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[c]));
+  // Flash sale prices go in the feed with their dates, so Google shows them only during the sale.
+  const feedSale = SALES.find((s) => Date.parse(s.end) > Date.now()) || null;
   const FEED_TITLES = {
     energy: 'Organic Cordyceps Militaris Mushroom Powder, CordyFuel, 100g | REWILD Energy',
     clarity: "Organic Lion's Mane Mushroom Powder, 100g, Grown in BC | REWILD Clarity",
@@ -76,7 +79,7 @@ async function build() {
 ${(p.gallery || []).filter((g) => g !== p.image).slice(0, 5).map((g) => `    <g:additional_image_link>${SITE.url}${g}</g:additional_image_link>`).join('\n')}
     <g:availability>in_stock</g:availability>
     <g:price>${(p.price / 100).toFixed(2)} CAD</g:price>
-    <g:brand>REWILD Mushrooms</g:brand>
+${feedSale && feedSale.ids.includes(p.id) ? `    <g:sale_price>${(Math.round(p.price * (100 - feedSale.percent) / 100) / 100).toFixed(2)} CAD</g:sale_price>\n    <g:sale_price_effective_date>${feedSale.start}/${feedSale.end}</g:sale_price_effective_date>\n` : ''}    <g:brand>REWILD Mushrooms</g:brand>
     <g:condition>new</g:condition>
     <g:identifier_exists>no</g:identifier_exists>
     <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items</g:google_product_category>
