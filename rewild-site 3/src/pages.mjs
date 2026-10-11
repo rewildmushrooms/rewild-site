@@ -374,7 +374,7 @@ function productPage(p) {
       faqLd(faqs),
     ],
     body: `
-<section class="section tight"><div class="wrap">
+<section class="section tight pdp-sec"><div class="wrap">
   <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/shop/">Shop</a><span aria-hidden="true">/</span><span aria-current="page">${esc(p.name)}</span></nav>
   <div class="pdp">
     <div>
@@ -415,6 +415,8 @@ function productPage(p) {
     </dl>
   </div>
 </div></section>
+<div class="mbar" data-mbar hidden><div class="mbar-txt"><b>${esc(p.name)}</b><span data-pid="${p.id}" data-list="${p.price}">${money(p.price)}</span></div><button type="button" class="btn btn-yellow" data-add="${p.id}">Add to cart</button></div>
+<script>(function(){var bar=document.querySelector('[data-mbar]'),main=document.querySelector('[data-add][data-qty-from]');if(!bar||!main||!('IntersectionObserver' in window))return;var seen=true;function set(){bar.hidden=seen||innerWidth>900;}new IntersectionObserver(function(e){seen=e[0].isIntersecting||e[0].boundingClientRect.top>innerHeight*3;set();}).observe(main);addEventListener('resize',set,{passive:true});})();</script>
 ${p.isTincture ? FALLS_BAND : ''}
 ${howToUse(p)}
 ${productVideos(p.id)}

@@ -28,7 +28,7 @@ export const launchPage = {
   title: `Launch Party: ${S.percent}% Off Everything for 48 Hours | REWILD`,
   description: `REWILD's launch party flash sale: ${S.percent}% off every mushroom powder and the tincture, ${day(S.start)} to ${day(S.end)}. Only ${S.stockEach} of each.`,
   body: `
-<section class="page-hero dark hero-photo hero-larches lp-hero"><div class="wrap stack-sm" style="gap:16px">
+<section class="page-hero dark hero-photo hero-larches lp-hero launch-hero"><div class="wrap stack-sm" style="gap:16px">
   <p class="eyebrow" style="color:var(--accent)">Launch party · 48 hours only</p>
   <h1 class="h1" style="font-size:clamp(44px,7vw,92px);color:#fff">${S.percent}% off<br>everything.</h1>
   <p class="lead" style="color:var(--on-dark);max-width:640px">We're celebrating the launch of rewildmushrooms.com with our biggest offer yet. ${day(S.start)}, ${time(S.start)} PT to ${day(S.end)}, ${time(S.end)} PT. Only ${S.stockEach} of each product at this price. When they're gone, they're gone.</p>
