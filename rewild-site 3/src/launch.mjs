@@ -25,12 +25,13 @@ const card = (p) => `<article class="card lp-card">
 
 export const launchPage = {
   path: '/launch-party/',
-  title: `Launch Party: ${S.percent}% Off Everything for 48 Hours | REWILD`,
-  description: `REWILD's launch party flash sale: ${S.percent}% off every mushroom powder and the tincture, ${day(S.start)} to ${day(S.end)}. Only ${S.stockEach} of each.`,
+  title: `Launch Party: ${S.percent}% Off Everything, ${S.tier.percent}% Off $${S.tier.at / 100}+ | REWILD`,
+  description: `REWILD launch party: ${S.percent}% off everything, ${S.tier.percent}% off orders of $${S.tier.at / 100}+. ${day(S.start)} to ${day(S.end)}. Only ${S.stockEach} of each.`,
   body: `
 <section class="page-hero dark hero-photo hero-larches lp-hero launch-hero"><div class="wrap stack-sm" style="gap:16px">
   <p class="eyebrow" style="color:var(--accent)">Launch party · 48 hours only</p>
   <h1 class="h1" style="font-size:clamp(44px,7vw,92px);color:#fff">${S.percent}% off<br>everything.</h1>
+  <p class="lp-tier">Spend $${S.tier.at / 100}+ and it's <b>${S.tier.percent}% off</b> your whole order.</p>
   <p class="lead" style="color:var(--on-dark);max-width:640px">We're celebrating the launch of rewildmushrooms.com with our biggest offer yet. ${day(S.start)}, ${time(S.start)} PT to ${day(S.end)}, ${time(S.end)} PT. Only ${S.stockEach} of each product at this price. When they're gone, they're gone.</p>
   <div class="lp-cd" aria-live="polite"><span class="lp-cd-label" data-lp-label>Starts in</span><span class="lp-cd-time" data-lp-cd>--:--:--</span></div>
   <div data-lp-phase="soon">
@@ -49,6 +50,7 @@ export const launchPage = {
   <div class="stack-sm" style="max-width:680px;gap:14px;margin-bottom:36px">
     <p class="eyebrow">Launch party prices</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Every product. ${S.percent}% off.</h2>
+    <p class="lead" style="margin:0"><b>Spend $${S.tier.at / 100} or more</b> (at regular prices) and your whole order is ${S.tier.percent}% off.</p>
     <p class="lead" data-lp-shopnote>These prices go live ${day(S.start)} at ${time(S.start)} PT. Until then, the cart shows regular prices.</p>
   </div>
   <div class="grid-4 lp-grid">${LIST.map((id) => card(PRODUCT_BY_ID[id])).join('')}</div>
@@ -56,6 +58,7 @@ export const launchPage = {
 <section class="section stone"><div class="wrap grid-3">
   <div class="stack-sm"><h2 class="h3" style="font-size:22px">The details</h2><ul class="ticks" style="font-size:16px">
     <li>${S.percent}% off every product, bundles included</li>
+    <li>${S.tier.percent}% off your whole order when it's $${S.tier.at / 100}+ at regular prices</li>
     <li>Only ${S.stockEach} of each product at this price</li>
     <li>Limit ${S.maxEach} of each per order</li>
     <li>Codes are paused during the sale</li>
