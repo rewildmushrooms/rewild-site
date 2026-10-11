@@ -32,12 +32,22 @@
     if (!s) { a.innerHTML = a.dataset.orig; a.classList.remove('sale-on'); return; }
     const now = Date.now();
     let txt;
-    if (s.phase === 'live') txt = `<b>Launch party: ${s.percent}% off everything</b> · ends in <span class="cd">${fmtLeft(Date.parse(s.end) - now)}</span> · only ${s.stockEach} of each`;
-    else if (s.phase === 'early') txt = `<b>Early access is open</b> for the list · ${s.percent}% off for everyone in <span class="cd">${fmtLeft(Date.parse(s.start) - now)}</span>`;
-    else if (Date.parse(s.start) - now < 7 * 86400000) txt = `<b>Launch party:</b> ${s.percent}% off everything, ${when(s.start)} · starts in <span class="cd">${fmtLeft(Date.parse(s.start) - now)}</span>`;
+    if (s.phase === 'live') txt = `<b>Launch party: ${s.percent}% off everything</b><span class="ann-sep"> · </span><span class="ann-l2"><span class="ann-opt">Oct 17 &amp; 18 · </span>ends in <span class="cd">${fmtLeft(Date.parse(s.end) - now)}</span><span class="ann-opt"> · only ${s.stockEach} of each</span></span>`;
+    else if (s.phase === 'early') txt = `<b>Early access is open</b><span class="ann-opt"> for the list</span><span class="ann-sep"> · </span><span class="ann-l2">${s.percent}% off for everyone in <span class="cd">${fmtLeft(Date.parse(s.start) - now)}</span></span>`;
+    else if (Date.parse(s.start) - now < 7 * 86400000) txt = `<b>Launch party: ${s.percent}% off everything</b><span class="ann-sep"> · </span><span class="ann-l2">Oct 17 &amp; 18<span class="ann-opt"> · starts in <span class="cd">${fmtLeft(Date.parse(s.start) - now)}</span></span></span>`;
     else { a.innerHTML = a.dataset.orig; a.classList.remove('sale-on'); return; }
     a.innerHTML = `<a href="/launch-party/" style="color:inherit;text-decoration:none">${txt}</a>`;
     a.classList.add('sale-on');
+    stick(a);
+  }
+
+  // Keep the sale banner pinned above the sticky header while it's showing.
+  let stuck = false;
+  function stick(a) {
+    const set = () => document.documentElement.style.setProperty('--ann-h', (a.classList.contains('sale-on') ? a.offsetHeight : 0) + 'px');
+    set();
+    document.documentElement.classList.add('ann-sticky');
+    if (!stuck) { stuck = true; addEventListener('resize', set, { passive: true }); }
   }
 
   function prices(s) {
