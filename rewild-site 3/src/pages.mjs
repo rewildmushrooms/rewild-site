@@ -1,6 +1,6 @@
 import { SITE } from './site.mjs';
 import { esc, proofStrip, signupForm } from './layout.mjs';
-import { reviewsSection, productReview } from './testimonials.mjs';
+import { reviewsSection, productReview, productVideos } from './testimonials.mjs';
 import { PRODUCTS, PRODUCT_BY_ID, SHIPPING, money } from '../netlify/functions/_shared/catalog.mjs';
 import { POSTS } from './journal.mjs';
 import { LAB, TESTS, PROCESS } from './lab.mjs';
@@ -417,6 +417,7 @@ function productPage(p) {
 </div></section>
 ${p.isTincture ? FALLS_BAND : ''}
 ${howToUse(p)}
+${productVideos(p.id)}
 <section class="section tight vreviews-band" id="reviews" data-product="${p.id}" hidden><div class="wrap">
   <div class="stack-sm" style="gap:10px;margin-bottom:28px"><p class="eyebrow">Verified buyers</p><h2 class="h3" style="font-size:clamp(26px,3vw,34px)">What customers say about ${esc(p.name)}.</h2><p class="small muted" data-vr-sum></p></div>
   <div class="vreviews" data-vr-list></div>

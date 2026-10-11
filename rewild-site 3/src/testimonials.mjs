@@ -21,6 +21,7 @@ export const TESTIMONIALS = [
     head: "Watch a Lion's Mane review",
     youtube: 'Ige2jg9JyU8',
     products: ['clarity'],
+    productPage: true, // also shown as a video band on the product page
   },
   {
     id: 'krystal',
@@ -79,6 +80,16 @@ export function reviewsSection({ eyebrow = 'What Rewilders are saying', title = 
   return `<section class="section ${tone} reviews-band" aria-label="Customer reviews"><div class="wrap">
   <div class="stack-sm" style="max-width:640px;gap:14px;margin-bottom:40px"><p class="eyebrow">${esc(eyebrow)}</p><h2 class="h2" style="font-size:clamp(30px,3.6vw,46px)">${esc(title)}</h2></div>
   <div class="reviews">${list.map(card).join('')}</div>
+</div></section>`;
+}
+
+// Video band on a product page (videos marked productPage).
+export function productVideos(productId) {
+  const list = TESTIMONIALS.filter((t) => t.youtube && t.productPage && t.products.includes(productId));
+  if (!list.length) return '';
+  return `<section class="section tight" aria-label="Video review"><div class="wrap">
+  <div class="stack-sm" style="gap:10px;margin-bottom:24px"><p class="eyebrow">In their words</p><h2 class="h3" style="font-size:clamp(26px,3vw,34px)">Watch a customer review.</h2></div>
+  <div class="reviews">${list.map(video).join('')}</div>
 </div></section>`;
 }
 
