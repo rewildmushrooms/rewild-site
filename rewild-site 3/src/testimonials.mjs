@@ -27,7 +27,7 @@ export const TESTIMONIALS = [
     name: 'Anna P.',
     detail: 'Rewild Energy (CordyFuel™) in her morning coffee',
     head: 'In my coffee every morning',
-    quote: 'I have been putting your CordyFuel™ in my coffee every morning... I like it!!',
+    quote: 'I have been putting your CordyFuel™ in my coffee every morning and today I played squash after weeks of doing nothing and I felt really good. I like it!!',
     products: ['energy', 'duo'],
   },
   {
