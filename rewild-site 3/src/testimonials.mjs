@@ -15,6 +15,14 @@ export const TESTIMONIALS = [
     products: ['energy', 'tincture', 'duo'],
   },
   {
+    id: 'lionsmane-video',
+    name: '',
+    detail: "Video review · Rewild Clarity (Lion's Mane)",
+    head: "Watch a Lion's Mane review",
+    youtube: 'Ige2jg9JyU8',
+    products: ['clarity'],
+  },
+  {
     id: 'krystal',
     name: 'Krystal J.',
     detail: "Uses Lion's Mane, Reishi, Chaga + the Energy Tincture",
@@ -54,7 +62,7 @@ const video = (t) => `<figure class="review review-video">
     <span class="yt-play" aria-hidden="true"></span>
   </button>
   <p class="review-head">${esc(t.head)}</p>
-  <figcaption><b>${esc(t.name)}</b><span>${esc(t.detail)}</span></figcaption>
+  <figcaption>${t.name ? `<b>${esc(t.name)}</b>` : ''}<span>${esc(t.detail)}</span></figcaption>
 </figure>`;
 
 const card = (t) => t.youtube ? video(t) : `<figure class="review">
