@@ -176,12 +176,14 @@ ${reviewsSection()}
   </div>
   <div class="grid-4 use-grid">${USES.map(([k, t, s]) => `<div class="use-tile"><img src="/img/use-${k}.webp" alt="${t} with REWILD mushroom powder" width="477" height="489" loading="lazy"><b>${t}</b><span class="muted" style="font-size:16px;margin-top:-8px">${s}</span></div>`).join('')}</div>
 </div></section>
-<section class="section tight" id="team"><div class="wrap stack-sm" style="text-align:center;align-items:center;gap:16px">
-  <img src="/img/rewild-team-2026-640.webp" alt="REWILD founders Pete, Jade and Sean in the forest" width="120" height="120" loading="lazy" style="width:120px;height:120px;border-radius:50%;object-fit:cover">
-  <p class="eyebrow">Meet the team</p>
-  <h2 class="h3" style="max-width:560px">Built on trust, integrity and a solid passion for 'shrooms.</h2>
-  <p style="font-size:17px;margin:0">Questions? Email <a class="link" href="mailto:hello@rewildmushrooms.com">hello@rewildmushrooms.com</a>. One of us three answers.</p>
-  <a class="btn btn-outline" href="/our-story/">Meet Jade, Pete and Sean</a>
+<section class="section stone team-band" id="team"><div class="wrap team-grid">
+  <img src="/img/rewild-team-2026-640.webp" alt="REWILD founders Pete, Jade and Sean in the forest" width="640" height="640" loading="lazy" class="team-photo">
+  <div class="team-copy">
+    <p class="eyebrow">Meet the team</p>
+    <h2 class="h2" style="font-size:clamp(28px,3.2vw,42px)">Built on trust, integrity and a solid passion for 'shrooms.</h2>
+    <p class="lead">Questions? Email <a class="link" href="mailto:hello@rewildmushrooms.com">hello@rewildmushrooms.com</a>. One of us three answers.</p>
+    <div><a class="btn btn-outline" href="/our-story/">Meet Jade, Pete and Sean</a></div>
+  </div>
 </div></section>`,
 };
 
