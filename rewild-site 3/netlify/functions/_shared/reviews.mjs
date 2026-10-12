@@ -172,7 +172,8 @@ export function approvalEmail(r, site) {
   const text = [`New ${r.rating}-star review on rewildmushrooms.com`, '', r.title ? `"${r.title}"` : '', r.text, '', `${r.name}${r.location ? ', ' + r.location : ''} · ${prods}`, `Order ${String(r.orderId).slice(-8).toUpperCase()} · ${r.email}`, '',
     r.consent ? `Approve, edit or hide it here: ${link}` : `They did NOT allow us to post it, so it stays private. Read it in HQ > Reviews & referrals: ${site}/hq/`, '', 'Nothing goes on the website until you approve it.'].join('\n');
   const html = `<!doctype html><html><body style="margin:0;background:#F3F2EE;font-family:Helvetica,Arial,sans-serif;color:#121310"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:24px 0"><tr><td align="center"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border-radius:4px">
-<tr><td style="background:#121310;padding:16px 24px;color:#fff;font-weight:800;letter-spacing:.3em;font-size:14px">REWILD · NEW REVIEW</td></tr>
+<tr><td align="left" style="background:#ffffff;padding:22px 28px 18px"><a href="https://rewildmushrooms.com/" style="text-decoration:none"><img src="https://rewildmushrooms.com/img/rewild-logo-email.png" width="200" height="56" alt="REWILD Mushrooms" style="display:block;border:0;outline:none;width:200px;height:56px"></a></td></tr>
+<tr><td style="height:6px;line-height:6px;font-size:0;background-color:#22B573;background:linear-gradient(90deg,#22B573,#2F7FE0)">&nbsp;</td></tr>
 <tr><td style="padding:24px">
 <p style="margin:0 0 6px;font-size:26px;color:#C9A800;letter-spacing:2px">${stars(r.rating)}</p>
 ${r.title ? `<p style="margin:0 0 8px;font-size:19px;font-weight:700">${esc(r.title)}</p>` : ''}
