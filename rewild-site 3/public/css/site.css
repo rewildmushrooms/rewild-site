@@ -745,3 +745,14 @@ html.ann-sticky .buybox{top:calc(100px + var(--ann-h,0px))}
 @media (max-width:700px){.page-hero.hero-photo.launch-hero{background:linear-gradient(180deg,rgba(18,19,16,.62),rgba(18,19,16,.92)),url(/img/banner-tincture-larches-v2.webp) 70% center/cover no-repeat,#121310}.page-hero.launch-hero .wrap{padding-top:44px;padding-bottom:52px}.launch-hero .h1{font-size:44px!important}.launch-hero .lead{font-size:17px}}
 
 .lp-tier{font-family:var(--display);font-weight:800;font-size:clamp(20px,2.4vw,28px);color:var(--accent);text-transform:uppercase;letter-spacing:.02em;margin:0}.lp-tier b{color:#fff}
+/* Button hover (Jade, Oct 11): spore pop + living gradient */
+.btn{transition:background .3s,color .3s,border-color .3s,transform .3s,box-shadow .3s}
+@media (hover:hover){
+.btn:not([disabled]){position:relative}
+.btn:not([disabled]):hover,.btn:not([disabled]):focus-visible{background:linear-gradient(90deg,#22B573,#2F7FE0,#22B573,#2F7FE0)!important;background-size:300% 100%!important;color:#fff!important;border-color:transparent!important;transform:translateY(-3px) scale(1.03);box-shadow:0 0 0 4px rgba(47,127,224,.15),0 10px 22px -10px rgba(34,181,115,.6);animation:btnflow 2.4s linear infinite}
+.btn:not([disabled])::after{content:'';position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;opacity:0;pointer-events:none;box-shadow:-70px -30px 0 #22B573,-40px -38px 0 #2F7FE0,0 -42px 0 #22B573,45px -36px 0 #2F7FE0,75px -26px 0 #22B573,-80px 8px 0 #2F7FE0,82px 6px 0 #2F7FE0,-60px 34px 0 #22B573,-15px 40px 0 #2F7FE0,25px 42px 0 #22B573,62px 32px 0 #2F7FE0}
+.btn:not([disabled]):hover::after{animation:btnspore .7s ease-out}
+}
+@keyframes btnflow{to{background-position:-150% 0}}
+@keyframes btnspore{0%{opacity:1;transform:scale(.25)}70%{opacity:.9}100%{opacity:0;transform:scale(1.35)}}
+@media (prefers-reduced-motion:reduce){.btn:hover,.btn:focus-visible{animation:none!important;transform:none!important}.btn:hover::after{animation:none!important}}
