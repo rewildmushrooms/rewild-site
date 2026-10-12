@@ -749,11 +749,11 @@ html.ann-sticky .buybox{top:calc(100px + var(--ann-h,0px))}
 .btn{transition:background .3s,color .3s,border-color .3s,transform .3s,box-shadow .3s}
 @media (hover:hover){
 .btn:not([disabled]){position:relative}
-.btn:not([disabled]):hover,.btn:not([disabled]):focus-visible{background:linear-gradient(90deg,#22B573,#2F7FE0,#22B573,#2F7FE0)!important;background-size:300% 100%!important;color:#fff!important;border-color:transparent!important;transform:translateY(-3px) scale(1.03);box-shadow:0 0 0 4px rgba(47,127,224,.15),0 10px 22px -10px rgba(34,181,115,.6);animation:btnflow 2.4s linear infinite}
+.btn:not([disabled]):hover,.btn:not([disabled]):focus-visible{background:linear-gradient(90deg,#22B573,#2F7FE0,#22B573)!important;background-size:200% 100%!important;color:#fff!important;border-color:transparent!important;transform:translateY(-3px) scale(1.03);box-shadow:0 0 0 4px rgba(47,127,224,.15),0 10px 22px -10px rgba(34,181,115,.6);animation:btnflow 2.4s linear infinite}
 .btn:not([disabled])::after{content:'';position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;opacity:0;pointer-events:none;box-shadow:-70px -30px 0 #22B573,-40px -38px 0 #2F7FE0,0 -42px 0 #22B573,45px -36px 0 #2F7FE0,75px -26px 0 #22B573,-80px 8px 0 #2F7FE0,82px 6px 0 #2F7FE0,-60px 34px 0 #22B573,-15px 40px 0 #2F7FE0,25px 42px 0 #22B573,62px 32px 0 #2F7FE0}
 .btn:not([disabled]):hover::after{animation:btnspore .7s ease-out}
 }
-@keyframes btnflow{to{background-position:-150% 0}}
+@keyframes btnflow{from{background-position:0 0}to{background-position:200% 0}}
 @keyframes btnspore{0%{opacity:1;transform:scale(.25)}70%{opacity:.9}100%{opacity:0;transform:scale(1.35)}}
 @media (prefers-reduced-motion:reduce){.btn:hover,.btn:focus-visible{animation:none!important;transform:none!important}.btn:hover::after{animation:none!important}}
 /* Mushroom icon on primary (yellow) buttons, wiggles on hover */
@@ -773,3 +773,23 @@ html.ann-sticky .buybox{top:calc(100px + var(--ann-h,0px))}
 .why-band .why-item p,.why-band p{color:var(--on-dark)}
 .why-band .why-n{color:#22B573}
 .why-band a.link{color:#fff}
+.why-band{position:relative;overflow:hidden}
+.why-band::before{content:'';position:absolute;right:-170px;bottom:-110px;width:820px;height:461px;background:url(/img/deco-reishi.svg) center/contain no-repeat;opacity:.13;pointer-events:none}
+.why-band .wrap{position:relative;z-index:1}
+/* Meet the team: roomy two-column */
+.team-grid{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:64px;align-items:center}
+.team-photo{width:100%;height:auto;aspect-ratio:1;object-fit:cover;border-radius:50%;box-shadow:0 18px 40px -18px rgba(0,0,0,.35)}
+.team-copy{display:flex;flex-direction:column;gap:22px;max-width:560px}
+.team-copy .lead{margin:0}
+@media (max-width:800px){.team-grid{grid-template-columns:1fr;gap:36px;text-align:center;justify-items:center}.team-photo{max-width:260px}.team-copy{align-items:center}}
+/* "New here? Start here" in the Learn menu: yellow to orange pop */
+.nav-sub a.start-pop{display:flex;align-items:center;gap:10px;margin:6px 8px 10px;padding:12px 16px;border-radius:8px;background:linear-gradient(90deg,#F5D81C,#FF8A1F,#F5D81C);background-size:200% 100%;color:#121310!important;font-weight:800;box-shadow:0 8px 18px -10px rgba(255,138,31,.9);transition:transform .25s,box-shadow .25s;position:relative}
+.nav-sub a.start-pop::after{content:'\2192';margin-left:auto;font-size:18px;transition:transform .25s}
+.nav-sub a.start-pop .new-tag{background:#121310!important;color:#F5D81C!important;border-color:#121310!important;margin:0}
+.nav-sub a.start-pop:hover,.nav-sub a.start-pop:focus-visible{animation:btnflow 2.2s linear infinite;transform:translateY(-2px);box-shadow:0 12px 24px -10px rgba(255,120,20,1)}
+.nav-sub a.start-pop:hover::after{transform:translateX(4px)}
+@media (prefers-reduced-motion:reduce){.nav-sub a.start-pop:hover{animation:none;transform:none}}
+/* Why REWILD: deep forest green (Jade, Oct 11) */
+.why-band,.why-band.stone{background:#173327}
+.why-band .why-item{border-top-color:#4FD39A}
+.why-band .why-n{color:#4FD39A}
