@@ -786,10 +786,29 @@ html.ann-sticky .buybox{top:calc(100px + var(--ann-h,0px))}
 .nav-sub a.start-pop{display:flex;align-items:center;gap:10px;margin:6px 8px 10px;padding:12px 16px;border-radius:8px;background:linear-gradient(90deg,#F5D81C,#FF8A1F,#F5D81C);background-size:200% 100%;color:#121310!important;font-weight:800;box-shadow:0 8px 18px -10px rgba(255,138,31,.9);transition:transform .25s,box-shadow .25s;position:relative}
 .nav-sub a.start-pop::after{content:'\2192';margin-left:auto;font-size:18px;transition:transform .25s}
 .nav-sub a.start-pop .new-tag{background:#121310!important;color:#F5D81C!important;border-color:#121310!important;margin:0}
-.nav-sub a.start-pop:hover,.nav-sub a.start-pop:focus-visible{animation:btnflow 2.2s linear infinite;transform:translateY(-2px);box-shadow:0 12px 24px -10px rgba(255,120,20,1)}
+@media (hover:hover){.nav-sub a.start-pop:hover,.nav-sub a.start-pop:focus-visible{animation:btnflow 2.2s linear infinite;transform:translateY(-2px);box-shadow:0 12px 24px -10px rgba(255,120,20,1)}}
 .nav-sub a.start-pop:hover::after{transform:translateX(4px)}
 @media (prefers-reduced-motion:reduce){.nav-sub a.start-pop:hover{animation:none;transform:none}}
 /* Why REWILD: deep forest green (Jade, Oct 11) */
 .why-band,.why-band.stone{background:#173327}
 .why-band .why-item{border-top-color:#4FD39A}
 .why-band .why-n{color:#4FD39A}
+/* CordyFuel in the main menu: yellow to orange pop, like "Start here" */
+.nav a.nav-hot{background:linear-gradient(90deg,#F5D81C,#FF8A1F,#F5D81C);background-size:200% 100%;color:#121310;border-radius:8px;box-shadow:0 8px 18px -10px rgba(255,138,31,.9);transition:transform .25s,box-shadow .25s}
+.nav a.nav-hot:hover{background:linear-gradient(90deg,#F5D81C,#FF8A1F,#F5D81C);background-size:200% 100%;color:#121310}
+@media (hover:hover){.nav a.nav-hot:hover,.nav a.nav-hot:focus-visible{background:linear-gradient(90deg,#F5D81C,#FF8A1F,#F5D81C);background-size:200% 100%;color:#121310;animation:btnflow 2.2s linear infinite;transform:translateY(-2px);box-shadow:0 12px 24px -10px rgba(255,120,20,1)}}
+@media (prefers-reduced-motion:reduce){.nav a.nav-hot:hover{animation:none;transform:none}}
+/* Mobile menu: consistent left-aligned full-width rows */
+@media (max-width:900px){
+  .nav{align-items:stretch;text-align:left;font-size:15px;box-shadow:0 18px 30px -12px rgba(0,0,0,.25)}
+  .nav > a,.nav-group,.nav-toggle{width:100%}
+  .nav > a{display:block;padding:15px 2px}
+  .nav > a[aria-current=page]{box-shadow:inset 3px 0 0 var(--accent);padding-left:12px}
+  .nav-toggle{padding:15px 2px}
+  .nav a.nav-hot{display:flex;align-items:center;justify-content:space-between;margin:12px 0 6px;padding:14px 16px}
+  .nav a.nav-hot::after{content:'\2192';font-size:18px}
+  .nav-sub{padding:0 0 6px 12px}
+  .nav-sub a{padding:13px 2px}
+  .nav-sub a.start-pop{margin:10px 0 8px;padding:13px 14px}
+  .nav-sub .sub-label{padding:14px 2px 4px}
+}
