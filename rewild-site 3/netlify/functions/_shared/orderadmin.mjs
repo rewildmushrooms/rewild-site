@@ -69,8 +69,7 @@ export function refundEmail(rec, amount, reason) {
   const html = `<!doctype html><html><body style="margin:0;background:#F3F2EE;font-family:Helvetica,Arial,sans-serif;color:#121310">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3F2EE;padding:24px 0"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border-radius:4px">
-<tr><td align="left" style="background:#ffffff;padding:22px 28px 18px"><a href="https://rewildmushrooms.com/" style="text-decoration:none"><img src="https://rewildmushrooms.com/img/rewild-logo-email.png" width="200" height="56" alt="REWILD Mushrooms" style="display:block;border:0;outline:none;width:200px;height:56px"></a></td></tr>
-<tr><td style="height:6px;line-height:6px;font-size:0;background-color:#22B573;background:linear-gradient(90deg,#22B573,#2F7FE0)">&nbsp;</td></tr>
+<tr><td align="left" style="background:#121310;padding:20px 28px"><a href="https://rewildmushrooms.com/" style="text-decoration:none"><img src="https://rewildmushrooms.com/img/rewild-logo-email-white.png" width="200" height="56" alt="REWILD Mushrooms" style="display:block;border:0;outline:none;width:200px;height:56px"></a></td></tr>
 <tr><td style="padding:32px 28px 8px"><p style="margin:0 0 10px;font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#9A8400">Order #${esc(ref)}</p>
 <h1 style="margin:0 0 14px;font-size:26px;line-height:1.2;text-transform:uppercase">Your refund is on the way.</h1>
 ${lines.map((l) => `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#3D3F38">${esc(l)}</p>`).join('')}
