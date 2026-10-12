@@ -761,3 +761,15 @@ html.ann-sticky .buybox{top:calc(100px + var(--ann-h,0px))}
 @media (hover:hover){.btn-yellow:not([disabled]):hover::before{animation:shroomwiggle .6s ease-in-out}}
 @keyframes shroomwiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-14deg)}50%{transform:rotate(10deg)}75%{transform:rotate(-6deg)}}
 @media (prefers-reduced-motion:reduce){.btn-yellow:hover::before{animation:none!important}}
+/* Tags/badges: ember pill so they never look like buttons */
+.pill-tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ember);border:1.5px solid var(--ember);background:rgba(176,58,30,.06);padding:5px 12px;border-radius:999px;line-height:1.3}
+.save-tag,.new-tag{background:rgba(176,58,30,.08)!important;color:var(--ember)!important;border:1px solid var(--ember);border-radius:999px!important}
+.tf-badge{background:var(--ember)!important;color:#fff!important;border-radius:999px!important}
+/* Why REWILD band: dark section for separation */
+.why-band{background:var(--ink);color:#fff}
+.why-band .eyebrow{color:var(--accent)}
+.why-band .h2,.why-band h3{color:#fff}
+.why-band .why-item{border-top-color:#22B573}
+.why-band .why-item p,.why-band p{color:var(--on-dark)}
+.why-band .why-n{color:#22B573}
+.why-band a.link{color:#fff}
