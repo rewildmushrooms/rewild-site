@@ -1,5 +1,5 @@
 // Telegram order alerts (free). Env: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID (one id, or several separated by commas).
-// If either is missing, nothing is sent and nothing breaks. Bot: @Rewildmushroomsbot (set up Oct 2026).
+// If either is missing, nothing is sent and nothing breaks. Bot: @Rewildmushroomsbot (set up Oct 2026, team channel).
 const money = (c) => '$' + (Number(c || 0) / 100).toFixed(2);
 const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 
