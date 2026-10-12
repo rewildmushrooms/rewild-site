@@ -10,6 +10,7 @@ export async function sendTelegram(text, { fetchImpl = fetch } = {}) {
   const chats = String(process.env.TELEGRAM_CHAT_ID || '').split(',').map((s) => s.trim()).filter(Boolean);
   if (!token || !chats.length) return { skipped: true, reason: 'Telegram is not set up yet (TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID).' };
   let sent = 0;
+  const errs = [];
   for (const chat_id of chats) {
     const res = await fetchImpl(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
@@ -17,9 +18,10 @@ export async function sendTelegram(text, { fetchImpl = fetch } = {}) {
       body: JSON.stringify({ chat_id, text, parse_mode: 'HTML', disable_web_page_preview: true }),
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok || !data.ok) throw new Error('Telegram: ' + (data.description || res.status));
-    sent++;
+    if (!res.ok || !data.ok) errs.push(`chat ending ${chat_id.slice(-4)}: ${data.description || res.status}`);
+    else sent++;
   }
+  if (errs.length) throw new Error(`Telegram (${sent} of ${chats.length} sent): ` + errs.join('; '));
   return { sent };
 }
 
