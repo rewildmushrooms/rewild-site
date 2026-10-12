@@ -7,7 +7,7 @@ import crypto from 'node:crypto';
 import { getJSON, setJSON } from './store.mjs';
 import { readIndex, putIndex, customerSummary } from './data.mjs';
 import { PRODUCT_BY_ID } from './catalog.mjs';
-import { createRecoveryCode, RECOVERY_PERCENT } from './carts.mjs';
+import { createRecoveryCode, WINBACK_PERCENT as RECOVERY_PERCENT } from './carts.mjs';
 import { referralFor, sharePage, REFERRAL } from './referrals.mjs';
 
 const DAY = 86400000;
@@ -101,7 +101,7 @@ export async function runLifecycle(now = Date.now(), { send, site }) {
     if (!kind) continue;
     const last = lastOrder(c);
     let code = null;
-    if (kind === 'winback') code = await createRecoveryCode({ id: null, email }, now, WINBACK_CODE_HOURS, 'winback');
+    if (kind === 'winback') code = await createRecoveryCode({ id: null, email }, now, WINBACK_CODE_HOURS, 'winback', RECOVERY_PERCENT);
     const optout = await optoutLink(site, email, c);
     let refCode = null;
     if (kind === 'reorder') { try { refCode = (await referralFor(email, c.name))?.code || null; } catch (e) { console.error('referral code failed', e.message); } }

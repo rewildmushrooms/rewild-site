@@ -1,6 +1,6 @@
 // Saved carts (from the email step before checkout) and abandoned-cart reminders.
 // Reminders go only to people who ticked the email box, and stop the moment the cart is paid.
-//   1 hour: reminder   24 hours: second reminder   48 hours: one-time 15% code, valid 24 hours
+//   1 hour: reminder   24 hours: second reminder   48 hours: one-time 10% code, valid 24 hours (during a sale: the sale instead, since codes are paused)
 import crypto from 'node:crypto';
 import { getJSON, setJSON } from './store.mjs';
 import { readIndex, putIndex, customerSummary } from './data.mjs';
@@ -13,7 +13,8 @@ export const STEPS = [
 ];
 export const CODE_HOURS = 24;
 export const EXPIRE_AFTER = 7 * 24 * 60 * 60 * 1000; // stop tracking a cart after a week
-export const RECOVERY_PERCENT = 15;
+export const RECOVERY_PERCENT = 10; // abandoned cart (Jade, Oct 11: dropped from 15)
+export const WINBACK_PERCENT = 15;
 // One-time codes made by the website: COMEBACK- (cart reminders, win-back), THANKS- (review thank-you), REWARD- (referral reward).
 export const RECOVERY_RE = /^(COMEBACK|THANKS|REWARD)-[A-Z0-9]{6}$/;
 
@@ -39,7 +40,7 @@ export function newCart({ email, items, value, consent, country, code, ref }) {
 export async function touchCustomer(email, { consent, source, quiz, name } = {}, now = new Date().toISOString()) {
   const c = (await getJSON('customers', email)) || { email, createdAt: now, orders: {}, firstSource: source };
   if (name && !c.name) c.name = name;
-  if (quiz) c.quiz = quiz;
+  if (quiz) { c.quiz = quiz; if (!c.quizAt) c.quizAt = now; }
   if (consent && !c.marketingConsent) { c.marketingConsent = true; c.marketingConsentAt = now; c.marketingConsentSource = source; }
   if (!c.firstSource) c.firstSource = source;
   c.lastActivityAt = now;
@@ -71,11 +72,11 @@ export async function markPurchased(cartId, orderId) {
 }
 
 // One-time recovery codes (not stored in Square; checkout applies them server-side).
-export async function createRecoveryCode(cart, now = Date.now(), hours = CODE_HOURS, source = 'cart') {
+export async function createRecoveryCode(cart, now = Date.now(), hours = CODE_HOURS, source = 'cart', percent = RECOVERY_PERCENT) {
   let code;
   do code = 'COMEBACK-' + crypto.randomBytes(4).toString('hex').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6).padEnd(6, '7');
   while (await getJSON('onetime', code));
-  const rec = { code, cartId: cart.id || null, email: cart.email, source, percentOff: RECOVERY_PERCENT, createdAt: new Date(now).toISOString(), expiresAt: Math.floor((now + hours * 3600000) / 1000), used: false };
+  const rec = { code, cartId: cart.id || null, email: cart.email, source, percentOff: percent, createdAt: new Date(now).toISOString(), expiresAt: Math.floor((now + hours * 3600000) / 1000), used: false };
   await setJSON('onetime', code, rec);
   return rec;
 }
@@ -105,14 +106,14 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 const money = (c) => '$' + (c / 100).toFixed(c % 100 ? 2 : 0);
 
 // The three reminder emails. Plain, friendly, no health claims.
-export function reminderEmail(step, cart, { site, code }) {
+export function reminderEmail(step, cart, { site, code, sale }) {
   const list = (cart.items || []).map((i) => `${i.qty} × ${PRODUCT_BY_ID[i.id]?.name || i.id}`);
   const link = cartLink(site, cart, code?.code);
   const optout = `${site}/api/cart-optout?c=${cart.id}&t=${cart.optout}`;
   const copy = {
     1: { subject: 'You left something in your cart', head: 'Your cart is saved.', body: 'Looks like checkout got interrupted. Your mushrooms are still waiting, right where you left them.', cta: 'Finish checkout' },
     2: { subject: 'Still thinking it over?', head: 'Still thinking it over?', body: 'Totally fair. Every REWILD lot is third-party tested, full spectrum, nothing else added. Canadian orders ship in 1 to 3 business days, and you have 14 days for a full refund if it is not for you.', cta: 'View your cart' },
-    3: { subject: `${RECOVERY_PERCENT}% off your cart, for the next 24 hours`, head: `Here's ${RECOVERY_PERCENT}% off, just for you.`, body: `Use code ${code?.code} at checkout for ${RECOVERY_PERCENT}% off this cart. It works once and ends in 24 hours.`, cta: `Checkout with ${RECOVERY_PERCENT}% off` },
+    3: sale ? { subject: `Your cart is ${sale.percent}% off this weekend`, head: 'Good timing.', body: `Our launch party is on, so everything in your cart is ${sale.percent}% off right now${sale.tier ? `, and ${sale.tier.percent}% off when you spend $${sale.tier.at / 100}+` : ''}. This weekend only, and there are only ${sale.stockEach} of each. The sale price is applied automatically.`, cta: 'Back to my cart' } : { subject: `${RECOVERY_PERCENT}% off your cart, for the next 24 hours`, head: `Here's ${RECOVERY_PERCENT}% off, just for you.`, body: `Use code ${code?.code} at checkout for ${RECOVERY_PERCENT}% off this cart. It works once and ends in 24 hours.`, cta: `Checkout with ${RECOVERY_PERCENT}% off` },
   }[step];
   const text = [copy.head, '', copy.body, '', 'In your cart:', ...list.map((l) => '  ' + l), `  Total: ${money(cart.value)}`, '', `${copy.cta}: ${link}`, '', 'Return to your natural state.', '~ The REWILD crew', '', '---', "You're getting this because you started a checkout at rewildmushrooms.com and said yes to emails.", `Stop cart reminders: ${optout}`, 'REWILD Mushrooms, Box 18, Crescent Valley, BC V0G 1H0'].join('\n');
   const html = `<!doctype html><html><body style="margin:0;background:#F3F2EE;font-family:Helvetica,Arial,sans-serif;color:#121310">
