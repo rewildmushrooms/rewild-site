@@ -5,6 +5,7 @@ import { isPaid } from './_shared/orders.mjs';
 import { fetchOrder, recordPaidOrder } from './_shared/record.mjs';
 import { getCart, saveCart, setOpenCart, openCarts, dueStep, reminderEmail, createRecoveryCode, EXPIRE_AFTER } from './_shared/carts.mjs';
 import { sendMail, mailConfigured } from './_shared/mailer.mjs';
+import { runQuizFollowups, saleShowing } from './_shared/quizfollow.mjs';
 
 export async function runReminders(now = Date.now(), deps = {}) {
   const send = deps.sendMail || sendMail;
@@ -31,8 +32,9 @@ export async function runReminders(now = Date.now(), deps = {}) {
     const fresh = await getCart(cart.id); // re-read right before sending
     if (!fresh || fresh.status !== 'open') continue;
     let code = null;
-    if (step === 3) { code = await createRecoveryCode(fresh, now); fresh.code = code.code; }
-    const msg = reminderEmail(step, fresh, { site, code });
+    const sale = step === 3 ? saleShowing(now) : null;
+    if (step === 3 && !sale) { code = await createRecoveryCode(fresh, now); fresh.code = code.code; }
+    const msg = reminderEmail(step, fresh, { site, code, sale });
     await send({ to: fresh.email, subject: msg.subject, text: msg.text, html: msg.html, fromName: 'REWILD Mushrooms', replyTo: 'hello@rewildmushrooms.com', unsubscribe: msg.unsubscribe });
     fresh.sent.push({ step, at: new Date(now).toISOString() });
     await saveCart(fresh);
@@ -46,6 +48,12 @@ export default async () => {
     const r = await runReminders();
     console.log('cart reminders', JSON.stringify(r));
   } catch (e) { console.error('cart reminders failed', e.message); }
+  try {
+    if (mailConfigured()) {
+      const site = (process.env.SITE_URL || process.env.URL || 'https://rewildmushrooms.com').replace(/\/$/, '');
+      console.log('quiz follow-ups', JSON.stringify(await runQuizFollowups(Date.now(), { send: sendMail, site })));
+    }
+  } catch (e) { console.error('quiz follow-ups failed', e.message); }
 };
 
 export const config = { schedule: '@hourly' };
