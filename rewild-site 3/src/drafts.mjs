@@ -15,7 +15,7 @@ const faqs = (list) => list.map(([q, a]) => `<details class="faq"><summary>${esc
 /* ---------- "Why REWILD" block: goes on the homepage (after the product grid) and the Shop page ---------- */
 export const WHY_POINTS = [
   ['Grown in BC. Not imported and relabelled.', 'Every REWILD mushroom is grown by NuCelium in Coldstream, British Columbia, in a solar-powered facility. We can tell you exactly who grows it.'],
-  ['The whole mushroom. Nothing added.', 'Fruiting body and mycelium, milled together with the organic sorghum it grew on. No fillers, flavours, colours or preservatives. One mushroom per bag, never a mystery blend.'],
+  ['The whole mushroom. Nothing added.', 'Fruiting body and mycelium, milled together with the organic sorghum it grew on. No fillers, flavours, colours or preservatives.'],
   ['Every lot tested. The numbers are public.', 'Species identity, potency and seven microbial checks, before anything ships. We publish the results instead of just saying "lab tested".'],
   ['Award-winning Cordyceps.', 'Rewild Energy is CordyFuel™ Cordyceps militaris, winner of Best Fruiting Body / Full Spectrum at the 2025 Cordy Cup. Every lot has at least 3 mg/g cordycepin.'],
 ];
@@ -36,7 +36,6 @@ const ASK = [
   ['Is every lot tested?', 'Yes. Species identity, potency, seven microbial checks, gluten and water activity.', 'Ask to see the numbers, not just the words "lab tested".'],
   ['Can I see the results?', 'Yes. Key numbers are on our lab results page and full reports are emailed on request.', 'A brand that is proud of its numbers will show you.'],
   ['What else is in it?', 'Nothing. No fillers, flavours, sweeteners, colours or preservatives.', 'Check the ingredient list for carriers, flavours and "proprietary blends".'],
-  ['Is it a blend?', 'No. One mushroom per bag, so you always know what you’re using.', 'Blends can hide small amounts of each mushroom behind a long list.'],
 ];
 const whyPage = ({
   path: '/why-rewild/',
@@ -53,7 +52,7 @@ ${WHY_SECTION}
 <section class="section stone"><div class="wrap">
   <div class="stack-sm" style="max-width:680px;gap:14px;margin-bottom:32px">
     <p class="eyebrow">Compare any brand</p>
-    <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Seven questions to ask before you buy.</h2>
+    <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Six questions to ask before you buy.</h2>
     <p class="lead">Put these to any mushroom company. Here are our answers.</p>
   </div>
   <div class="ask-table" role="table" aria-label="Questions to ask any mushroom brand">

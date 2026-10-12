@@ -159,7 +159,7 @@ ${reviewsSection()}
 </div></section>
 <section class="section" id="tincture"><div class="wrap split" style="flex-wrap:wrap-reverse">
   <div class="stack">
-    <span style="align-self:flex-start;background:var(--accent);font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:6px 12px;border-radius:2px">New · Liquid tincture</span>
+    <span class="pill-tag" style="align-self:flex-start">New · Liquid tincture</span>
     <h2 class="h2">Rewild Energy,<br>without the powder.</h2>
     <p class="small" style="font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">100 ml · 5 to 10 servings per bottle</p>
     <p class="lead">Same CordyFuel™ Cordyceps. A different way to enjoy it. Simple, portable and easy to work into your day. Even people who don't love the taste of mushrooms tend to love this one.</p>
