@@ -33,9 +33,9 @@
     if (!s) { a.innerHTML = a.dataset.orig; a.classList.remove('sale-on'); return; }
     const now = Date.now();
     let txt;
-    if (s.phase === 'live') txt = `<b>Launch party: ${s.percent}% off everything</b><span class="ann-sep"> · </span><span class="ann-l2">${tierTxt(s)}<span class="ann-opt">Oct 17 &amp; 18 · </span>ends in <span class="cd">${fmtLeft(Date.parse(s.end) - now)}</span><span class="ann-opt"> · only ${s.stockEach} of each</span></span>`;
+    if (s.phase === 'live') txt = `<b>Launch party: ${s.percent}% off site wide</b><span class="ann-sep"> &nbsp;•&nbsp; </span><span class="ann-l2">ends in <span class="cd">${fmtLeft(Date.parse(s.end) - now)}</span> &nbsp;•&nbsp; limited stock</span>`;
     else if (s.phase === 'early') txt = `<b>Early access is open</b><span class="ann-opt"> for the list</span><span class="ann-sep"> · </span><span class="ann-l2">${s.percent}% off for everyone in <span class="cd">${fmtLeft(Date.parse(s.start) - now)}</span></span>`;
-    else if (Date.parse(s.start) - now < 7 * 86400000) txt = `<b>Launch party: ${s.percent}% off everything</b><span class="ann-sep"> · </span><span class="ann-l2">${tierTxt(s)}Oct 17 &amp; 18<span class="ann-opt"> · starts in <span class="cd">${fmtLeft(Date.parse(s.start) - now)}</span></span></span>`;
+    else if (Date.parse(s.start) - now < 7 * 86400000) txt = `<b>Launch party: ${s.percent}% off site wide</b><span class="ann-sep"> &nbsp;•&nbsp; </span><span class="ann-l2">Oct 17 &amp; 18 &nbsp;•&nbsp; limited stock</span>`;
     else { a.innerHTML = a.dataset.orig; a.classList.remove('sale-on'); return; }
     a.innerHTML = `<a href="/launch-party/" style="color:inherit;text-decoration:none">${txt}</a>`;
     a.classList.add('sale-on');
