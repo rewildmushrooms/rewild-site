@@ -3,7 +3,7 @@
 //   GET  /api/hq?action=me
 //   GET  /api/hq?action=summary&days=30                     (owner)
 //   GET  /api/hq?action=coupons                             (everyone; partners see active codes, read only)
-//   GET  /api/hq?action=traffic&days=30                     (owner, Google Analytics)
+//   GET  /api/hq?action=traffic&days=30                     (everyone, Google Analytics; partners get visitors only)
 //   GET  /api/hq?action=alerts                              (owner, things to look at)
 //   GET  /api/hq?action=inventory                           (everyone)
 //   GET  /api/hq?action=commissions&month=2026-10           (owner: all partners; partner: themselves)
@@ -476,15 +476,29 @@ export default async (req) => {
       const action = url.searchParams.get('action');
       if (action === 'me') return json(200, { id: member.id, name: member.name, role: member.role, mode: isLive() ? 'live' : 'test',
         partners: PARTNERS.filter((p) => owner || p.id === member.id).map((p) => ({ id: p.id, name: p.name, codePrefix: p.codePrefix, ref: p.ref })) });
-      if (action === 'inventory') return json(200, await stock());
-      if (action === 'ledger') return json(200, { ledger: (await readLedger()).slice(0, 200) });
+      // Partners (Sean, Pete): no orders or sales figures. Stock counts, restocks and adjustments only.
+      if (action === 'inventory') { const inv = await stock(); return json(200, owner ? inv : { ...inv, synced: 0 }); }
+      if (action === 'ledger') {
+        const all = await readLedger();
+        return json(200, { ledger: (owner ? all : all.filter((l) => !['online_sale', 'offline_sale', 'refund'].includes(l.source))).slice(0, 200) });
+      }
       if (action === 'commissions') {
         const month = /^\d{4}-\d{2}$/.test(url.searchParams.get('month') || '') ? url.searchParams.get('month') : monthOf(new Date().toISOString());
-        return json(200, await commissions(month, member));
+        const rep = await commissions(month, member);
+        if (!owner) rep.partners = rep.partners.map((p) => ({ id: p.id, name: p.name, codePrefix: p.codePrefix, ref: p.ref, commission: p.commission }));
+        return json(200, rep);
       }
       if (action === 'coupons') {
         const list = await coupons();
-        return json(200, { coupons: owner ? list : list.filter((c) => !c.archived) });
+        return json(200, { coupons: owner ? list : list.filter((c) => !c.archived).map(({ timesRedeemed, ...c }) => c) });
+      }
+      if (action === 'traffic') { // everyone: visitors only, no orders or sales
+        const days = Math.min(365, parseDays(url.searchParams.get('days')));
+        try {
+          const t = await traffic(days);
+          if (!owner) delete t.events;
+          return json(200, t);
+        } catch (e) { return json(200, { configured: true, error: e.message }); }
       }
       if (!owner) return denied();
       if (action === 'summary') {
@@ -508,10 +522,6 @@ export default async (req) => {
         const id = url.searchParams.get('id') || '';
         if (!/^[A-Za-z0-9_-]{10,64}$/.test(id)) return json(400, { error: 'Bad order id' });
         return json(200, { shipTo: shipToFrom(await fetchOrder(id)) });
-      }
-      if (action === 'traffic') {
-        const days = Math.min(365, parseDays(url.searchParams.get('days')));
-        try { return json(200, await traffic(days)); } catch (e) { return json(200, { configured: true, error: e.message }); }
       }
       return json(400, { error: 'Unknown action' });
     }
