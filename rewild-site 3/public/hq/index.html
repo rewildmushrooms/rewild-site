@@ -648,8 +648,8 @@ a{color:var(--ink)}
   function shipForm(btn){
     const td=btn.closest('td');const id=btn.dataset.ship;
     td.innerHTML=`<div class="stack-sm" style="min-width:220px"><select data-f="carrier">${Object.entries(CARRIERS).map(([k,v])=>`<option value="${k}">${v[0]}</option>`).join('')}</select>
-      <input data-f="tracking" placeholder="Tracking number" autocomplete="off" style="text-transform:uppercase">
-      <label class="small" style="flex-direction:row;gap:6px;align-items:center"><input type="checkbox" data-f="notify" checked style="width:auto"> Email the customer their tracking</label>
+      <input data-f="tracking" placeholder="Tracking number (optional)" autocomplete="off" style="text-transform:uppercase">
+      <label class="small" style="flex-direction:row;gap:6px;align-items:center"><input type="checkbox" data-f="notify" checked style="width:auto"> Email the customer that it shipped</label>
       <div class="row" style="gap:8px"><button class="btn small" data-f="save">Save</button><button class="link-btn small" data-f="cancel">Cancel</button></div><p class="msg small" data-f="msg"></p></div>`;
     const f=(k)=>td.querySelector(`[data-f="${k}"]`);f('tracking').focus();
     f('cancel').onclick=()=>loadOrders();
