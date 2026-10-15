@@ -127,6 +127,7 @@ export function summarize(orders, days, now = Date.now(), invoices = [], emails 
         city: addr.locality || '',
         items: (o.line_items || []).map((li) => `${li.quantity}x ${li.name}`).join(', '),
         note: (o.fulfillments || []).map((f) => f.shipment_details?.shipping_note).find(Boolean) || '',
+        local: o.metadata?.fulfillment === 'local',
         needsShippingQuote: (o.metadata?.destination || country) === 'US',
         shippingInvoice: inv
           ? { id: inv.id, status: inv.status === 'PAID' ? 'paid' : 'sent', amount: amt(inv.payment_requests?.[0]?.computed_amount_money), url: inv.public_url }

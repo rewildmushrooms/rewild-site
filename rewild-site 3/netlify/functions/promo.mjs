@@ -14,7 +14,7 @@ export default async (req) => {
     const catalog = { byId: PRODUCT_BY_ID, shipping: Object.fromEntries(Object.entries(SHIPPING).map(([k, v]) => [k, { flatRate: v.flatRate, freeOver: v.freeOver, quoted: !!v.quotedAfterOrder }])) };
     const live = saleFor(Date.now(), b?.early);
     if (live) return json(400, { error: `Codes are paused during the ${live.name.replace(/ \d+% off$/i, '').toLowerCase()}. Everything is already ${live.percent}% off${live.tier ? `, or ${live.tier.percent}% off orders of $${live.tier.at / 100}+` : ''}.` });
-    const q = priceCart(b?.items, b?.country === 'US' ? 'US' : 'CA', catalog);
+    const q = priceCart(b?.items, b?.country === 'US' ? 'US' : b?.country === 'LOCAL' ? 'LOCAL' : 'CA', catalog);
     const { promo, discount } = await validatePromo(b?.code, q.listTotal, undefined, Date.now(), b?.email || '');
     return json(200, { code: promo.code, percentOff: promo.percentOff, amountOff: promo.amountOff, minimumAmount: promo.minimumAmount, discount });
   } catch (err) {

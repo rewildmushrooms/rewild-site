@@ -16,18 +16,20 @@ import { emailKey } from './_shared/record.mjs';
 const CUR = 'CAD';
 
 export async function buildPaymentLink(body, siteUrl, opts) {
-  const country = body?.country === 'US' ? 'US' : 'CA';
+  const dest = body?.country === 'US' ? 'US' : body?.country === 'LOCAL' ? 'LOCAL' : 'CA';
+  const local = dest === 'LOCAL';
+  const country = local ? 'CA' : dest; // local orders are Canadian orders
   const catalog = { byId: PRODUCT_BY_ID, shipping: Object.fromEntries(Object.entries(SHIPPING).map(([k, v]) => [k, { flatRate: v.flatRate, freeOver: v.freeOver, quoted: !!v.quotedAfterOrder }])) };
-  const base = priceCart(body?.items, country, catalog);
+  const base = priceCart(body?.items, dest, catalog);
   if (base.lines.length === 0) throw Object.assign(new Error('Your cart is empty.'), { status: 400 });
   // Flash sale: everything at the sale price, no codes. Limits and stock left are checked here.
   const sale = saleFor(Date.now(), body?.early);
   if (sale) await checkSaleCart(sale, base.lines, catalog);
   let promo = null;
   if (body?.code && !sale) promo = (await validatePromo(body.code, base.listTotal, opts, Date.now(), body?.email || '')).promo;
-  const q = priceCart(body?.items, country, catalog, promo, !!body?.addon, sale); // best deal wins, add-on, free gift
+  const q = priceCart(body?.items, dest, catalog, promo, !!body?.addon, sale); // best deal wins, add-on, free gift
   const partnerCode = promo && partnerByCode(promo.code) ? promo.code : null; // partner keeps credit even if the offers beat their code
-  const ship = SHIPPING[country];
+  const ship = SHIPPING[dest];
   const lineItem = (id, qty, amount, name, note) => ({ name, quantity: String(qty), base_price_money: { amount, currency: CUR }, metadata: { rewild_id: id, ...(note ? { offer: note } : {}) } });
   const ref = partnerByRef(body?.ref)?.ref; // partner share link (?ref=sean), for commission
   const summary = q.lines.map((l) => `${l.qty}x ${l.id}`).join(', ');
@@ -43,6 +45,7 @@ export async function buildPaymentLink(body, siteUrl, opts) {
     metadata: {
       source: 'rewildmushrooms.com',
       destination: country,
+      ...(local ? { fulfillment: 'local' } : {}),
       cart: summary.slice(0, 255),
       newsletter: body?.newsletter ? 'yes' : 'no',
       ...(body?.cartId ? { cart: body.cartId } : {}),
@@ -65,7 +68,9 @@ export async function buildPaymentLink(body, siteUrl, opts) {
   if (!ship.quotedAfterOrder && q.shipping > 0) {
     checkout_options.shipping_fee = { name: ship.standardName, charge: { amount: ship.flatRate, currency: CUR } };
   }
-  if (country === 'CA' && ship.localDelivery?.enabled) {
+  if (local) {
+    checkout_options.custom_fields = [{ title: 'Pickup (Wed 5-6pm) or delivery? + your phone' }];
+  } else if (country === 'CA' && ship.localDelivery?.enabled) {
     checkout_options.custom_fields = [{ title: 'In Nelson? Ask for Mon/Tue hand delivery' }];
   }
   const res = await square('POST', '/online-checkout/payment-links', {
