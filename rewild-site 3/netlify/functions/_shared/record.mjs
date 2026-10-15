@@ -58,6 +58,7 @@ export function orderRecord(o, email, name) {
     code: orderCode(o) || null,
     partner: partnerForOrder(o)?.partner.id || null,
     country: o.metadata?.destination || null,
+    local: o.metadata?.fulfillment === 'local',
     shipTo: shipToFrom(o),
     newsletter: o.metadata?.newsletter === 'yes',
     state: o.state,

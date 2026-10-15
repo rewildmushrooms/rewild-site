@@ -16,6 +16,19 @@ export const SHIPPING = {
     // Nelson, BC hand delivery (Monday / Tuesday). Set enabled:false to hide it.
     localDelivery: { enabled: false, name: 'Hand delivery in Nelson, BC (Mon / Tue)', sameAsShipping: true },
   },
+  // Free local pickup (Wednesdays 5 to 6pm) or delivery by arrangement in Nelson and the Slocan Valley.
+  // Orders are Canadian orders (destination CA) tagged fulfillment: 'local'. Jade emails pickup details.
+  LOCAL: {
+    label: 'Local pickup or delivery',
+    flatRate: 0,
+    freeOver: null,
+    local: true,
+    standardName: 'Free local pickup or delivery',
+    area: 'Nelson and the Slocan Valley',
+    pickup: 'Wednesdays, 5 to 6pm',
+    minDays: 0,
+    maxDays: 7,
+  },
   US: {
     label: 'United States',
     // US shipping is quoted per order: Jade declares each parcel in Zonos, then sends

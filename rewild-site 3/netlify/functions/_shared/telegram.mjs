@@ -35,6 +35,7 @@ export function orderAlertText(rec, order, siteUrl = '') {
     items,
     rec.name ? `👤 ${esc(rec.name)}` : '',
     place ? `📍 ${esc(place)}` : '',
+    order?.metadata?.fulfillment === 'local' || rec.local ? '🚗 <b>Local pickup / delivery</b>: email them to set it up' : '',
     rec.code ? `🏷 Code: ${esc(rec.code)}` : '',
     rec.discount ? `Discount: −${money(rec.discount)}` : '',
     siteUrl ? `<a href="${siteUrl}/hq/">Open HQ</a>` : '',
