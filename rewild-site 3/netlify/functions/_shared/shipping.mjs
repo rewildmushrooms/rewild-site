@@ -58,7 +58,6 @@ export async function markShipped(b, member, deps = {}) {
   const carrier = CARRIERS[b.carrier] ? b.carrier : 'canadapost';
   const tracking = String(b.tracking || '').replace(/\s+/g, '').toUpperCase().slice(0, 40);
   if (tracking && !/^[A-Z0-9-]{6,40}$/.test(tracking)) throw bad('That tracking number does not look right. Use letters and numbers only.');
-  if (!tracking && !['hand', 'other'].includes(carrier)) throw bad('Enter the tracking number.');
   const rec = await getJSON('orders', id);
   if (!rec) throw bad('Order not found', 404);
   if (rec.source === 'offline') throw bad('Offline sales do not ship.');
