@@ -394,6 +394,19 @@ p{text-wrap:pretty}
 .lp-checks{list-style:none;padding:0;margin:4px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
 .lp-checks li{background:var(--stone);padding:14px 16px 14px 46px;position:relative;font-weight:700;border-radius:var(--radius)}
 .lp-checks li::before{content:"";position:absolute;left:18px;top:21px;width:13px;height:7px;border-left:2.5px solid var(--ink);border-bottom:2.5px solid var(--ink);transform:rotate(-45deg)}
+.stone .lp-checks li{background:#fff}
+.lp-vs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.lp-vs>div{border-radius:var(--radius);padding:20px 20px 8px}
+.lp-vs h3{font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin:0 0 12px}
+.lp-vs ul{list-style:none;padding:0;margin:0}
+.lp-vs li{position:relative;padding:0 0 12px 28px;line-height:1.45}
+.lp-vs .meh{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18)}
+.lp-vs .yes{background:var(--accent);color:var(--ink)}
+.lp-vs .meh li::before{content:"\2715";position:absolute;left:2px;top:0;font-weight:800;opacity:.7}
+.lp-vs .yes li::before{content:"\2713";position:absolute;left:2px;top:0;font-weight:800}
+.stone .lp-vs .meh,.lp-vs.light .meh{background:#fff;border:1px solid var(--line)}
+.lp-for{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0}
+.lp-for li{border:1.5px solid var(--ink);border-radius:999px;padding:7px 14px;font-weight:700;font-size:15px}
 .lp-litany{list-style:none;padding:0 0 0 22px;margin:0;border-left:6px solid var(--accent);display:grid;gap:6px}
 .lp-litany li{font-family:var(--display);font-weight:700;font-size:clamp(20px,2.4vw,26px);text-transform:uppercase;line-height:1.25}
 .lp-litany-dark li{color:#fff}
