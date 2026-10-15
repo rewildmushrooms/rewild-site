@@ -19,6 +19,11 @@ const pull = (text, by = '') =>
 const FAQ = [
   ['What is CordyFuel™?', 'CordyFuel™ is a full-spectrum Cordyceps militaris (fruiting body and mycelium) grown in Coldstream, British Columbia, and standardized to a minimum of 3 mg/g cordycepin in every batch. It won Best Fruiting Body / Full Spectrum at the 2025 Cordy Cup. Rewild Energy and Rewild Energy Tincture are powered by CordyFuel™.'],
   ['Is CordyFuel™ a blend?', 'No. It is a single species, Cordyceps militaris, grown on organic sorghum and milled whole. No proprietary blend and nothing added.'],
+  ['Is it a stimulant? Does it have caffeine?', 'No and no. Rewild Energy is a mushroom, not a stimulant. It works with how your body makes and uses energy, so there is no spike and no crash.'],
+  ['When will I feel it?', 'Some people notice it in the first few days. For most, it builds. Take it every day for two weeks before you decide, and if it is not for you, our 14-day guarantee has you covered.'],
+  ['When should I take it?', 'Morning, or 30 to 60 minutes before you train. If you are sensitive to anything later in the day, keep it to the morning.'],
+  ['Can I take it with coffee?', 'Yes. Lots of us do. Some people find they want less coffee once Cordyceps is part of their day.'],
+  ['Can I take it every day?', 'Yes, that is how most people take it. Cordyceps militaris is a food mushroom. If you are pregnant, nursing or on medication, check with your doctor first.'],
   ['How do I take Rewild Energy?', 'Powder: ½ teaspoon in a smoothie, elixir, soup, tea, coffee, or hot water and honey. In a warm drink, add a little coconut oil or butter and blend it so the powder mixes in smooth. Tincture: drink it straight or add it to a drink, 5 to 10 servings per bottle.'],
 ];
 
@@ -65,6 +70,23 @@ export const cordyfuelPage = {
   <p>REWILD isn't about rejecting modern life.</p>
   <p>It's about remembering that you're still part of nature, and choosing simple, natural tools that help you reconnect with how you were built to live.</p>
   <p class="lp-big">CordyFuel™ is one of those tools.</p>
+</div></section>
+
+<section class="section dark lp"><div class="lp-col">
+  <p class="eyebrow">Fuel, not a jolt</p>
+  <h2 class="h2">Built for oxygen. Not stimulants.</h2>
+  <p>Most energy products work the same way. Poke the nervous system. Spike. Ride it. Crash.</p>
+  <p>Then do it again tomorrow, a little more tired than today.</p>
+  <div class="lp-vs">
+    <div class="meh"><h3>The stimulant way</h3><ul>
+      <li>Caffeine, pre-workout, energy drinks</li><li>Adrenaline up. Cortisol up.</li><li>Fast spike, hard drop</li><li>Wired, then tired</li><li>Energy pulled from tomorrow</li>
+    </ul></div>
+    <div class="yes"><h3>The Cordyceps way</h3><ul>
+      <li>No caffeine. No stimulants.</li><li>Supports how your body uses oxygen</li><li>Supports ATP, the energy your cells actually run on</li><li>Steady, not spiky</li><li>Energy that's yours</li>
+    </ul></div>
+  </div>
+  <p>Cordyceps militaris has been studied for how the body uses oxygen and makes ATP during exercise. Cordycepin, the compound CordyFuel™ is standardized for, is one of the main reasons researchers keep coming back to it.</p>
+  ${pull('Calm power.<br>Not a caffeine buzz with a nicer label.')}
 </div></section>
 
 <section class="section stone lp"><div class="lp-col">
@@ -156,6 +178,20 @@ export const cordyfuelPage = {
   <div class="row">${cta()}</div>
 </div></section>
 
+<section class="section stone lp"><div class="lp-col">
+  <p class="eyebrow">For people who train for the long game</p>
+  <h2 class="h2">Strength. Breath. Clear head. Still going at 60.</h2>
+  <p>If you care about how you feel in ten years, not just in the next ten minutes, you're our people.</p>
+  <ul class="lp-for" aria-label="Who takes it">
+    <li>Trail runners</li><li>Hikers</li><li>Climbers</li><li>Snowboarders + skiers</li><li>Lifters</li><li>Breathwork + cold plunge</li><li>Yoga + dance</li><li>Martial arts</li><li>Anyone done with the 3pm crash</li>
+  </ul>
+  <h3 class="h3" style="margin-top:12px">What people tell us they notice</h3>
+  <ul class="lp-checks">
+    <li>More stamina on long days</li><li>Easier breathing on the climb</li><li>Bouncing back faster between sessions</li><li>Workouts that feel smoother</li><li>No wired-then-tired crash</li><li>A steadier mood and focus</li>
+  </ul>
+  <p class="small muted">Everyone's different. Give it two weeks, every day, before you decide.</p>
+</div></section>
+
 <section class="section dark lp"><div class="lp-col">
   <p class="eyebrow">From the people growing it</p>
   <h2 class="h2">Obsessed with getting mushrooms right.</h2>
@@ -166,6 +202,21 @@ export const cordyfuelPage = {
   </ul>
   <p>The Cordy Cup result gave CordyFuel™ something unusual in the mushroom world:</p>
   <p class="lp-big" style="color:var(--accent)">Proof you can actually measure.</p>
+</div></section>
+
+<section class="section stone lp"><div class="lp-col">
+  <p class="eyebrow">Why it feels different</p>
+  <h2 class="h2">Not all Cordyceps is created equal.</h2>
+  <div class="lp-vs light">
+    <div class="meh"><h3>A lot of what's out there</h3><ul>
+      <li>Mycelium grown on grain, with a lot of grain in the bag</li><li>Cordycepin never tested, or never shared</li><li>Imported and hard to trace</li><li>Vague labels, no numbers</li><li>Caffeine added to make you feel something</li>
+    </ul></div>
+    <div class="yes"><h3>Rewild Energy</h3><ul>
+      <li>Powered by CordyFuel™, 2025 Cordy Cup winner</li><li>Standardized to 3+ mg/g cordycepin, every batch</li><li>Grown in Coldstream, BC</li><li>Fruiting body + mycelium, full spectrum</li><li>Third-party tested</li><li>Nothing added. No caffeine.</li>
+    </ul></div>
+  </div>
+  <p class="lp-big">This is what real energy feels like. Capable. Calm. Ready.</p>
+  <div class="row">${cta()}</div>
 </div></section>
 
 <section class="section lp"><div class="lp-col">
@@ -185,6 +236,7 @@ ${reviewsSection({ eyebrow: 'What people are saying', title: 'Rewilders, in thei
   <p>CordyFuel™ is easy to work into what you're already doing. Add it to:</p>
   <ul class="lp-tags"><li>Coffee</li><li>Tea</li><li>Smoothies</li><li>Cacao</li><li>Protein shakes</li><li>Hot water + honey</li><li>Or find your own way</li></ul>
   <p>Consistency matters more than complexity. Just add it to something you already do every day.</p>
+  <p><b>When:</b> in the morning, or 30 to 60 minutes before you train. Take it every day. It builds.</p>
   <p>Tip for warm drinks: add a little coconut oil or butter and blend it. The fat helps the powder mix in smooth, so your drink doesn't get muddy.</p>
   <div class="lp-dose">
     <div><b>Powder</b><span>Add ½ teaspoon to your favourite smoothie, elixir, soup, tea, coffee, or hot water and honey.</span></div>
@@ -208,7 +260,7 @@ ${reviewsSection({ eyebrow: 'What people are saying', title: 'Rewilders, in thei
       <div class="offer-row best"><div><b>Get both <em class="save-tag">Save ${money(energy.price + tincture.price - duo.price)}</em></b><span>Powder at home, tincture on the go</span></div><span class="offer-price"><s>${money(energy.price + tincture.price)}</s> ${money(duo.price)}</span><button type="button" class="btn btn-yellow" data-add="duo">Add</button></div>
     </div>
     <div class="guarantee compact"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><div><b>100% Risk-Free Guarantee</b><span>Don't love it? Email us within 14 days of delivery for a full refund. No questions asked.</span></div></div>
-    <p class="small muted">Free shipping in Canada on orders over $175. Every batch third-party tested.</p>
+    <p class="small muted">Free shipping in Canada on orders over $175. Free local pickup or delivery in Nelson and the Slocan Valley. Every batch third-party tested.</p>
   </div>
 </div></section>
 
