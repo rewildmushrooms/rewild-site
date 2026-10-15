@@ -103,7 +103,7 @@
         prog.querySelector('.progress span').style.width = (q.next ? q.next.pct : 100) + '%';
       } else prog.hidden = true;
     }
-    const shipTxt = !state.items.length ? 'n/a' : q.quoted ? 'Quoted by email' : (q.free ? 'Free' : money(q.shipping));
+    const shipTxt = !state.items.length ? 'n/a' : q.quoted ? 'Quoted by email' : state.country === 'LOCAL' ? 'Free (local)' : (q.free ? 'Free' : money(q.shipping));
     const p = state.promo;
     $('#cart-totals').innerHTML = `<span>Subtotal</span><span>${money(q.itemsTotal)}</span>` +
       (q.discount ? `<span class="disc">${esc(q.discountName)}</span><span class="disc">&minus;${money(q.discount)}</span>` : '') +
@@ -132,7 +132,7 @@
     }
     const ct = $('#co-total'); if (ct) ct.textContent = `${count() + (q.addonApplied ? 1 : 0) + (q.gift ? 1 : 0)} item${count() === 1 && !q.addonApplied && !q.gift ? '' : 's'} · ${money(q.total)} CAD${q.quoted ? ' + shipping' : ''}${q.savings > 0 ? ` · you save ${money(q.savings)}` : ''}`;
     if (!state.items.length) $('#cart-drawer').classList.remove('step-email');
-    $('#cart-ship-note').textContent = state.country === 'US' ? 'US shipping and duties vary by parcel. After you order, we email a quote you can pay online before we ship.' : '';
+    $('#cart-ship-note').textContent = state.country === 'US' ? 'US shipping and duties vary by parcel. After you order, we email a quote you can pay online before we ship.' : state.country === 'LOCAL' ? 'Nelson and the Slocan Valley only. Pick up Wednesdays 5 to 6pm, or we deliver by arrangement. We email you after you order to set it up.' : '';
     // Launch party limits: per-order cap and stock left
     const err0 = $('#cart-error');
     const left = window.RewildSale && window.RewildSale.left();
@@ -227,7 +227,7 @@
   document.addEventListener('click', (e) => { if (e.target.classList && e.target.classList.contains('drawer-backdrop')) close(); });
   document.addEventListener('change', (e) => {
     if (e.target.dataset && e.target.dataset.qty) setQty(e.target.dataset.qty, e.target.value);
-    if (e.target.name === 'dest') { state.country = e.target.value === 'US' ? 'US' : 'CA'; save(); }
+    if (e.target.name === 'dest') { state.country = e.target.value === 'US' ? 'US' : e.target.value === 'LOCAL' ? 'LOCAL' : 'CA'; save(); }
     if (e.target.id === 'co-addon') { state.addon = !!e.target.checked; save(); if (state.addon) ga('add_to_cart', [gaItem('tincture', 1)], { promotion_name: 'checkout_addon' }); }
     if (e.target.id === 'cart-news') { state.newsletter = e.target.checked; save(); }
   });
