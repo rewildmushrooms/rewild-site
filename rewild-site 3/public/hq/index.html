@@ -149,6 +149,7 @@ a{color:var(--ink)}
     <button role="tab" data-tab="overview" data-owner aria-selected="false">Overview</button>
     <button role="tab" data-tab="customers" data-owner aria-selected="false">Customers</button>
     <button role="tab" data-tab="orders" data-owner aria-selected="false">Orders</button>
+    <button role="tab" data-tab="refunds" data-owner aria-selected="false">Refunds</button>
     <button role="tab" data-tab="inventory" aria-selected="false">Inventory</button>
     <button role="tab" data-tab="commissions" aria-selected="false">Commissions</button>
     <button role="tab" data-tab="codes" aria-selected="false">Promo codes</button>
@@ -319,6 +320,14 @@ a{color:var(--ink)}
     </section>
   </div>
 
+  <div data-panel="refunds" hidden>
+    <section class="panel">
+      <div class="panel-head"><h2>Refunds</h2><span class="muted small" id="rf-sum"></span></div>
+      <p class="muted" style="margin-top:0">Every refund, whether it was made here (Orders, then Refund) or in Square's own dashboard. Note why it happened so patterns are easy to spot. Notes are private to HQ and also saved on the order.</p>
+      <p class="msg" id="rf-msg" role="status"></p>
+      <div id="rf-list"></div>
+    </section>
+  </div>
   <div data-panel="reviews" hidden>
     <section class="panel">
       <div class="panel-head"><h2>Reviews</h2><span class="muted small" id="rv-sum"></span></div>
@@ -577,6 +586,7 @@ a{color:var(--ink)}
     if(tab==='emails')loadEmails();
     if(tab==='reviews'){loadReviews();loadReferrals();}
     if(tab==='orders')loadOrders();
+    if(tab==='refunds')loadRefunds();
     if(tab==='codes')loadCoupons();
     if(tab==='inventory'){loadInventory();loadLedger();}
     if(tab==='commissions')loadCommissions();
@@ -819,6 +829,22 @@ a{color:var(--ink)}
 
   // ---- Reviews
   const PNAME={energy:'Energy',clarity:'Clarity',strength:'Strength',peace:'Peace',tincture:'Energy Tincture'};
+  async function loadRefunds(){
+    const m=$('#rf-msg');m.className='msg';m.textContent='Loading…';
+    try{
+      const r=await api('?action=refunds');m.textContent='';
+      $('#rf-sum').textContent=r.count?`${r.count} refund${r.count===1?'':'s'} · ${money(r.total)} total`:'';
+      $('#rf-list').innerHTML=r.list.length?r.list.map(x=>`<div class="panel" style="background:var(--stone);margin:0 0 10px" data-rf="${esc(x.id)}">
+        <div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start"><div><strong>${esc(x.name||x.email||'Customer')}</strong> <span class="chip ab">${x.full?'Refunded':'Part refunded'}</span>${x.restocked?' <span class="chip">Back in stock</span>':''}<br><span class="muted small">${esc(x.email||'')} · Order ${esc(x.ref)} · ordered ${day(x.orderAt)}</span></div><div style="text-align:right"><strong>${money(x.refunded)}</strong> <span class="muted small">of ${money(x.total)}</span><br><span class="muted small">Refunded ${day(x.refundedAt)}</span></div></div>
+        <p class="small" style="margin:8px 0 0">${esc(x.items)}</p>
+        ${x.reasons.length?`<p class="small muted" style="margin:6px 0 0">Reason typed at refund: ${esc(x.reasons.join(' · '))}</p>`:''}
+        <div class="stack-sm" style="margin-top:10px"><label class="small" for="rfn-${esc(x.id)}"><strong>Why was it refunded?</strong></label>
+        <textarea id="rfn-${esc(x.id)}" data-f="note" rows="2" maxlength="500" placeholder="For example: had a reaction, didn't like the taste, arrived damaged">${esc(x.note)}</textarea>
+        <div class="row" style="gap:8px;align-items:center"><button class="btn small" data-rfsave>Save note</button><span class="muted small" data-rfm>${x.noteAt?'Saved '+day(x.noteAt):''}</span></div></div></div>`).join(''):'<p class="muted">No refunds yet.</p>';
+      document.querySelectorAll('[data-rfsave]').forEach(b=>b.onclick=async()=>{const box=b.closest('[data-rf]'),msg=box.querySelector('[data-rfm]');b.disabled=true;msg.textContent='Saving…';
+        try{await api('',{method:'POST',body:JSON.stringify({action:'refundNote',orderId:box.dataset.rf,note:box.querySelector('[data-f=note]').value})});msg.textContent='Saved';}catch(err){msg.textContent=err.message;}b.disabled=false;});
+    }catch(err){m.className='msg err';m.textContent=err.message;}
+  }
   async function loadReviews(){
     const m=$('#rv-msg');m.className='msg';m.textContent='Loading…';
     try{
