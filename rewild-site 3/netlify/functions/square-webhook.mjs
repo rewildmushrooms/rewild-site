@@ -32,7 +32,7 @@ export async function handleEvent(event, opts, deps = {}) {
   const orderId = orderIdFrom(event);
   if (!orderId || !/^[A-Za-z0-9_-]{10,64}$/.test(orderId)) return { ignored: 'no order' };
   const order = await (deps.fetchOrder || fetchOrder)(orderId, opts);
-  if (type.startsWith('refund.')) return { refund: await recordRefund(order) };
+  if (type.startsWith('refund.')) return { refund: await (deps.recordRefund || recordRefund)(order, opts) };
   // A sale in the Square app: only bundles need us (their parts come out of stock).
   if (order?.metadata?.source !== 'rewildmushrooms.com') {
     if (isPaid(order)) return { pos: await (deps.syncWebOrders || syncWebOrders)([order], opts) };

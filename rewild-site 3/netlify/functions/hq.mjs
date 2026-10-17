@@ -25,7 +25,7 @@ import { groupStats, groupCount } from './_shared/mailerlite.mjs';
 import { readIndex, readLedger, HIGH_VALUE } from './_shared/data.mjs';
 import { recordOfflineSale, recordRestock, recordAdjustment, logCount } from './_shared/ledger.mjs';
 import { cartStats, STEPS, EXPIRE_AFTER } from './_shared/carts.mjs';
-import { getJSON, dataStartsAt } from './_shared/store.mjs';
+import { getJSON, setJSON, dataStartsAt } from './_shared/store.mjs';
 import { stockLevels } from './_shared/inventory.mjs';
 import { PRODUCTS } from './_shared/catalog.mjs';
 import { listPromos, createPromo, setPromoActive, setPromoArchived, setPromoOnce, setPromoNote } from './_shared/promos.mjs';
@@ -42,7 +42,7 @@ import { sendMail, mailConfigured } from './_shared/mailer.mjs';
 import { markShipped } from './_shared/shipping.mjs';
 import { setOrderStatus, addOrderNote, refundOrder, deleteOrder } from './_shared/orderadmin.mjs';
 import { sendTelegram } from './_shared/telegram.mjs';
-import { fetchOrder, shipToFrom } from './_shared/record.mjs';
+import { fetchOrder, shipToFrom, attachReturnRefunds, syncRefunds } from './_shared/record.mjs';
 
 // Returns the signed-in team member, or null.
 export async function authorized(req) {
@@ -123,6 +123,7 @@ export function summarize(orders, days, now = Date.now(), invoices = [], emails 
         name: buyerName(o),
         email: emails[o.id] || (o.fulfillments || []).map((f) => f.shipment_details?.recipient?.email_address).find(Boolean) || '',
         total: amt(o.total_money),
+        refunded: (o.refunds || []).filter((r) => r.status !== 'REJECTED' && r.status !== 'FAILED').reduce((a, r) => a + amt(r.amount_money), 0),
         country,
         city: addr.locality || '',
         items: (o.line_items || []).map((li) => `${li.quantity}x ${li.name}`).join(', '),
@@ -142,7 +143,7 @@ async function searchOrders(sinceIso, opts, { all = false } = {}) {
   const loc = await locationId(opts);
   const from = all ? null : await dataStartsAt().catch(() => null);
   if (from && from > sinceIso) sinceIso = from;
-  return pages((cursor) => square('POST', '/orders/search', {
+  const list = await pages((cursor) => square('POST', '/orders/search', {
     location_ids: [loc],
     cursor,
     limit: 500,
@@ -151,6 +152,7 @@ async function searchOrders(sinceIso, opts, { all = false } = {}) {
       sort: { sort_field: 'CREATED_AT', sort_order: 'DESC' },
     },
   }, opts), 'orders', 3000);
+  return attachReturnRefunds(list); // refunds made in Square's dashboard sit on separate return orders
 }
 
 async function paymentEmails(sinceIso, opts) {
@@ -467,6 +469,15 @@ export async function ordersList(days, source, now = Date.now()) {
   return { orders: list.slice(0, 300), total: list.length, revenue: list.reduce((a, o) => a + o.total - (o.refunded || 0), 0) };
 }
 
+async function refundCheck() {
+  try {
+    const last = await getJSON('hq-meta', 'refund-sync');
+    if (last && Date.now() - Date.parse(last.at) < 10 * 60000) return;
+    await setJSON('hq-meta', 'refund-sync', { at: new Date().toISOString() });
+    await syncRefunds(120);
+  } catch (e) { console.error('refund check failed', e.message); }
+}
+
 export default async (req) => {
   const member = await authorized(req);
   if (!member) return json(401, { error: 'Wrong name or password' });
@@ -502,6 +513,7 @@ export default async (req) => {
         } catch (e) { return json(200, { configured: true, error: e.message }); }
       }
       if (!owner) return denied();
+      if (['summary', 'orders', 'customers', 'people'].includes(action)) await refundCheck();
       if (action === 'summary') {
         const days = parseDays(url.searchParams.get('days'));
         return json(200, await summary(days));
