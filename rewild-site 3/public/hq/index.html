@@ -404,7 +404,7 @@ a{color:var(--ink)}
       $('#load-msg').textContent=waiting?(waiting+' US order'+(waiting===1?'':'s')+' waiting for a shipping quote. See Recent orders below.'):'';
       const m=$('#mode');m.hidden=false;m.textContent=s.mode==='live'?'Live':'Test mode';m.className='pill'+(s.mode==='live'?'':' test');
       $('#t-revenue').textContent=money(s.revenue);
-      $('#t-net').textContent=s.refunded?('Net '+money(s.netRevenue)+' after '+money(s.refunded)+' refunds'):'No refunds';
+      $('#t-net').textContent=s.refunded?('After '+money(s.refunded)+' in refunds ('+money(s.grossRevenue)+' before)'):'No refunds';
       $('#t-orders').textContent=s.orders;
       $('#t-customers').textContent=s.customers+' customers';
       $('#t-aov').textContent=money(s.aov);
