@@ -40,7 +40,7 @@ import { listReviews, updateReview, runReviewRequests } from './_shared/reviews.
 import { listReferrals, setRewardStatus } from './_shared/referrals.mjs';
 import { sendMail, mailConfigured } from './_shared/mailer.mjs';
 import { markShipped } from './_shared/shipping.mjs';
-import { setOrderStatus, addOrderNote, refundOrder, deleteOrder } from './_shared/orderadmin.mjs';
+import { setOrderStatus, addOrderNote, refundOrder, deleteOrder, setRefundNote } from './_shared/orderadmin.mjs';
 import { sendTelegram } from './_shared/telegram.mjs';
 import { fetchOrder, shipToFrom, attachReturnRefunds, syncRefunds } from './_shared/record.mjs';
 
@@ -469,6 +469,24 @@ export async function ordersList(days, source, now = Date.now()) {
   return { orders: list.slice(0, 300), total: list.length, revenue: list.reduce((a, o) => a + o.total - (o.refunded || 0), 0) };
 }
 
+// HQ Refunds tab: every refunded website order, with Square's reason and Jade's own note.
+async function refundsList() {
+  const idx = Object.values(await readIndex('orders')).filter((o) => (o.refunded || 0) > 0);
+  const recs = await Promise.all(idx.map((o) => getJSON('orders', o.id).catch(() => null)));
+  const live = (l) => !['REJECTED', 'FAILED'].includes(l.status);
+  const list = recs.filter((r) => r && !r.deleted).map((r) => {
+    const log = (r.refundLog || []).filter(live);
+    return {
+      id: r.id, ref: '#' + orderRef(r.id), orderAt: r.createdAt, refundedAt: log.map((l) => l.at).sort().at(-1) || r.createdAt,
+      name: r.name || null, email: r.email || null, items: (r.items || []).map((i) => `${i.qty}x ${i.name}`).join(', '),
+      total: r.total || 0, refunded: r.refunded || 0, full: (r.refunded || 0) >= (r.total || 0), restocked: !!r.restocked,
+      reasons: [...new Set(log.map((l) => l.reason).filter(Boolean))],
+      note: r.refundNote || '', noteAt: r.refundNoteAt || null,
+    };
+  }).sort((a, b) => String(b.refundedAt).localeCompare(String(a.refundedAt)));
+  return { list, count: list.length, total: list.reduce((a, x) => a + x.refunded, 0) };
+}
+
 async function refundCheck() {
   try {
     const last = await getJSON('hq-meta', 'refund-sync');
@@ -513,7 +531,8 @@ export default async (req) => {
         } catch (e) { return json(200, { configured: true, error: e.message }); }
       }
       if (!owner) return denied();
-      if (['summary', 'orders', 'customers', 'people'].includes(action)) await refundCheck();
+      if (['summary', 'orders', 'customers', 'people', 'refunds'].includes(action)) await refundCheck();
+      if (action === 'refunds') return json(200, await refundsList());
       if (action === 'summary') {
         const days = parseDays(url.searchParams.get('days'));
         return json(200, await summary(days));
@@ -563,6 +582,7 @@ export default async (req) => {
       if (b.action === 'markShipped') return json(200, await markShipped(b, member));
       if (b.action === 'orderStatus') return json(200, await setOrderStatus(b, member));
       if (b.action === 'orderNote') return json(200, await addOrderNote(b, member));
+      if (b.action === 'refundNote') return json(200, await setRefundNote(b, member));
       if (b.action === 'refundOrder') { console.log('refund', member.id, b.orderId, b.amount || 'all'); return json(200, await refundOrder(b, member)); }
       if (b.action === 'deleteOrder') { console.log('order deleted', member.id, b.orderId); return json(200, await deleteOrder(b, member)); }
       if (b.action === 'shippingInvoice') return json(200, { ok: true, ...(await sendShippingInvoice(b)) });
