@@ -10,7 +10,7 @@ import { resources } from './resources.mjs';
 import { GUIDES, GUIDE_BY_PRODUCT, GROWN, CLEAN, MICRO, HEAVY } from './learn.mjs';
 import { DRAFT_PAGES, WHY_SECTION } from './drafts.mjs';
 import { referPage, reviewPage } from './refer.mjs';
-import { launchPage } from './launch.mjs';
+import { launchPage, launchHomeHero } from './launch.mjs';
 
 const powders = PRODUCTS.filter((p) => !p.isTincture && !p.isBundle);
 const SELLABLE = PRODUCTS.filter((p) => !p.isBundle);
@@ -101,6 +101,7 @@ const home = {
     { '@context': 'https://schema.org', '@type': 'WebSite', name: 'REWILD Mushrooms', url: SITE.url + '/', publisher: { '@id': SITE.url + '/#org' } },
   ],
   body: `
+${launchHomeHero()}
 <section class="hero hero-home">
   <div class="wrap"><div class="hero-copy">
     <p class="eyebrow">For those who already believe in the power of mushrooms</p>

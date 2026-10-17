@@ -29,7 +29,7 @@ export const launchPage = {
   description: `REWILD launch party: ${S.percent}% off everything, ${S.tier.percent}% off orders of $${S.tier.at / 100}+. ${day(S.start)} to ${day(S.end)}. Only ${S.stockEach} of each.`,
   body: `
 <section class="page-hero dark hero-photo hero-larches lp-hero launch-hero"><div class="wrap stack-sm" style="gap:16px">
-  <p class="eyebrow" style="color:var(--accent)">Launch party · 48 hours only</p>
+  <p class="eyebrow" style="color:var(--accent)">Launch party · ends ${pt(S.end, { weekday: 'long' })} ${time(S.end)} PT</p>
   <h1 class="h1" style="font-size:clamp(44px,7vw,92px);color:#fff">${S.percent}% off<br>everything.</h1>
   <p class="lp-tier">Spend $${S.tier.at / 100}+ and it's <b>${S.tier.percent}% off</b> your whole order.</p>
   <p class="lead" style="color:var(--on-dark);max-width:640px">We're celebrating the launch of rewildmushrooms.com with our biggest offer yet. ${day(S.start)}, ${time(S.start)} PT to ${day(S.end)}, ${time(S.end)} PT. Only ${S.stockEach} of each product at this price. When they're gone, they're gone.</p>
@@ -68,7 +68,7 @@ export const launchPage = {
 </div></section>`,
   scripts: `<script>
 (function(){
-  var S=${JSON.stringify({ earlyStart: S.earlyStart, start: S.start, end: S.end })};
+  var S=${JSON.stringify({ earlyStart: S.earlyStart, start: S.start, end: S.end, endsLabel: `Ends ${pt(S.end, { weekday: 'long' })} ${time(S.end)} PT · time left` })};
   var cd=document.querySelector('[data-lp-cd]'), label=document.querySelector('[data-lp-label]'), note=document.querySelector('[data-lp-shopnote]');
   function early(){try{return !!localStorage.getItem('rewild_early');}catch(e){return false;}}
   function fmt(ms){var s=Math.max(0,Math.floor(ms/1000)),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),x=s%60;return (d?d+'d ':'')+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(x).padStart(2,'0');}
@@ -77,7 +77,7 @@ export const launchPage = {
     document.querySelectorAll('[data-lp-phase]').forEach(function(el){el.hidden=el.getAttribute('data-lp-phase')!==p;});
     document.documentElement.classList.toggle('lp-live',p==='live');
     if(p==='soon'){label.textContent='Starts in';cd.textContent=fmt(Date.parse(S.start)-n);}
-    else if(p==='live'){label.textContent='Ends in';cd.textContent=fmt(Date.parse(S.end)-n);if(note)note.textContent='Live now. Add to your cart and the launch party price is applied automatically.';}
+    else if(p==='live'){label.textContent=S.endsLabel;cd.textContent=fmt(Date.parse(S.end)-n);if(note)note.textContent='Live now. Add to your cart and the launch party price is applied automatically.';}
     else{label.textContent='';cd.textContent='';if(note)note.textContent='The launch party has ended. These were the launch party prices.';}
   }
   tick();setInterval(tick,1000);
@@ -90,3 +90,42 @@ export const launchPage = {
 })();
 </script>`,
 };
+
+// Home page hero while the launch party is on. The normal hero stays in the page and comes back
+// on its own when the sale ends (no rebuild needed): a tiny script swaps them by the clock.
+export const LAUNCH_HERO_IMG = '/img/773276745_5476076612617462_7496075791395980541_n.jpg';
+export function launchHomeHero() {
+  if (!S || Date.now() >= Date.parse(S.end)) return '';
+  return `<style>
+.lp-home{display:none;position:relative;color:#fff;background:#121310 url(${LAUNCH_HERO_IMG}) 62% 40%/cover no-repeat;overflow:hidden}
+html.lp-on .lp-home{display:block}html.lp-on .hero-home{display:none}
+.lp-home::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,14,10,.82) 0%,rgba(12,14,10,.55) 34%,rgba(12,14,10,.12) 62%,rgba(12,14,10,0) 80%),radial-gradient(60% 70% at 78% 18%,rgba(255,214,120,.22),rgba(255,214,120,0) 70%)}
+.lp-home .wrap{position:relative;padding-top:120px;padding-bottom:130px}
+.lp-home .lp-copy{max-width:620px;display:flex;flex-direction:column;gap:20px}
+.lp-home .lp-live{display:inline-flex;align-items:center;gap:10px;align-self:flex-start;padding:7px 14px;border:1px solid rgba(255,255,255,.35);border-radius:999px;font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;background:rgba(0,0,0,.25);backdrop-filter:blur(4px)}
+.lp-home .lp-dot{width:9px;height:9px;border-radius:50%;background:#22B573;box-shadow:0 0 0 0 rgba(34,181,115,.7);animation:lpPulse 1.8s infinite}
+@keyframes lpPulse{70%{box-shadow:0 0 0 10px rgba(34,181,115,0)}100%{box-shadow:0 0 0 0 rgba(34,181,115,0)}}
+.lp-home .lp-big{text-shadow:0 2px 24px rgba(0,0,0,.25);font-family:var(--display);font-weight:900;font-size:clamp(48px,6.6vw,96px);line-height:.94;letter-spacing:-.01em;text-transform:uppercase;margin:0}
+.lp-home .lp-big span{display:inline-block;padding-right:.08em;text-shadow:none;background:linear-gradient(90deg,#F5D81C,#FFB648);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lp-home .lp-sub{font-size:20px;color:rgba(255,255,255,.9);max-width:520px;margin:0}
+.lp-home .lp-sub b{color:#fff}
+.lp-home .lp-cd{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.75)}
+.lp-home .lp-cd b{font-family:var(--display);font-size:22px;letter-spacing:.04em;color:#fff;font-variant-numeric:tabular-nums}
+.lp-home .note{font-size:15px;font-style:italic;color:rgba(255,255,255,.72);margin:0}
+@media (max-width:700px){.lp-home{background-position:30% 40%}.lp-home::before{background:linear-gradient(180deg,rgba(12,14,10,.25) 0%,rgba(12,14,10,.6) 40%,rgba(12,14,10,.9) 100%)}.lp-home .wrap{padding-top:72px;padding-bottom:84px}.lp-home .lp-sub{font-size:18px}}
+</style>
+<section class="lp-home">
+  <div class="wrap"><div class="lp-copy">
+    <p class="lp-live"><span class="lp-dot" aria-hidden="true"></span>Launch party · live now</p>
+    <h2 class="lp-big">Up to 40% off<span>everything.</span></h2>
+    <p class="lp-sub"><b>${S.percent}% off site wide.</b> Spend $${S.tier.at / 100}+ and your whole order is ${S.tier.percent}% off. No codes needed. Money-back guarantee.</p>
+    <p class="lp-cd">Ends ${pt(S.end, { weekday: 'long' })} ${time(S.end)} PT <b data-lp-home-cd>--:--:--</b></p>
+    <div class="row" style="margin-top:4px"><a class="btn btn-yellow" href="/launch-party/">Shop the launch party</a><a class="btn btn-ghost" href="/shop/">Shop all mushrooms</a></div>
+    <p class="note">Return to your natural state.</p>
+  </div></div>
+</section>
+<script>(function(){var S=${JSON.stringify({ start: S.earlyStart || S.start, end: S.end })},r=document.documentElement,c=document.querySelector('[data-lp-home-cd]');
+function f(ms){var s=Math.max(0,Math.floor(ms/1000)),x=Math.floor(s/86400),hh=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),z=s%60;return (x?x+'d ':'')+String(hh).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(z).padStart(2,'0');}
+function t(){var n=Date.now(),on=n>=Date.parse(S.start)&&n<Date.parse(S.end);r.classList.toggle('lp-on',on);if(on&&c)c.textContent=f(Date.parse(S.end)-n);return on;}
+if(t())var i=setInterval(function(){if(!t())clearInterval(i);},1000);})();</script>`;
+}
