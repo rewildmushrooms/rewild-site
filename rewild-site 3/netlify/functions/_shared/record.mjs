@@ -106,6 +106,7 @@ export async function recordPaidOrder(order, opts, deps = {}) {
   const email = prev?.email || emailKey(await buyerEmail(order, opts)) || null;
   const name = buyerName(order);
   const rec = { ...orderRecord(order, email, name), steps, ...hqFields(prev) };
+  keepRefunds(rec); // Square doesn't show dashboard refunds on the sale itself, so keep the ones we logged
 
   if (!steps.inventory) {
     try { await (deps.syncWebOrders || syncWebOrders)([order], opts); steps.inventory = true; } catch (e) { console.error('stock update failed', order.id, e.message); }
@@ -164,18 +165,73 @@ export async function recordPaidOrder(order, opts, deps = {}) {
 
 // Refunds: note them on the order and customer. Stock is NOT put back automatically
 // (a refunded bag may never come back); HQ can restock by hand.
-export async function recordRefund(order) {
+// A refund made in Square's own dashboard lands on a separate "return" order that points back to the
+// sale (returns[].source_order_id). We follow that link so the sale, the customer and every total count it.
+const liveRefunds = (list) => (list || []).filter((r) => r.status !== 'REJECTED' && r.status !== 'FAILED');
+export const returnSource = (o) => (o?.returns || []).map((r) => r.source_order_id).find(Boolean) || null;
+// Copies refunds from return orders onto their sales (for lists of Square orders, e.g. HQ totals).
+export function attachReturnRefunds(orders) {
+  const byId = new Map((orders || []).map((o) => [o.id, o]));
+  for (const o of orders || []) {
+    const sale = byId.get(returnSource(o));
+    if (!sale || !o.refunds?.length) continue;
+    const have = new Set((sale.refunds || []).map((r) => r.id));
+    sale.refunds = [...(sale.refunds || []), ...o.refunds.filter((r) => !have.has(r.id))];
+  }
+  return orders;
+}
+// Refunds already counted on a saved order (HQ refunds and Square-dashboard refunds alike).
+export const loggedRefunds = (rec) => liveRefunds(rec?.refundLog).reduce((a, r) => a + (Number(r.amount) || 0), 0);
+// HQ's refund id is "<payment id>_<refund id>"; the order's refund id is just "<refund id>".
+const sameRefund = (a, b) => !!a && !!b && (a === b || String(a).endsWith('_' + b) || String(b).endsWith('_' + a));
+const keepRefunds = (rec) => { rec.refunded = Math.min(rec.total || 0, Math.max(rec.refunded || 0, loggedRefunds(rec))); return rec; };
+
+export async function recordRefund(order, opts) {
+  const src = returnSource(order);
+  if (src && !isWebOrder(order)) { // a return order: apply its refunds to the website sale it came from
+    const sale = await fetchOrder(src, opts).catch(() => null);
+    if (!sale) return { skipped: true };
+    attachReturnRefunds([sale, order]);
+    return recordRefund(sale, opts);
+  }
   if (!isWebOrder(order)) return { skipped: true };
   const prev = await getJSON('orders', order.id);
   if (!prev || prev.deleted) return { skipped: true };
-  const rec = { ...prev, ...orderRecord(order, prev.email, prev.name), steps: prev.steps, recordedAt: prev.recordedAt };
-  await setJSON('orders', order.id, rec);
+  const rec = { ...prev, ...orderRecord(order, prev.email, prev.name), ...hqFields(prev), steps: prev.steps, recordedAt: prev.recordedAt };
+  const log = [...(rec.refundLog || [])];
+  const notes = [...(rec.notes || [])];
+  for (const r of order.refunds || []) {
+    const i = log.findIndex((l) => sameRefund(l.id, r.id));
+    if (i >= 0) { if (r.status && log[i].status !== r.status) log[i] = { ...log[i], status: r.status }; continue; }
+    const amount = amt(r.amount_money);
+    log.push({ at: r.created_at || new Date().toISOString(), by: 'square', amount, reason: r.reason || null, id: r.id, status: r.status || null, via: 'square' });
+    if (!['REJECTED', 'FAILED'].includes(r.status)) notes.push({ at: r.created_at || new Date().toISOString(), by: 'square', text: `Refunded $${(amount / 100).toFixed(2)} in Square${r.reason ? ` (reason: ${r.reason})` : ''}.` });
+  }
+  rec.refundLog = log;
+  rec.notes = notes.slice(-50);
+  keepRefunds(rec);
+  await setJSON('orders', rec.id, rec);
+  await putIndex('orders', rec.id, orderSummary(rec));
   if (rec.email) {
     const c = await getJSON('customers', rec.email);
-    if (c) { const m = mergeCustomer(c, rec); await setJSON('customers', rec.email, m); await putIndex('customers', rec.email, customerSummary(m)); }
+    if (c) {
+      const m = mergeCustomer(c, rec); await setJSON('customers', rec.email, m); await putIndex('customers', rec.email, customerSummary(m));
+      if (m.marketingConsent) { try { await syncCustomer(m); } catch (e) { console.error('mailerlite sync failed', e.message); } }
+    }
   }
-  await putIndex('orders', order.id, orderSummary(rec));
   return rec;
+}
+
+// Re-checks recent refunds in Square (catches any the webhook missed). Safe to run again and again.
+export async function syncRefunds(days = 120, opts) {
+  const since = new Date(Date.now() - days * 86400000).toISOString();
+  const { refunds = [] } = await square('GET', `/refunds?begin_time=${encodeURIComponent(since)}&limit=100`, null, opts);
+  const ids = [...new Set(refunds.filter((r) => r.order_id).map((r) => r.order_id))];
+  let applied = 0;
+  for (const id of ids) {
+    try { const out = await recordRefund(await fetchOrder(id, opts), opts); if (out && !out.skipped) applied++; } catch (e) { console.error('refund sync failed', id, e.message); }
+  }
+  return { checked: ids.length, applied };
 }
 
 // Copies purchase facts into MailerLite fields (only for people who said yes to emails).
