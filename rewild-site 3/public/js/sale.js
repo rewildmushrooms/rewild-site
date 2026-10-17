@@ -25,6 +25,10 @@
     const h = Number(d.toLocaleString('en-US', { ...o, hour: 'numeric', hour12: false })) % 24, m = d.toLocaleString('en-US', { ...o, minute: '2-digit' });
     return d.toLocaleString('en-CA', { ...o, weekday: 'short', month: 'short', day: 'numeric' }) + ', ' + (h % 12 || 12) + (Number(m) ? ':' + String(m).padStart(2, '0') : '') + (h < 12 ? 'am' : 'pm') + ' PT'; };
 
+  // "Monday 9am PT"
+  const endsAt = (iso) => { const d = new Date(iso), o = { timeZone: 'America/Vancouver' };
+    const h = Number(d.toLocaleString('en-US', { ...o, hour: 'numeric', hour12: false })) % 24, m = Number(d.toLocaleString('en-US', { ...o, minute: '2-digit' }));
+    return d.toLocaleString('en-CA', { ...o, weekday: 'long' }) + ' ' + (h % 12 || 12) + (m ? ':' + String(m).padStart(2, '0') : '') + (h < 12 ? 'am' : 'pm') + ' PT'; };
   const tierTxt = (s) => (s.tier ? `${s.tier.percent}% off $${s.tier.at / 100}+ · ` : '');
   function bar(s) {
     const a = document.querySelector('.announce');
@@ -33,7 +37,7 @@
     if (!s) { a.innerHTML = a.dataset.orig; a.classList.remove('sale-on'); return; }
     const now = Date.now();
     let txt;
-    if (s.phase === 'live') txt = `<b>Launch party: ${s.percent}% off site wide</b><span class="ann-sep"> &nbsp;•&nbsp; </span><span class="ann-l2">ends in <span class="cd">${fmtLeft(Date.parse(s.end) - now)}</span> &nbsp;•&nbsp; limited stock</span>`;
+    if (s.phase === 'live') txt = `<b>Launch party: up to ${s.tier ? s.tier.percent : s.percent}% off site wide</b><span class="ann-sep"> &nbsp;•&nbsp; </span><span class="ann-l2">ends ${endsAt(s.end)} &nbsp;•&nbsp; <span class="cd">${fmtLeft(Date.parse(s.end) - now)}</span> left</span>`;
     else if (s.phase === 'early') txt = `<b>Early access is open</b><span class="ann-opt"> for the list</span><span class="ann-sep"> · </span><span class="ann-l2">${s.percent}% off for everyone in <span class="cd">${fmtLeft(Date.parse(s.start) - now)}</span></span>`;
     else if (Date.parse(s.start) - now < 7 * 86400000) txt = `<b>Launch party: ${s.percent}% off site wide</b><span class="ann-sep"> &nbsp;•&nbsp; </span><span class="ann-l2">Oct 17 &amp; 18 &nbsp;•&nbsp; limited stock</span>`;
     else { a.innerHTML = a.dataset.orig; a.classList.remove('sale-on'); return; }
@@ -60,12 +64,8 @@
       const out = left && left[id] === 0;
       el.innerHTML = out ? `<s>${money(list)}</s> <b>Sold out</b>` : `<s>${money(list)}</s> <b class="sale-price">${money(Math.round(list * (100 - s.percent) / 100))}</b>`;
     });
-    document.querySelectorAll('[data-sale-left]').forEach((el) => {
-      const id = el.dataset.saleLeft;
-      if (!(s && s.phase === 'live' && left && id in left)) { el.hidden = true; return; }
-      el.hidden = false;
-      el.textContent = left[id] === 0 ? 'Sold out at the launch party price' : `Only ${left[id]} left at ${s.percent}% off · limit ${s.maxEach} per order`;
-    });
+    // "Only N left" notes are switched off (Jade, Oct 17): stock limits still apply at checkout.
+    document.querySelectorAll('[data-sale-left]').forEach((el) => { el.hidden = true; });
   }
 
   let lastPhase = null;
