@@ -75,12 +75,18 @@ export function summarize(orders, days, now = Date.now(), invoices = [], emails 
   let revenue = 0, shipping = 0, discounts = 0, refunded = 0;
   const customers = new Set();
   const paid = orders.filter((o) => isWebOrder(o) && isPaid(o));
+  // Sales are counted after refunds: a fully refunded order is not a sale; a part refund comes off the total.
+  const refundOf = (o) => (o.refunds || []).filter((r) => r.status !== 'REJECTED' && r.status !== 'FAILED').reduce((a, r) => a + amt(r.amount_money), 0);
+  const counted = [];
   for (const o of paid) {
-    const total = amt(o.total_money);
+    const back = Math.min(refundOf(o), amt(o.total_money));
+    refunded += back;
+    if (back >= amt(o.total_money)) continue;
+    counted.push(o);
+    const total = amt(o.total_money) - back;
     revenue += total;
     shipping += amt(o.total_service_charge_money);
     discounts += amt(o.total_discount_money);
-    refunded += (o.refunds || []).filter((r) => r.status !== 'REJECTED' && r.status !== 'FAILED').reduce((a, r) => a + amt(r.amount_money), 0);
     const email = emails[o.id] || (o.fulfillments || []).map((f) => f.shipment_details?.recipient?.email_address).find(Boolean);
     if (email) customers.add(email.toLowerCase());
     const day = new Date(o.created_at).toISOString().slice(0, 10);
@@ -104,9 +110,10 @@ export function summarize(orders, days, now = Date.now(), invoices = [], emails 
   const names = Object.fromEntries(PRODUCTS.map((p) => [p.id, p.name]));
   return {
     days,
-    revenue, netRevenue: revenue - refunded, refunded, shipping, discounts,
-    orders: paid.length,
-    aov: paid.length ? Math.round(revenue / paid.length) : 0,
+    revenue, netRevenue: revenue, grossRevenue: revenue + refunded, refunded, shipping, discounts,
+    orders: counted.length,
+    refundedOrders: paid.length - counted.length,
+    aov: counted.length ? Math.round(revenue / counted.length) : 0,
     customers: customers.size,
     series,
     products: Object.values(byProduct).map((p) => ({ ...p, name: names[p.id] || p.id })).sort((a, b) => b.revenue - a.revenue),
