@@ -109,6 +109,7 @@ export async function refundOrder(b, member, opts, deps = {}) {
   updated.refunded = Math.max(updated.refunded || 0, already + amount);
   updated.refundLog = [...(updated.refundLog || []), { at: new Date().toISOString(), by: member?.id || null, amount, reason: reason || null, id: refund.id || null, status: refund.status || null }];
   note(updated, member?.id, `Refunded ${money(amount)}${reason ? ` (${reason})` : ''}. Square status: ${String(refund.status || 'pending').toLowerCase()}.`);
+  if (reason && !updated.refundNote) { updated.refundNote = reason; updated.refundNoteAt = new Date().toISOString(); updated.refundNoteBy = member?.id || null; }
   if (b.restock) {
     try { if (await restock(updated, member, 'Order refunded', opts, deps)) note(updated, member?.id, 'Items put back in stock.'); }
     catch (e) { console.error('restock failed', e.message); note(updated, member?.id, 'Could not put the items back in stock. Do it in Stock.'); }
@@ -122,6 +123,17 @@ export async function refundOrder(b, member, opts, deps = {}) {
     if (c?.orders?.[updated.id]) { c.orders[updated.id].total = updated.total - updated.refunded; const m = recalcCustomer(c); await setJSON('customers', updated.email, m); await putIndex('customers', updated.email, customerSummary(m)); }
   }
   return { ok: true, refunded: amount, order: await save(updated) };
+}
+
+// b: { orderId, note }   Why an order was refunded (HQ Refunds tab). Private to HQ.
+export async function setRefundNote(b, member) {
+  const rec = await load(b.orderId);
+  const text = clean(b.note, 500);
+  rec.refundNote = text;
+  rec.refundNoteAt = new Date().toISOString();
+  rec.refundNoteBy = member?.id || null;
+  if (text) note(rec, member?.id, `Refund reason: ${text}`);
+  return { ok: true, order: await save(rec) };
 }
 
 // b: { orderId, restock }   Removes the order from HQ (use it for test orders). Does not refund.
