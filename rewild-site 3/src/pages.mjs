@@ -11,6 +11,7 @@ import { GUIDES, GUIDE_BY_PRODUCT, GROWN, CLEAN, MICRO, HEAVY } from './learn.mj
 import { DRAFT_PAGES, WHY_SECTION } from './drafts.mjs';
 import { referPage, reviewPage } from './refer.mjs';
 import { launchPage, launchHomeHero } from './launch.mjs';
+import { crewPage } from './crew.mjs';
 
 const powders = PRODUCTS.filter((p) => !p.isTincture && !p.isBundle);
 const SELLABLE = PRODUCTS.filter((p) => !p.isBundle);
@@ -1004,5 +1005,6 @@ export const PAGES = [
   referPage,
   reviewPage,
   launchPage,
+  crewPage,
   notFound,
 ];
