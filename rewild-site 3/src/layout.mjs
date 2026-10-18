@@ -208,6 +208,7 @@ ${page.body}
     <label for="co-email" class="sr-only">Email address</label>
     <input id="co-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
     <label class="addon-opt" id="addon-wrap" hidden><input type="checkbox" id="co-addon"> <span id="addon-text"></span></label>
+    <p class="co-note" style="font-size:13px;color:var(--soft);margin:-4px 0 0">If you don't finish checking out, we'll email you a reminder about your cart (up to 3). Opt out anytime.</p>
     <label class="news-opt"><input type="checkbox" id="cart-news"> <span>Keep me in the loop with REWILD news, product drops and occasional offers. Unsubscribe anytime.</span></label>
     <button type="submit" class="btn btn-yellow btn-block" id="co-continue">Continue to secure checkout</button>
     <p class="error-msg" id="cart-error" role="alert"></p>
