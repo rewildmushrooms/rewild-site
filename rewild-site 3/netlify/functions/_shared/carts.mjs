@@ -115,7 +115,7 @@ export function reminderEmail(step, cart, { site, code, sale }) {
     2: { subject: 'Still thinking it over?', head: 'Still thinking it over?', body: 'Totally fair. Every REWILD lot is third-party tested, full spectrum, nothing else added. Canadian orders ship in 1 to 3 business days, and you have 14 days for a full refund if it is not for you.', cta: 'View your cart' },
     3: sale ? { subject: `Your cart is ${sale.percent}% off this weekend`, head: 'Good timing.', body: `Our launch party is on, so everything in your cart is ${sale.percent}% off right now${sale.tier ? `, and ${sale.tier.percent}% off when you spend $${sale.tier.at / 100}+` : ''}. This weekend only, and there are only ${sale.stockEach} of each. The sale price is applied automatically.`, cta: 'Back to my cart' } : { subject: `${RECOVERY_PERCENT}% off your cart, for the next 24 hours`, head: `Here's ${RECOVERY_PERCENT}% off, just for you.`, body: `Use code ${code?.code} at checkout for ${RECOVERY_PERCENT}% off this cart. It works once and ends in 24 hours.`, cta: `Checkout with ${RECOVERY_PERCENT}% off` },
   }[step];
-  const text = [copy.head, '', copy.body, '', 'In your cart:', ...list.map((l) => '  ' + l), `  Total: ${money(cart.value)}`, '', `${copy.cta}: ${link}`, '', 'Return to your natural state.', '~ The REWILD crew', '', '---', "You're getting this because you started a checkout at rewildmushrooms.com and said yes to emails.", `Stop cart reminders: ${optout}`, 'REWILD Mushrooms, Box 18, Crescent Valley, BC V0G 1H0'].join('\n');
+  const text = [copy.head, '', copy.body, '', 'In your cart:', ...list.map((l) => '  ' + l), `  Total: ${money(cart.value)}`, '', `${copy.cta}: ${link}`, '', 'Return to your natural state.', '~ The REWILD crew', '', '---', "You're getting this because you started a checkout at rewildmushrooms.com.", `Stop cart reminders: ${optout}`, 'REWILD Mushrooms, Box 18, Crescent Valley, BC V0G 1H0'].join('\n');
   const html = `<!doctype html><html><body style="margin:0;background:#F3F2EE;font-family:Helvetica,Arial,sans-serif;color:#121310">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3F2EE;padding:24px 0"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border-radius:4px">
@@ -128,14 +128,14 @@ ${list.map((l) => `<tr><td style="padding:10px 0;font-size:15px">${esc(l)}</td><
 ${code ? `<p style="margin:0 0 18px;font-size:15px">Your code: <strong style="font-size:18px;letter-spacing:.06em">${esc(code.code)}</strong></p>` : ''}
 <a href="${esc(link)}" style="display:inline-block;background:#E8C800;color:#121310;text-decoration:none;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:15px 26px;border-radius:2px">${esc(copy.cta)}</a>
 <p style="margin:28px 0 0;font-size:15px;line-height:1.5">Return to your natural state.<br>~ The REWILD crew</p></td></tr>
-<tr><td style="padding:24px 28px;font-size:12px;line-height:1.5;color:#6B6D64">You're getting this because you started a checkout at rewildmushrooms.com and said yes to emails. <a href="${esc(optout)}" style="color:#6B6D64">Stop cart reminders</a>.<br>REWILD Mushrooms, Box 18, Crescent Valley, BC V0G 1H0</td></tr>
+<tr><td style="padding:24px 28px;font-size:12px;line-height:1.5;color:#6B6D64">You're getting this because you started a checkout at rewildmushrooms.com. <a href="${esc(optout)}" style="color:#6B6D64">Stop cart reminders</a>.<br>REWILD Mushrooms, Box 18, Crescent Valley, BC V0G 1H0</td></tr>
 </table></td></tr></table></body></html>`;
   return { subject: copy.subject, text, html, unsubscribe: optout };
 }
 
 // Which reminder (if any) is due now. Only the latest due step is sent, so a late run never sends three at once.
 export function dueStep(cart, now = Date.now()) {
-  if (cart.status !== 'open' || !cart.consent) return null;
+  if (cart.status !== 'open') return null; // reminders go to every started checkout; newsletter consent is separate
   const age = now - Date.parse(cart.createdAt);
   const due = STEPS.filter((s) => age >= s.after).at(-1);
   if (!due) return null;
