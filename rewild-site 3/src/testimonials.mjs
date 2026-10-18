@@ -55,6 +55,14 @@ export const TESTIMONIALS = [
     quote: 'Rewild Mushrooms has been an epic addition to my life... Adding these mushroom powders into my morning coffee or cacao have been a game changer and it is truly obvious the quality here... This company is going places!',
     products: ['clarity', 'strength', 'peace', 'energy'],
   },
+  {
+    id: 'hyperkodi',
+    name: 'Hyperkodi',
+    detail: 'Uses all four mushrooms',
+    head: 'Your mushrooms are killer',
+    quote: "Your mushrooms are killer dude. I gave some to my coworker last night and he's probably gonna be buying some too. The four species as a combo gives you such a great feeling of natural wellbeing and energy boost!",
+    products: ['energy', 'clarity', 'strength', 'peace'],
+  },
 ];
 
 const video = (t) => `<figure class="review review-video">
@@ -79,7 +87,11 @@ export function reviewsSection({ eyebrow = 'What Rewilders are saying', title = 
   if (!list.length) return '';
   return `<section class="section ${tone} reviews-band" aria-label="Customer reviews"><div class="wrap">
   <div class="stack-sm" style="max-width:640px;gap:14px;margin-bottom:40px"><p class="eyebrow">${esc(eyebrow)}</p><h2 class="h2" style="font-size:clamp(30px,3.6vw,46px)">${esc(title)}</h2></div>
-  <div class="reviews">${list.map(card).join('')}</div>
+  <div class="rv-slider" data-rv-slider>
+    <div class="reviews reviews-track" tabindex="0" aria-label="Customer reviews, scroll sideways for more">${list.map(card).join('')}</div>
+    <div class="rv-nav"><button type="button" class="rv-btn" data-rv="-1" aria-label="Previous review">&larr;</button><button type="button" class="rv-btn" data-rv="1" aria-label="Next review">&rarr;</button></div>
+  </div>
+  <script>document.querySelectorAll('[data-rv-slider]').forEach(function(s){if(s.dataset.on)return;s.dataset.on=1;var t=s.querySelector('.reviews-track');s.querySelectorAll('[data-rv]').forEach(function(b){b.onclick=function(){var c=t.querySelector('.review');t.scrollBy({left:(+b.dataset.rv)*((c?c.offsetWidth:400)+20),behavior:'smooth'})}})});</script>
 </div></section>`;
 }
 
