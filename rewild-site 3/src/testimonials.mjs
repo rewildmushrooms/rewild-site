@@ -63,6 +63,14 @@ export const TESTIMONIALS = [
     quote: "Your mushrooms are killer dude. I gave some to my coworker last night and he's probably gonna be buying some too. The four species as a combo gives you such a great feeling of natural wellbeing and energy boost!",
     products: ['energy', 'clarity', 'strength', 'peace'],
   },
+  {
+    id: 'mate-mika',
+    name: 'Mate Mika',
+    detail: 'Uses the Energy Tincture + mushroom powders',
+    head: 'Super grateful these products are out',
+    quote: "Honestly after just one month of your daily cordycep tincture I... have felt super positive. The mushrooms powders make amazing teas... They all taste great and I love that I can trust the quality and I'm supporting local Canadians 🙏💎 super grateful these products are out!!!",
+    products: ['tincture', 'energy', 'duo', 'clarity', 'strength', 'peace'],
+  },
 ];
 
 const video = (t) => `<figure class="review review-video">
