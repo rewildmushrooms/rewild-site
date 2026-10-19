@@ -99,7 +99,7 @@
     if (prog) {
       if (state.items.length) {
         prog.hidden = false;
-        const done = q.sale ? (q.sale.tierOn ? `You unlocked ${q.sale.percent}% off everything${q.quoted ? '' : ' + free shipping'}.` : q.quoted ? 'Launch party prices applied.' : 'You get free shipping.') : q.quoted ? 'You get a free tincture with this order.' : 'You get free shipping and a free tincture.';
+        const done = q.sale ? (q.sale.tierOn ? `You unlocked ${q.sale.percent}% off everything${q.quoted ? '' : ' + free shipping'}.` : q.quoted ? `${q.sale.label} prices applied.` : 'You get free shipping.') : q.quoted ? 'You get a free tincture with this order.' : 'You get free shipping and a free tincture.';
         prog.querySelector('p').textContent = !q.next ? done : q.next.kind === 'shipping' ? `${money(q.next.short)} away from free shipping in Canada.` : q.next.kind === 'tier' ? `Add ${money(q.next.short)} more (at regular prices) to get ${q.next.percent}% off your whole order.` : `${money(q.next.short)} away from a free Rewild Energy Tincture.`;
         prog.querySelector('.progress span').style.width = (q.next ? q.next.pct : 100) + '%';
       } else prog.hidden = true;
@@ -116,7 +116,7 @@
     const pm = $('#promo-msg');
     if (pm) {
       pm.className = 'small';
-      if (q.sale) pm.innerHTML = `<b>Launch party: ${q.sale.percent}% off everything${q.sale.tier && !q.sale.tierOn ? ` (${q.sale.tier.percent}% off orders of $${q.sale.tier.at / 100}+)` : ''}.</b> Codes are paused until it ends. Limit ${q.sale.maxEach} of each per order.`;
+      if (q.sale) pm.innerHTML = `<b>${q.sale.label}: ${q.sale.percent}% off everything${q.sale.tier && !q.sale.tierOn ? ` (${q.sale.tier.percent}% off orders of $${q.sale.tier.at / 100}+)` : ''}.</b> Codes are paused until it ends.${q.sale.maxEach < 99 ? ` Limit ${q.sale.maxEach} of each per order.` : ''}`;
       else if (!p) pm.innerHTML = '';
       else if (p.pending) pm.innerHTML = `${esc(p.code)} will be checked at checkout. <button type="button" class="link-btn" data-promo-remove>Remove</button>`;
       else if (q.codeNote === 'minimum') { pm.className = 'small err'; pm.innerHTML = `${esc(p.code)} needs an order of ${money(p.minimumAmount)} or more. <button type="button" class="link-btn" data-promo-remove>Remove</button>`; }
@@ -138,8 +138,8 @@
     const err0 = $('#cart-error');
     const left = window.RewildSale && window.RewildSale.left();
     let block = '';
-    if (q.sale && q.overCap && q.overCap.length) block = `Launch party limit: ${q.sale.maxEach} of each product per order (bundles count what's inside). Please lower ${q.overCap.map((id) => byId[id] ? byId[id].word || byId[id].name : id).join(', ')}.`;
-    else if (q.sale && left) { const short = Object.keys(q.units || {}).find((id) => id in left && q.units[id] > left[id]); if (short) block = left[short] === 0 ? `${byId[short].word || byId[short].name} is sold out at the launch party price. Please remove it.` : `Only ${left[short]} ${byId[short].word || byId[short].name} left at the launch party price.`; }
+    if (q.sale && q.overCap && q.overCap.length) block = `${q.sale.label} limit: ${q.sale.maxEach} of each product per order (bundles count what's inside). Please lower ${q.overCap.map((id) => byId[id] ? byId[id].word || byId[id].name : id).join(', ')}.`;
+    else if (q.sale && left) { const short = Object.keys(q.units || {}).find((id) => id in left && q.units[id] > left[id]); if (short) block = left[short] === 0 ? `${byId[short].word || byId[short].name} is sold out at the ${q.sale.label.toLowerCase()} price. Please remove it.` : `Only ${left[short]} ${byId[short].word || byId[short].name} left at the ${q.sale.label.toLowerCase()} price.`; }
     if (err0 && (block || err0.dataset.sale)) { err0.textContent = block; if (block) err0.dataset.sale = '1'; else delete err0.dataset.sale; }
     $('#checkout-btn').disabled = state.items.length === 0 || !!block;
   }
