@@ -16,7 +16,7 @@ import { emailKey } from './_shared/record.mjs';
 const CUR = 'CAD';
 
 export async function buildPaymentLink(body, siteUrl, opts) {
-  const dest = body?.country === 'US' ? 'US' : body?.country === 'LOCAL' ? 'LOCAL' : 'CA';
+  const dest = body?.country === 'US' ? 'US' : 'CA'; // local pickup retired Oct 2026
   const local = dest === 'LOCAL';
   const country = local ? 'CA' : dest; // local orders are Canadian orders
   const catalog = { byId: PRODUCT_BY_ID, shipping: Object.fromEntries(Object.entries(SHIPPING).map(([k, v]) => [k, { flatRate: v.flatRate, freeOver: v.freeOver, quoted: !!v.quotedAfterOrder }])) };
