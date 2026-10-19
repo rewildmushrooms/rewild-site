@@ -11,6 +11,7 @@ import { GUIDES, GUIDE_BY_PRODUCT, GROWN, CLEAN, MICRO, HEAVY } from './learn.mj
 import { DRAFT_PAGES, WHY_SECTION } from './drafts.mjs';
 import { referPage, reviewPage } from './refer.mjs';
 import { launchPage, launchHomeHero } from './launch.mjs';
+import { bfPage, bfHomeHero } from './blackfriday.mjs';
 import { crewPage } from './crew.mjs';
 
 const powders = PRODUCTS.filter((p) => !p.isTincture && !p.isBundle);
@@ -103,6 +104,7 @@ const home = {
   ],
   body: `
 ${launchHomeHero()}
+${bfHomeHero()}
 <section class="hero hero-home">
   <div class="wrap"><div class="hero-copy">
     <p class="eyebrow">For those who already believe in the power of mushrooms</p>
@@ -1005,6 +1007,7 @@ export const PAGES = [
   referPage,
   reviewPage,
   launchPage,
+  bfPage,
   crewPage,
   notFound,
 ];
