@@ -24,7 +24,7 @@ import { square, idem, locationId, pages, isLive, json } from './_shared/square.
 import { groupStats, groupCount } from './_shared/mailerlite.mjs';
 import { readIndex, readLedger, HIGH_VALUE } from './_shared/data.mjs';
 import { recordOfflineSale, recordRestock, recordAdjustment, logCount } from './_shared/ledger.mjs';
-import { cartStats, STEPS, EXPIRE_AFTER } from './_shared/carts.mjs';
+import { cartStats, STEPS, EXPIRE_AFTER, getCart, saveCart, setOpenCart } from './_shared/carts.mjs';
 import { getJSON, setJSON, dataStartsAt } from './_shared/store.mjs';
 import { stockLevels } from './_shared/inventory.mjs';
 import { PRODUCTS } from './_shared/catalog.mjs';
@@ -566,6 +566,13 @@ export default async (req) => {
     }
     if (req.method === 'POST') {
       const b = await req.json();
+      if (b.action === 'stopCart') { // owner: stop reminders for every open cart of one email
+        if (!owner) return json(403, { error: 'Owner only' });
+        const email = String(b.email || '').trim().toLowerCase(); const stopped = [];
+        for (const id of [].concat(b.cartIds || [])) { const cart = await getCart(id); if (cart && cart.status === 'open' && cart.email === email) { cart.status = 'stopped'; await saveCart(cart); stopped.push(id); } }
+        if (stopped.length) await setOpenCart(email, false);
+        return json(200, { ok: true, stopped });
+      }
       if (b.action === 'offlineSale') return json(200, { ok: true, ...(await recordOfflineSale(b, member)) });
       if (b.action === 'restock') return json(200, { ok: true, ...(await recordRestock(b, member)) });
       if (b.action === 'adjust') return json(200, { ok: true, ...(await recordAdjustment(b, member)) });
