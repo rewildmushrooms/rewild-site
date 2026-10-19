@@ -6,7 +6,7 @@ import { square, locationId } from './square.mjs';
 import { PRODUCTS } from './catalog.mjs';
 import { BUNDLES, STOCKED, ensureVariations, stockLevels } from './inventory.mjs';
 import { appendLedger, putIndex, orderSummary } from './data.mjs';
-import { setJSON } from './store.mjs';
+import { getJSON, setJSON } from './store.mjs';
 import { checkLowStock } from './lowstock.mjs';
 import { PARTNERS } from './team.mjs';
 
@@ -50,6 +50,30 @@ async function afterMove(opts) {
 
 const lines = (units, sign, source, reason, by, n, order, at) =>
   Object.entries(units).map(([product, q]) => ({ at, product, change: sign * q, source, reason, by, note: n || null, order: order || null }));
+
+// Free samples sent out (stores, partners, friends). Full-size products come out of stock;
+// items that are not stocked products (50g bags, 20mg sample packs) are logged as text only.
+export async function recordSample(b, member, opts) {
+  const to = note(b.to).slice(0, 120);
+  if (!to) throw bad('Who is the sample for?');
+  const sent = (Array.isArray(b.items) ? b.items : []).filter((i) => Math.floor(Number(i?.qty)) > 0);
+  const other = note(b.other).slice(0, 300);
+  if (!sent.length && !other) throw bad('Add at least one product or other item.');
+  const units = sent.length ? cleanItems(sent) : {};
+  const id = 'SMP-' + crypto.randomBytes(4).toString('hex').toUpperCase();
+  const n = note(b.note);
+  const tracking = String(b.tracking || '').replace(/\s+/g, '').toUpperCase().slice(0, 40);
+  const at = sent.length ? await move(units, 'IN_STOCK', 'WASTE', `sample:${id}`, opts) : new Date().toISOString();
+  if (sent.length) await appendLedger(lines(units, -1, 'sample', 'Sample', member.id, `For ${to}${n ? ': ' + n : ''}`, id, at));
+  const rec = { id, at, to, address: note(b.address).slice(0, 200) || null, tracking: tracking || null, by: member.id, note: n || null, other: other || null,
+    items: sent.map((i) => ({ id: i.id, name: PRODUCTS.find((p) => p.id === i.id)?.name || i.id, qty: Math.floor(Number(i.qty)) })) };
+  const doc = (await getJSON('hq-meta', 'samples')) || { list: [] };
+  doc.list.unshift(rec);
+  await setJSON('hq-meta', 'samples', doc);
+  if (sent.length) await afterMove(opts);
+  return { sample: rec };
+}
+export async function listSamples() { return { samples: ((await getJSON('hq-meta', 'samples')) || { list: [] }).list }; }
 
 // Offline / event sale. Several products at once. amount = dollars received (optional).
 export async function recordOfflineSale(b, member, opts) {
