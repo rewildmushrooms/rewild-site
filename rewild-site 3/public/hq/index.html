@@ -166,6 +166,7 @@ a{color:var(--ink)}
         <button class="btn small" data-mode="offline" aria-pressed="false">Record offline sale</button>
         <button class="btn ghost small" data-mode="restock" aria-pressed="false">Restock</button>
         <button class="btn ghost small" data-mode="adjust" aria-pressed="false">Adjust</button>
+        <button class="btn ghost small" data-mode="sample" aria-pressed="false">Send sample</button>
       </div>
       <form class="stockform" id="stock-form" hidden>
         <h2 id="sf-title" style="margin-bottom:6px">Record offline sale</h2>
@@ -174,6 +175,10 @@ a{color:var(--ink)}
         <div class="grid" style="align-items:end">
           <label id="sf-amount-l">Amount received ($)<input id="sf-amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Optional"></label>
           <label id="sf-who-l">Whose sale<select id="sf-who"></select></label>
+          <label id="sf-to-l" hidden>Who it's for<input id="sf-to" maxlength="120" placeholder="e.g. Mr Mothy (Dixie)"></label>
+          <label id="sf-addr-l" hidden>Address<input id="sf-addr" maxlength="200" placeholder="Optional"></label>
+          <label id="sf-other-l" hidden>Other items (not counted in stock)<input id="sf-other" maxlength="300" placeholder="e.g. 2× Energy 50g, 8× Energy 20mg samples"></label>
+          <label id="sf-track-l" hidden>Tracking #<input id="sf-track" maxlength="40" placeholder="Optional"></label>
           <label>Note<input id="sf-note" maxlength="200" placeholder="e.g. Shambhala, cash"></label>
           <button class="btn" type="submit" id="sf-submit">Save</button>
           <button class="btn ghost" type="button" id="sf-cancel">Cancel</button>
@@ -182,6 +187,10 @@ a{color:var(--ink)}
       <p class="msg" id="inv-msg" role="status"></p>
       <div class="scroll"><table><thead><tr><th>Product</th><th class="num">On hand</th><th>Set count</th></tr></thead><tbody id="inv-list"><tr><td colspan="3" class="muted">Loading…</td></tr></tbody></table></div>
       <p class="muted" id="inv-bundles" style="margin-bottom:0"></p>
+    </section>
+    <section class="panel" style="margin-top:12px" id="samples-panel" hidden>
+      <div class="panel-head"><h2>Samples sent</h2><span class="muted small">no charge, newest first</span></div>
+      <div class="scroll"><table><thead><tr><th>Date</th><th>For</th><th>What</th><th>Tracking</th><th>Note</th></tr></thead><tbody id="samples"><tr><td colspan="5" class="muted">Loading…</td></tr></tbody></table></div>
     </section>
     <section class="panel" style="margin-top:12px">
       <div class="panel-head"><h2>Stock history</h2><span class="muted small">newest first</span></div>
@@ -588,7 +597,7 @@ a{color:var(--ink)}
     if(tab==='orders')loadOrders();
     if(tab==='refunds')loadRefunds();
     if(tab==='codes')loadCoupons();
-    if(tab==='inventory'){loadInventory();loadLedger();}
+    if(tab==='inventory'){loadInventory();loadLedger();loadSamples();}
     if(tab==='commissions')loadCommissions();
     if(tab==='traffic')loadTraffic({});
   }
@@ -746,15 +755,16 @@ a{color:var(--ink)}
   function openStockForm(m){
     mode=m;document.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.mode===m));
     const f=$('#stock-form');f.hidden=false;
-    $('#sf-title').textContent=m==='offline'?'Record offline sale':m==='restock'?'Restock':'Adjust stock';
-    $('#sf-help').textContent=m==='offline'?'Cash or non-Square sales, e.g. at a market. Sales in the Square app already count. Enter how many of each you sold, then Save once.':m==='restock'?'Enter how many of each product came in.':'Pick one product and enter + or − (e.g. -2 for damaged). A note is required.';
+    $('#sf-title').textContent=m==='offline'?'Record offline sale':m==='restock'?'Restock':m==='sample'?'Send sample':'Adjust stock';
+    ['to','addr','other','track'].forEach(k=>{$('#sf-'+k+'-l').hidden=m!=='sample';$('#sf-'+k).value='';});
+    $('#sf-help').textContent=m==='offline'?'Cash or non-Square sales, e.g. at a market. Sales in the Square app already count. Enter how many of each you sold, then Save once.':m==='restock'?'Enter how many of each product came in.':m==='sample'?'Free samples. Full-size products below come out of stock. List anything else (50g bags, 20mg packs) under Other items.':'Pick one product and enter + or − (e.g. -2 for damaged). A note is required.';
     $('#sf-amount-l').hidden=m!=='offline';
     const owner=me&&me.role==='owner';
     $('#sf-who-l').hidden=m!=='offline'||!owner;
     if(owner)$('#sf-who').innerHTML='<option value="">Jade (no commission)</option>'+(me.partners||[]).map(p=>`<option value="${esc(p.id)}">${esc(p.name)} (commission)</option>`).join('');
     if(m==='offline'&&!owner)$('#sf-help').textContent='Cash, e-transfer or any sale outside the website, e.g. at a market. Enter how many of each you sold and the amount you received. It counts toward your commission.';
     $('#sf-amount').placeholder=m==='offline'&&!owner?'Required':'Optional (required for a partner sale)';
-    const ids=m==='offline'?SALE_IDS:SALE_IDS.filter(i=>i!=='duo');
+    const ids=m==='offline'||m==='sample'?SALE_IDS:SALE_IDS.filter(i=>i!=='duo');
     $('#sf-qty').innerHTML=m==='adjust'
       ?`<label>Product<select id="sf-prod">${ids.map(i=>`<option value="${i}">${LABEL[i]}</option>`).join('')}</select></label><label>Change (+ or −)<input id="sf-change" type="number" step="1" inputmode="numeric" placeholder="-2"></label>`
       :ids.map(i=>`<label>${LABEL[i]}${i==='duo'?' <span class="muted small">(1 powder + 1 tincture)</span>':''}<input type="number" min="0" step="1" inputmode="numeric" data-q="${i}" placeholder="0"></label>`).join('');
@@ -768,15 +778,22 @@ a{color:var(--ink)}
       let body;
       if(mode==='adjust')body={action:'adjust',id:$('#sf-prod').value,change:$('#sf-change').value,note:$('#sf-note').value};
       else{const items=[...document.querySelectorAll('[data-q]')].map(i=>({id:i.dataset.q,qty:Number(i.value||0)})).filter(i=>i.qty>0);
-        body={action:mode==='offline'?'offlineSale':'restock',items,note:$('#sf-note').value,...(mode==='offline'?{amount:$('#sf-amount').value,partner:$('#sf-who').value}:{})};}
+        body=mode==='sample'?{action:'sample',items,note:$('#sf-note').value,to:$('#sf-to').value,address:$('#sf-addr').value,other:$('#sf-other').value,tracking:$('#sf-track').value}
+          :{action:mode==='offline'?'offlineSale':'restock',items,note:$('#sf-note').value,...(mode==='offline'?{amount:$('#sf-amount').value,partner:$('#sf-who').value}:{})};}
       await api('',{method:'POST',body:JSON.stringify(body)});
-      m.className='msg';m.textContent=mode==='offline'?'Offline sale saved. Stock updated.':mode==='restock'?'Restock saved.':'Adjustment saved.';
+      m.className='msg';m.textContent=mode==='offline'?'Offline sale saved. Stock updated.':mode==='restock'?'Restock saved.':mode==='sample'?'Sample saved.':'Adjustment saved.';
       $('#stock-form').hidden=true;document.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed','false'));
-      loadInventory();loadLedger();delete loaded.overview;
+      loadInventory();loadLedger();loadSamples();delete loaded.overview;
     }catch(err){m.className='msg err';m.textContent=err.message;}
     b.disabled=false;b.textContent='Save';
   };
-  const SRC={online_sale:'Website order',offline_sale:'Offline sale',restock:'Restock',manual_adjustment:'Adjustment',refund:'Refund'};
+  async function loadSamples(){
+    if(!(me&&me.role==='owner'))return;$('#samples-panel').hidden=false;
+    try{const r=await api('?action=samples');
+      $('#samples').innerHTML=r.samples.length?r.samples.map(s=>`<tr><td>${new Date(s.at).toLocaleDateString('en-CA',{month:'short',day:'numeric'})}</td><td><strong>${esc(s.to)}</strong>${s.address?'<br><span class="muted small">'+esc(s.address)+'</span>':''}</td><td>${esc([...(s.items||[]).map(i=>i.qty+'× '+(LABEL[i.id]||i.name)),s.other].filter(Boolean).join(', '))}</td><td>${s.tracking?'<a href="https://www.canadapost-postescanada.ca/track-reperage/en#/search?searchFor='+encodeURIComponent(s.tracking)+'" target="_blank" rel="noopener">'+esc(s.tracking)+'</a>':''}</td><td>${esc(s.note||'')}</td></tr>`).join(''):'<tr><td colspan="5" class="muted">No samples yet.</td></tr>';
+    }catch(err){$('#samples').innerHTML='<tr><td colspan="5" class="msg err">'+esc(err.message)+'</td></tr>';}
+  }
+  const SRC={sample:'Sample',online_sale:'Website order',offline_sale:'Offline sale',restock:'Restock',manual_adjustment:'Adjustment',refund:'Refund'};
   async function loadLedger(){
     try{const r=await api('?action=ledger');
       $('#ledger').innerHTML=r.ledger.length?r.ledger.slice(0,100).map(l=>`<tr><td>${new Date(l.at).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}</td><td>${esc(LABEL[l.product]||l.product)}</td><td class="num"><span class="chg ${l.change>0?'up':'down'}">${l.change>0?'+':''}${l.change}</span></td><td>${esc(l.reason||SRC[l.source]||l.source)}${l.order&&l.source==='online_sale'?' <span class="muted">#'+esc(String(l.order).slice(-8).toUpperCase())+'</span>':''}</td><td>${esc(l.by||'')}</td><td>${esc(l.note||'')}</td></tr>`).join(''):'<tr><td colspan="6" class="muted">No changes recorded yet.</td></tr>';
