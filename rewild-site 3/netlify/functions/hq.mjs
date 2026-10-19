@@ -23,7 +23,7 @@
 import { square, idem, locationId, pages, isLive, json } from './_shared/square.mjs';
 import { groupStats, groupCount } from './_shared/mailerlite.mjs';
 import { readIndex, readLedger, HIGH_VALUE } from './_shared/data.mjs';
-import { recordOfflineSale, recordRestock, recordAdjustment, logCount } from './_shared/ledger.mjs';
+import { recordOfflineSale, recordRestock, recordAdjustment, logCount, recordSample, listSamples } from './_shared/ledger.mjs';
 import { cartStats, STEPS, EXPIRE_AFTER, getCart, saveCart, setOpenCart } from './_shared/carts.mjs';
 import { getJSON, setJSON, dataStartsAt } from './_shared/store.mjs';
 import { stockLevels } from './_shared/inventory.mjs';
@@ -539,6 +539,7 @@ export default async (req) => {
       }
       if (!owner) return denied();
       if (['summary', 'orders', 'customers', 'people', 'refunds'].includes(action)) await refundCheck();
+      if (action === 'samples') return json(200, owner ? await listSamples() : { samples: [] });
       if (action === 'refunds') return json(200, await refundsList());
       if (action === 'summary') {
         const days = parseDays(url.searchParams.get('days'));
@@ -573,6 +574,7 @@ export default async (req) => {
         if (stopped.length) await setOpenCart(email, false);
         return json(200, { ok: true, stopped });
       }
+      if (b.action === 'sample') { if (!owner) return json(403, { error: 'Owner only' }); return json(200, { ok: true, ...(await recordSample(b, member)) }); }
       if (b.action === 'offlineSale') return json(200, { ok: true, ...(await recordOfflineSale(b, member)) });
       if (b.action === 'restock') return json(200, { ok: true, ...(await recordRestock(b, member)) });
       if (b.action === 'adjust') return json(200, { ok: true, ...(await recordAdjustment(b, member)) });
