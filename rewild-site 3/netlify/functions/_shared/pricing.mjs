@@ -25,7 +25,11 @@ export const BUNDLE_CODE_OVER = 20; // a % code must beat this to touch a bundle
 // product per order (bundles count their parts). stockEach units of each product are sold at the sale price; the
 // checkout checks what is left. Times are UTC. earlyStart: people with the early-access link can buy from then.
 export const SALES = [
-  { id: 'launch40', name: 'Launch party 33% off', percent: 33, tier: { at: 33300, percent: 40 }, earlyStart: '2026-10-17T03:00:00Z', start: '2026-10-17T16:00:00Z', end: '2026-10-19T16:00:00Z', maxEach: 3, stockEach: 40,
+  { id: 'launch40', label: 'Launch party', page: '/launch-party/', dates: 'Oct 17 &amp; 18', name: 'Launch party 33% off', percent: 33, tier: { at: 33300, percent: 40 }, earlyStart: '2026-10-17T03:00:00Z', start: '2026-10-17T16:00:00Z', end: '2026-10-19T16:00:00Z', maxEach: 3, stockEach: 40,
+    ids: ['energy', 'clarity', 'strength', 'peace', 'tincture'] },
+  // Black Friday (Jade, Oct 19): 25% off everything, 40% off orders of $500+ at regular prices. No limits.
+  // Early access Thu Nov 26, 8pm PT; everyone Fri Nov 27, 12am PT; ends Mon Nov 30, 11:59pm PT (PST, UTC-8).
+  { id: 'bf25', label: 'Black Friday', page: '/black-friday/', dates: 'Nov 27 to 30', name: 'Black Friday 25% off', percent: 25, tier: { at: 50000, percent: 40 }, earlyStart: '2026-11-27T04:00:00Z', start: '2026-11-27T08:00:00Z', end: '2026-12-01T07:59:00Z', maxEach: 99, stockEach: 100000,
     ids: ['energy', 'clarity', 'strength', 'peace', 'tincture'] },
 ];
 // The sale that matters right now (live, or early access, or the next one coming up). phase: 'soon' | 'early' | 'live'
@@ -170,10 +174,10 @@ function priceSale(items, country, catalog, sale, promo) {
   if (!next && sale.tier && !tier && lines.length) next = { kind: 'tier', short: sale.tier.at - listTotal, pct: Math.min(100, Math.round(listTotal / sale.tier.at * 100)), percent: sale.tier.percent };
   return {
     lines, itemsTotal, listTotal, bundleSaving: 0, stockUpSaving: 0, bags: 0, codeApplied: null, codeBeaten: false, bundleKept: false,
-    codeNote: promo ? 'sale' : '', discount: itemsTotal - productsTotal, discountName: tier ? `Launch party ${pct}% off ($${sale.tier.at / 100}+)` : sale.name,
+    codeNote: promo ? 'sale' : '', discount: itemsTotal - productsTotal, discountName: tier ? `${sale.label || 'Sale'} ${pct}% off ($${sale.tier.at / 100}+)` : sale.name,
     addonEligible: false, addonApplied: false, addonUnit: 0, addonFull: byId[OFFERS.addon.id].price,
     gift: false, paid: productsTotal, shipping, free, total: productsTotal + shipping, quoted: !!ship.quoted, freeOver: ship.freeOver,
-    savings: listTotal - productsTotal, next, sale: { id: sale.id, percent: pct, base: sale.percent, tier: sale.tier || null, tierOn: !!tier, maxEach: sale.maxEach }, units, overCap,
+    savings: listTotal - productsTotal, next, sale: { id: sale.id, label: sale.label || 'Sale', limited: sale.stockEach < 1000, percent: pct, base: sale.percent, tier: sale.tier || null, tierOn: !!tier, maxEach: sale.maxEach }, units, overCap,
   };
 }
 

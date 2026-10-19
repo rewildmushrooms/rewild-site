@@ -59,7 +59,7 @@ export function quizEmail(step, c, { site, code, optout, sale }) {
       small: "Not for you? Email us within 14 days of delivery for a full refund. No questions asked." };
   } else if (sale) {
     const tier = sale.tier ? `${sale.tier.percent}% off your whole order when you spend $${sale.tier.at / 100}+` : '';
-    copy = { subject: `Your stack is ${sale.percent}% off this weekend`, head: 'Good timing.', body: [hi, `Our launch party is on, so your stack is ${sale.percent}% off right now. This weekend only, and there are only ${sale.stockEach} of each.`], big: `${sale.percent}% off everything`, sub: tier, cta: 'Load my stack', campaign: 'sale',
+    copy = { subject: `Your stack is ${sale.percent}% off right now`, head: 'Good timing.', body: [hi, `${sale.label || 'Our sale'} is on, so your stack is ${sale.percent}% off right now. It's only on for a few days${sale.stockEach < 1000 ? `, and there are only ${sale.stockEach} of each` : ''}.`], big: `${sale.percent}% off everything`, sub: tier, cta: 'Load my stack', campaign: 'sale',
       small: 'The sale price is applied automatically in your cart. It ends Monday at 9am PT.' };
   } else if (step === 2) {
     copy = { subject: `${QUIZ_PERCENT}% off your stack`, head: 'A little nudge.', body: [hi, `Your stack has been sitting here for a few days, so here's ${QUIZ_PERCENT}% off to get you started. The code works once and ends in 72 hours.`], cta: `Claim my ${QUIZ_PERCENT}%`, campaign: 'offer',

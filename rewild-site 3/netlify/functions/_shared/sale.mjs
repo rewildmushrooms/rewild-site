@@ -4,7 +4,7 @@
 import { getJSON, setJSON } from './store.mjs';
 import { activeSale, saleNow, cartUnits } from './pricing.mjs';
 
-export const EARLY_KEYS = { launch40: 'rewilders-first' };
+export const EARLY_KEYS = { launch40: 'rewilders-first', bf25: 'rewilders-bf' };
 export const earlyOk = (saleId, key) => !!key && EARLY_KEYS[saleId] === String(key).trim().toLowerCase();
 
 export async function saleSold(saleId) { return (await getJSON('sales', saleId))?.sold || {}; }
@@ -26,12 +26,12 @@ export async function checkSaleCart(sale, items, { byId } = {}) {
   const bad = (m) => Object.assign(new Error(m), { status: 400 });
   const units = cartUnits(items);
   const name = (id) => byId?.[id]?.word || byId?.[id]?.name || id;
-  for (const [id, n] of Object.entries(units)) if (n > sale.maxEach) throw bad(`The launch party limit is ${sale.maxEach} of each product per order (bundles count what's inside). Please lower ${name(id)}.`);
+  for (const [id, n] of Object.entries(units)) if (n > sale.maxEach) throw bad(`The ${(sale.label || 'sale').toLowerCase()} limit is ${sale.maxEach} of each product per order (bundles count what's inside). Please lower ${name(id)}.`);
   const left = await saleRemaining(sale);
   for (const [id, n] of Object.entries(units)) {
     if (!(id in left)) continue;
-    if (left[id] <= 0) throw bad(`${name(id)} is sold out for the launch party. Please remove it to check out.`);
-    if (n > left[id]) throw bad(`Only ${left[id]} ${name(id)} left at the launch party price. Please lower the amount.`);
+    if (left[id] <= 0) throw bad(`${name(id)} is sold out for the ${(sale.label || 'sale').toLowerCase()}. Please remove it to check out.`);
+    if (n > left[id]) throw bad(`Only ${left[id]} ${name(id)} left at the ${(sale.label || 'sale').toLowerCase()} price. Please lower the amount.`);
   }
 }
 
@@ -54,5 +54,5 @@ export async function saleInfo(now = Date.now(), early = '') {
   if (!s) return { sale: null };
   const earlyValid = earlyOk(s.id, early);
   const left = await saleRemaining(s).catch(() => null);
-  return { sale: { id: s.id, name: s.name, percent: s.percent, tier: s.tier || null, earlyStart: s.earlyStart, start: s.start, end: s.end, maxEach: s.maxEach, stockEach: s.stockEach, phase: s.phase, left, ...(early ? { earlyOk: earlyValid } : {}) } };
+  return { sale: { id: s.id, label: s.label || 'Sale', page: s.page || '/shop/', dates: s.dates || '', name: s.name, percent: s.percent, tier: s.tier || null, earlyStart: s.earlyStart, start: s.start, end: s.end, maxEach: s.maxEach, stockEach: s.stockEach, phase: s.phase, left, ...(early ? { earlyOk: earlyValid } : {}) } };
 }
