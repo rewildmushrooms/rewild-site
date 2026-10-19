@@ -22,6 +22,7 @@
     write(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} },
   };
   let state = store.read();
+  if (state.country === 'LOCAL') state.country = 'CA'; // local pickup retired
   state.items = state.items.filter((i) => byId[i.id]);
 
   // Prices come from /js/pricing.js, the same engine the checkout uses.
@@ -227,7 +228,7 @@
   document.addEventListener('click', (e) => { if (e.target.classList && e.target.classList.contains('drawer-backdrop')) close(); });
   document.addEventListener('change', (e) => {
     if (e.target.dataset && e.target.dataset.qty) setQty(e.target.dataset.qty, e.target.value);
-    if (e.target.name === 'dest') { state.country = e.target.value === 'US' ? 'US' : e.target.value === 'LOCAL' ? 'LOCAL' : 'CA'; save(); }
+    if (e.target.name === 'dest') { state.country = e.target.value === 'US' ? 'US' : 'CA'; save(); }
     if (e.target.id === 'co-addon') { state.addon = !!e.target.checked; save(); if (state.addon) ga('add_to_cart', [gaItem('tincture', 1)], { promotion_name: 'checkout_addon' }); }
     if (e.target.id === 'cart-news') { state.newsletter = e.target.checked; save(); }
   });
