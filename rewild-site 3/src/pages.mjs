@@ -739,7 +739,7 @@ const simple = (path, title, description, h1, html, extra = {}) => ({
 
 const shipping = simple('/shipping/', 'Shipping & Returns | Free Shipping in Canada Over $175 | REWILD', 'REWILD ships across Canada ($20 flat rate, free over $175) and to the US with duties quoted per order. Every order has a 14-day, 100% risk-free guarantee.', 'Shipping & Returns', `
 <h2>Canada</h2>
-<ul><li><strong>Free local pickup or delivery</strong> in Nelson and the Slocan Valley. Pick up Wednesdays 5 to 6pm, or we deliver by arrangement. Choose it in your cart and we email you to set it up.</li><li><strong>$20 flat rate</strong> on orders under $175.</li><li><strong>Free shipping</strong> on orders of $175 or more (before discounts).</li><li>Orders ship within 1 to 3 business days with tracking. Most arrive in 2 to 7 business days.</li></ul>
+<ul><li><strong>$20 flat rate</strong> on orders under $175.</li><li><strong>Free shipping</strong> on orders of $175 or more (before discounts).</li><li>Orders ship within 1 to 3 business days with tracking. Most arrive in 2 to 7 business days.</li></ul>
 <h2>United States</h2>
 <p>Yes, we ship to the US. Every US parcel now goes through customs, so shipping and duties depend on what's in your order. Here's how it works:</p>
 <ol><li>Place your order. You pay for the products only.</li><li>We declare your parcel with customs and work out the exact shipping and duties.</li><li>We email you a quote with a secure link to pay it online, usually within 1 business day.</li><li>As soon as it's paid, your order ships. Most US orders arrive in 5 to 12 business days.</li></ol>
@@ -758,7 +758,7 @@ const FAQS = [
   ['How do I use the tincture?', 'Drink it straight or add it to a drink. Each 100 ml bottle holds 5 to 10 servings.'],
   ['Are your products tested?', 'Yes. Every lot is tested for species identity, potency (polysaccharides, beta-glucans, and cordycepin for CordyFuel™), a seven-test microbial panel, gluten and water activity. See the numbers on our <a href="/lab-results/">lab results</a> page.'],
   ['Can I see the lab report?', 'Yes. Full certificates of analysis are sent on request. <a href="/lab-results/#request">Request one here</a> and we\u2019ll email it, usually within one business day.'],
-  ['How much is shipping?', `$20 flat rate in Canada, free on orders of $175 or more. Local pickup or delivery in Nelson and the Slocan Valley is free. US shipping and duties are quoted per order by email after you check out.`],
+  ['How much is shipping?', `$20 flat rate in Canada, free on orders of $175 or more. US shipping and duties are quoted per order by email after you check out.`],
   ['Do you ship to the United States?', 'Yes. Choose United States in your cart. After you order, we email a quote for shipping and duties that you can pay online before it ships.'],
   ['What if I don\u2019t like it?', `Every order comes with our 100% Risk-Free Guarantee. ${GUARANTEE_TEXT} <a href="/shipping/#guarantee">How it works</a>.`],
   ['Do you have a referral program?', 'Yes. Give $20, get $20. Every customer gets a friend code: your friend gets $20 off their first order of $75 or more, and you get $20 off your next order once theirs is in. <a href="/refer/">Get your friend code</a>.'],

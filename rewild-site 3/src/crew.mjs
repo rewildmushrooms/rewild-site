@@ -65,7 +65,7 @@ const DECK = [
   // ---------- Offers and policies ----------
   { c: 'use', q: 'The guarantee window:', a: ['14 days from delivery', '30 days from purchase', '14 days from purchase', '60 days'], ok: 0,
     why: 'Full refund within 14 days of delivery. No questions asked, no need to send it back.' },
-  { c: 'use', q: 'Free shipping in Canada starts at:', a: ['$175', '$150', '$100', '$200'], ok: 0, why: 'Otherwise $20 flat. Local pickup or delivery is free.' },
+  { c: 'use', q: 'Free shipping in Canada starts at:', a: ['$175', '$150', '$100', '$200'], ok: 0, why: 'Otherwise $20 flat. No local pickup.' },
   { c: 'use', h: 1, q: 'What triggers a free Energy Tincture?', a: ['Paying $200+ for products (after discounts)', 'Buying any 2 bags', 'Using a promo code', 'Ordering the All Four Set'], ok: 0,
     why: 'When what they pay for products reaches $200. Not during the launch party, which has its own pricing.' },
   { c: 'use', h: 1, q: 'What is the "stock up" saving?', a: ['10% off when you buy 2 or more bags', '20% off 3 bags', 'Free shipping on 2 bags', '$10 off each extra bag'], ok: 0,

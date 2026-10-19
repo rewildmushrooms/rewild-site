@@ -260,7 +260,7 @@ ${reviewsSection({ eyebrow: 'What people are saying', title: 'Rewilders, in thei
       <div class="offer-row best"><div><b>Get both <em class="save-tag">Save ${money(energy.price + tincture.price - duo.price)}</em></b><span>Powder at home, tincture on the go</span></div><span class="offer-price"><s>${money(energy.price + tincture.price)}</s> ${money(duo.price)}</span><button type="button" class="btn btn-yellow" data-add="duo">Add</button></div>
     </div>
     <div class="guarantee compact"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><div><b>100% Risk-Free Guarantee</b><span>Don't love it? Email us within 14 days of delivery for a full refund. No questions asked.</span></div></div>
-    <p class="small muted">Free shipping in Canada on orders over $175. Free local pickup or delivery in Nelson and the Slocan Valley. Every batch third-party tested.</p>
+    <p class="small muted">Free shipping in Canada on orders over $175. Every batch third-party tested.</p>
   </div>
 </div></section>
 

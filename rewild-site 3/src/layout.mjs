@@ -185,7 +185,7 @@ ${page.body}
   <div class="drawer-body" id="cart-lines"></div>
   <div class="drawer-foot foot-main">
     <fieldset style="border:0;padding:0;margin:0"><legend class="small" style="font-weight:700;margin-bottom:8px">Shipping to</legend>
-      <div class="dest"><label><input type="radio" name="dest" value="CA" checked> Canada</label><label><input type="radio" name="dest" value="US"> United States</label><label><input type="radio" name="dest" value="LOCAL"> Local pickup / delivery (free)</label></div>
+      <div class="dest"><label><input type="radio" name="dest" value="CA" checked> Canada</label><label><input type="radio" name="dest" value="US"> United States</label></div>
     </fieldset>
     <div id="cart-progress" hidden><p class="small" style="margin-bottom:6px"></p><div class="progress"><span style="width:0"></span></div></div>
     <form class="promo" id="promo-form" novalidate>
