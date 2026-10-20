@@ -12,6 +12,7 @@ import { DRAFT_PAGES, WHY_SECTION } from './drafts.mjs';
 import { referPage, reviewPage } from './refer.mjs';
 import { launchPage, launchHomeHero } from './launch.mjs';
 import { bfPage, bfHomeHero } from './blackfriday.mjs';
+import { spmcPage } from './spmc.mjs';
 import { crewPage } from './crew.mjs';
 
 const powders = PRODUCTS.filter((p) => !p.isTincture && !p.isBundle);
@@ -1008,6 +1009,7 @@ export const PAGES = [
   reviewPage,
   launchPage,
   bfPage,
+  spmcPage,
   crewPage,
   notFound,
 ];

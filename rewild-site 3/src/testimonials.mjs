@@ -40,6 +40,14 @@ export const TESTIMONIALS = [
     products: ['energy', 'duo'],
   },
   {
+    id: 'kevin',
+    name: 'Kevin G.',
+    detail: 'CordyFuel™ as a pre-workout',
+    head: 'A nice energy boost without the caffeine jitter',
+    quote: 'I have used the cordyfuel as a pre workout and it’s a nice energy boost without the caffeine jitter.',
+    products: ['energy', 'tincture', 'duo'],
+  },
+  {
     id: 'jesse',
     name: 'Jesse F.',
     detail: "Men's Coach · Calgary, AB",
