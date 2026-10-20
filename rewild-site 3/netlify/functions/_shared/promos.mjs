@@ -44,6 +44,7 @@ export function toPromo(r) {
     archived: !!r.archived,
     archivedAt: r.archivedAt || null,
     oncePerCustomer: !!r.once,
+    onBundles: !!r.bundles, // also takes % off bundle prices (stacks on the bundle deal)
     expiresAt: r.exp ? endOfDayPacific(r.exp) : null,
     expiresOn: r.exp || null,
     minimumAmount: r.min || null,
@@ -174,6 +175,7 @@ export async function createPromo(b, opts) {
   if (b.expiresAt && /^\d{4}-\d{2}-\d{2}$/.test(b.expiresAt)) r.exp = b.expiresAt;
   if (b.minimumAmount) r.min = Math.round(Number(b.minimumAmount) * 100);
   if (b.oncePerCustomer) r.once = true;
+  if (b.onBundles) r.bundles = true;
   if (cleanNote(b.note)) r.note = cleanNote(b.note);
   // Also add it to Square (Items > Discounts) so it can be used in the Square app. Optional: the website does not need it.
   try {

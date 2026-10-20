@@ -98,7 +98,7 @@ export function priceCart(items, country, catalog, promo = null, addon = false, 
         for (const l of lines) {
           const off = offerLine(l);
           const touch = !isBundle(l) || pct > BUNDLE_CODE_OVER;
-          const code = touch ? l.listUnit * l.qty - Math.round(l.listUnit * l.qty * pct / 100) : Infinity;
+          const code = isBundle(l) && promo.onBundles ? off - Math.round(off * pct / 100) : touch ? l.listUnit * l.qty - Math.round(l.listUnit * l.qty * pct / 100) : Infinity;
           if (code < off) { codeTotal += code; useCode = true; } else { codeTotal += off; if (isBundle(l)) bundleKept = true; }
         }
       } else {
