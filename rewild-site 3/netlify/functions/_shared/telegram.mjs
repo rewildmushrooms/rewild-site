@@ -1,4 +1,5 @@
 // Telegram order alerts (free). Env: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID (one id, or several separated by commas).
+// To post into a forum topic, add the topic id after a slash: -1001234567890/177
 // If either is missing, nothing is sent and nothing breaks. Bot: @Rewildmushroomsbot (set up Oct 2026, team channel).
 const money = (c) => '$' + (Number(c || 0) / 100).toFixed(2);
 const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
@@ -11,11 +12,12 @@ export async function sendTelegram(text, { fetchImpl = fetch } = {}) {
   if (!token || !chats.length) return { skipped: true, reason: 'Telegram is not set up yet (TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID).' };
   let sent = 0;
   const errs = [];
-  for (const chat_id of chats) {
+  for (const entry of chats) {
+    const [chat_id, topic] = entry.split('/').map((s) => s.trim());
     const res = await fetchImpl(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id, text, parse_mode: 'HTML', disable_web_page_preview: true }),
+      body: JSON.stringify({ chat_id, ...(topic ? { message_thread_id: Number(topic) } : {}), text, parse_mode: 'HTML', disable_web_page_preview: true }),
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok || !data.ok) errs.push(`chat ending ${chat_id.slice(-4)}: ${data.description || res.status}`);
