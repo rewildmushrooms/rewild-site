@@ -27,20 +27,19 @@ export async function sendTelegram(text, { fetchImpl = fetch } = {}) {
   return { sent };
 }
 
-// "🍄 New order · $130.00" with items, place, code and a link to HQ.
+// "🍄 New order · $130.00" with items, name and full shipping address (no code, discount or HQ link: Jade 2026-10-26).
 export function orderAlertText(rec, order, siteUrl = '') {
   const items = (rec.items || []).filter((i) => i.qty > 0).map((i) => `${i.qty}× ${esc(i.name)}`).join('\n');
   const addr = order?.fulfillments?.[0]?.shipment_details?.recipient?.address || {};
-  const place = [addr.locality, addr.administrative_district_level_1, addr.country || rec.country].filter(Boolean).join(', ');
+  const street = [addr.address_line_1, addr.address_line_2].filter(Boolean).join(', ');
+  const cityLine = [addr.locality, addr.administrative_district_level_1, addr.postal_code].filter(Boolean).join(' ');
+  const place = [street, cityLine, addr.country || rec.country].filter(Boolean).join(', ');
   const lines = [
     `🍄 <b>New order · ${money(rec.total)}</b>`,
     items,
     rec.name ? `👤 ${esc(rec.name)}` : '',
     place ? `📍 ${esc(place)}` : '',
     order?.metadata?.fulfillment === 'local' || rec.local ? '🚗 <b>Local pickup / delivery</b>: email them to set it up' : '',
-    rec.code ? `🏷 Code: ${esc(rec.code)}` : '',
-    rec.discount ? `Discount: −${money(rec.discount)}` : '',
-    siteUrl ? `<a href="${siteUrl}/hq/">Open HQ</a>` : '',
   ];
   return lines.filter(Boolean).join('\n');
 }
