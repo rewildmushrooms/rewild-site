@@ -109,7 +109,7 @@ ${bfHomeHero()}
 <section class="hero hero-home">
   <div class="wrap"><div class="hero-copy">
     <p class="eyebrow">For those who already believe in the power of mushrooms</p>
-    <h1 class="h1">Feel more alive.</h1>
+    <h1 class="h1">REWILD YOURSELF.</h1>
     <p class="tag">Energy. Clarity. Strength. Peace.</p>
     <p class="body">Early starts. Long trails. Festivals that go late. Organic, full-spectrum mushrooms grown in BC, made to come along for all of it. Stay wild.</p>
     <div class="row" style="margin-top:8px"><a class="btn btn-yellow" href="#cordyfuel-options">Start with Rewild Energy</a><a class="btn btn-ghost" href="/shop/">Shop all mushrooms</a></div>
