@@ -778,6 +778,7 @@ const finder = simple('/find-your-mushroom/', 'Find Your Mushroom | Mushroom Mat
 <p class="small muted" style="margin-top:28px">This page shares how people traditionally use functional mushrooms and what they look for. It's general education, not medical advice, and these statements have not been evaluated by Health Canada. REWILD mushroom powders are sold as foods. If you're pregnant, nursing or taking medication, talk to your healthcare practitioner first.</p>
 `);
 
+finder.body = finder.body.replace('<section class="page-hero">', '<section class="page-hero dark hero-photo hero-finder">');
 const shipping = simple('/shipping/', 'Shipping & Returns | Free Shipping in Canada Over $175 | REWILD', 'REWILD ships across Canada ($20 flat rate, free over $175) and to the US with duties quoted per order. Every order has a 14-day, 100% risk-free guarantee.', 'Shipping & Returns', `
 <h2>Canada</h2>
 <ul><li><strong>$20 flat rate</strong> on orders under $175.</li><li><strong>Free shipping</strong> on orders of $175 or more (before discounts).</li><li>Orders ship within 1 to 3 business days with tracking. Most arrive in 2 to 7 business days.</li></ul>
