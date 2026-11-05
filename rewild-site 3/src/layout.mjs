@@ -16,6 +16,7 @@ const NAV = [
 ];
 // Shop dropdown. The Duo has no product page of its own, so it links to the home page offer.
 const SHOP_LINKS = [
+  ['/find-your-mushroom/', 'Find your mushroom'],
   ['/shop/cordyceps-tincture/', 'Energy Tincture · Cordyceps', 'New'],
   ['/#cordyfuel', 'Energy Duo · Powder + Tincture'],
   ['/shop/cordyceps-militaris-powder/', 'Energy · Cordyceps'],

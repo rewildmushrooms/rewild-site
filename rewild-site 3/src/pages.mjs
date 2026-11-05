@@ -143,7 +143,7 @@ ${CORDYFUEL_SECTION}
       <h2 class="h2" style="font-size:clamp(30px,3.6vw,46px)">Which mushrooms belong in your life?</h2>
       <p class="lead" style="font-size:18px">Mushrooms are tools. Not miracles. Not shortcuts.</p>
     </div>
-    <div class="stack-sm" style="gap:10px;align-items:flex-start"><a class="btn btn-outline" href="/shop/">Shop all</a><span class="small muted">Not sure? <a class="link" href="/build-your-stack/">Build your stack</a>.</span><span class="small muted">New to mushrooms? <a class="link" href="/start-here/">Start here</a>.</span></div>
+    <div class="stack-sm" style="gap:10px;align-items:flex-start"><a class="btn btn-outline" href="/shop/">Shop all</a><span class="small muted">Not sure? <a class="link" href="/find-your-mushroom/">Find your mushroom</a> or <a class="link" href="/build-your-stack/">build your stack</a>.</span><span class="small muted">New to mushrooms? <a class="link" href="/start-here/">Start here</a>.</span></div>
   </div>
   <div class="grid-4 home-products">${powders.map((p) => productCard(p)).join('')}</div>
 </div></section>
@@ -740,6 +740,44 @@ const simple = (path, title, description, h1, html, extra = {}) => ({
   ...extra,
 });
 
+// Find Your Mushroom (/find-your-mushroom/): Jade's chosen exception to the no-body-claims rule (2026-11-05).
+// Adapted from her Forest Science Mushroom Matchmaker. Claims stay on THIS page only; keep them out of heroes, menus copy and emails.
+const FY = {
+  energy: ['/shop/cordyceps-militaris-powder/', 'Rewild Energy (Cordyceps, powered by CordyFuel™)'],
+  tincture: ['/shop/cordyceps-tincture/', 'Energy Tincture'],
+  clarity: ['/shop/lions-mane-powder/', "Rewild Clarity (Lion's Mane)"],
+  strength: ['/shop/chaga-powder/', 'Rewild Strength (Chaga)'],
+  peace: ['/shop/reishi-powder/', 'Rewild Peace (Reishi)'],
+};
+const FINDER = [
+  ['⚡', 'Energy & Performance Support', 'your stamina is low, you\'re running on fumes, or you want more from your body and mind.', ['energy', 'tincture', 'clarity'], 'steady energy, endurance and a clear head, without the jitters or the mid-afternoon crash.'],
+  ['🧠', 'Stress & Nervous System Support', 'you\'re overwhelmed, anxious or mentally worn out.', ['peace', 'clarity', 'energy'], 'a calmer nervous system, better focus and more resilience when life gets loud.'],
+  ['🌿', 'Digestive & Gut Support', 'you deal with bloating, an unsettled gut, or digestion that\'s off.', ['strength', 'peace'], 'a happier gut, easier digestion and support for the immune system that lives there.'],
+  ['🛡️', 'Immune Defense Support', 'you catch everything going around, or busy seasons knock you down.', ['strength', 'peace'], 'an immune system that\'s ready when it counts.'],
+  ['🌙', 'Sleep & Recovery Support', 'you struggle to fall asleep or stay asleep.', ['peace', 'clarity'], 'deeper sleep, better overnight recovery and an easier wind-down at the end of the day.'],
+  ['❤️', 'Cardiovascular & Circulation Support', 'you want more endurance, better circulation and a strong heart for the long haul.', ['energy', 'peace'], 'better oxygen use, healthy circulation and cardiovascular support.'],
+  ['⚖️', 'Metabolic Balance Support', 'you\'re dealing with inflammation or blood sugar swings, or just feel "off."', ['energy', 'clarity'], 'steadier metabolism and whole-body balance.'],
+  ['🔄', 'Detox & Cellular Renewal', 'you\'re burnt out, carrying a heavy load or slow to bounce back.', ['strength', 'energy'], 'antioxidant protection, cellular repair and recovery support.'],
+  ['✨', 'Skin, Hair & Longevity Support', 'you want to glow, repair and age well.', ['peace', 'strength', 'energy'], 'skin support through antioxidants and healthy cells.'],
+];
+const finderItems = FINDER.map(([icon, title, who, picks, look]) => `<details class="faq finder-item"><summary><span aria-hidden="true">${icon}</span> ${esc(title)}</summary><div class="answer">
+<p><strong>Good for you if:</strong> ${esc(who)}</p>
+<p><strong>Start with:</strong></p>
+<ol>${picks.map((k) => `<li><a class="link" href="${FY[k][0]}">${esc(FY[k][1])}</a></li>`).join('')}</ol>
+<p><strong>What people look for:</strong> ${esc(look)}</p>
+</div></details>`).join('');
+const finder = simple('/find-your-mushroom/', 'Find Your Mushroom | Mushroom Matchmaker | REWILD', 'Find the REWILD functional mushroom that fits what you need right now: energy, stress, gut, immune, sleep and more. Organic, full-spectrum mushrooms grown in BC.', 'Find your mushroom.', `
+<p class="lead">Organic, full-spectrum functional mushrooms grown in BC: fruiting body and mycelium, the whole organism.</p>
+<p>Find the mushrooms that fit what you need right now. Questions? <a class="link" href="/contact/">Ask us</a>. If mushrooms aren't the right fit for you, we'll tell you straight.</p>
+<h2>How it works</h2>
+<ol><li>Pick the need that fits you best right now.</li><li>Start with the first mushroom listed. Each list runs in the order we'd start with.</li><li>Add a second, or rotate as your needs change.</li></ol>
+<div style="margin-top:28px">${finderItems}</div>
+<h2>Not sure where to start?</h2>
+<div class="row" style="margin-top:8px"><a class="btn btn-yellow" href="/build-your-stack/">Take the 60-second quiz</a><a class="btn btn-outline" href="/shop/">Shop all mushrooms</a></div>
+<p style="margin-top:22px"><strong>100% Risk-Free Guarantee:</strong> full refund within 14 days, no questions asked. <a class="link" href="/shipping/#guarantee">Details</a>.</p>
+<p class="small muted" style="margin-top:28px">This page shares how people traditionally use functional mushrooms and what they look for. It's general education, not medical advice, and these statements have not been evaluated by Health Canada. REWILD mushroom powders are sold as foods. If you're pregnant, nursing or taking medication, talk to your healthcare practitioner first.</p>
+`);
+
 const shipping = simple('/shipping/', 'Shipping & Returns | Free Shipping in Canada Over $175 | REWILD', 'REWILD ships across Canada ($20 flat rate, free over $175) and to the US with duties quoted per order. Every order has a 14-day, 100% risk-free guarantee.', 'Shipping & Returns', `
 <h2>Canada</h2>
 <ul><li><strong>$20 flat rate</strong> on orders under $175.</li><li><strong>Free shipping</strong> on orders of $175 or more (before discounts).</li><li>Orders ship within 1 to 3 business days with tracking. Most arrive in 2 to 7 business days.</li></ul>
@@ -988,6 +1026,7 @@ export const PAGES = [
   shop,
   ...SELLABLE.map(productPage),
   quiz,
+  finder,
   lab,
   story,
   manifesto,
