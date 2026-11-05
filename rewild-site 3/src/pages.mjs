@@ -98,7 +98,7 @@ const home = {
   title: 'REWILD | Organic Mushroom Powder Grown in BC, Canada',
   description:
     "Organic, full-spectrum Cordyceps, Lion's Mane, Chaga and Reishi powders grown in British Columbia. Every batch third-party tested.",
-  preload: '/img/hero-tincture-mountains.webp',
+  preload: '/img/hero-trail-larches-lake.webp',
   jsonld: [
     { '@context': 'https://schema.org', ...org },
     { '@context': 'https://schema.org', '@type': 'WebSite', name: 'REWILD Mushrooms', url: SITE.url + '/', publisher: { '@id': SITE.url + '/#org' } },
