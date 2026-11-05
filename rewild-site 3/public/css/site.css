@@ -80,14 +80,14 @@ p{margin:0}
 
 /* Hero */
 .hero{color:#fff;background-size:cover;background-position:70% center;background-color:#1b1d18}
-.hero-home{background-image:linear-gradient(90deg,rgba(10,12,9,.92) 0%,rgba(10,12,9,.7) 40%,rgba(10,12,9,.08) 75%),url(/img/hero-tincture-mountains.webp)}
+.hero-home{background-image:linear-gradient(90deg,rgba(10,12,9,.92) 0%,rgba(10,12,9,.7) 40%,rgba(10,12,9,.08) 75%),url(/img/hero-trail-larches-lake.webp)}
 .hero .wrap{padding-top:120px;padding-bottom:130px}
 .hero-copy{max-width:600px;display:flex;flex-direction:column;gap:22px}
 .hero .eyebrow{color:var(--accent);font-size:14px;letter-spacing:.18em}
 .hero .tag{font-family:var(--display);font-weight:600;font-size:22px;letter-spacing:.04em}
 .hero p.body{font-size:19px;color:rgba(255,255,255,.86);max-width:500px}
 .hero .note{font-size:15px;font-style:italic;color:rgba(255,255,255,.72)}
-@media (max-width:700px){.hero-home{background-image:linear-gradient(180deg,rgba(10,12,9,.55),rgba(10,12,9,.9)),url(/img/hero-tincture-mountains.webp);background-position:78% center}.hero .wrap{padding-top:80px;padding-bottom:90px}}
+@media (max-width:700px){.hero-home{background-image:linear-gradient(180deg,rgba(10,12,9,.55),rgba(10,12,9,.9)),url(/img/hero-trail-larches-lake.webp);background-position:78% center}.hero .wrap{padding-top:80px;padding-bottom:90px}}
 .page-hero{padding:90px 0 70px;background:var(--stone)}
 .page-hero.dark{background:var(--ink)}
 
