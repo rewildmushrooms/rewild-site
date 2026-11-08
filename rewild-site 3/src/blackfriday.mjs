@@ -41,6 +41,7 @@ export const bfPage = {
       <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
       <button type="submit" class="btn btn-yellow">Get early access</button>
     </form>
+    <p class="consent-line" style="color:var(--on-dark);margin-top:8px">By joining, you agree to get emails from REWILD Mushrooms, Box 18, Crescent Valley, BC V0G 1H0. Unsubscribe anytime. <a href="/privacy/">Privacy policy</a>.</p>
     <p class="small" style="color:var(--on-dark);margin-top:10px" data-lp-msg>Join the list and shop ${time(S.earlyStart)} PT ${pt(S.earlyStart, { weekday: 'long' })}, ${Math.round((Date.parse(S.start) - Date.parse(S.earlyStart)) / 3600000)} hours before everyone else.</p>
   </div>
   <div data-lp-phase="live" hidden><a class="btn btn-yellow" href="#lp-shop">Shop Black Friday</a></div>

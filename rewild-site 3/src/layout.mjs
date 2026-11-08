@@ -56,6 +56,8 @@ export function proofStrip() {
     .join('')}</div></section>`;
 }
 
+export const CONSENT_LINE = 'By joining, you agree to get emails from REWILD Mushrooms, Box 18, Crescent Valley, BC V0G 1H0. Unsubscribe anytime. <a href="/privacy/">Privacy policy</a>.';
+
 export function signupForm(id = 'footer') {
   return `<form class="signup" data-subscribe novalidate>
     <label for="email-${id}" class="sr-only">Email address</label>
@@ -63,11 +65,26 @@ export function signupForm(id = 'footer') {
     <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
     <button type="submit" class="btn btn-yellow">Join</button>
     <p data-msg role="status" class="small" style="flex-basis:100%"></p>
+    <p class="consent-line" style="flex-basis:100%">${CONSENT_LINE}</p>
   </form>`;
 }
 
 const keepBrandCase = (html) =>
   html.replace(/(<(script|title|style)[\s\S]*?<\/\2>)|(<[^>]+>)|CordyFuel™/g, (m, block, _t, tag) => block || tag || '<span class="cf">CordyFuel™</span>');
+
+function minimalHeader() {
+  return `<header class="rw-head"><div class="wrap">
+    <a href="/" aria-label="REWILD Mushrooms home"><img src="/img/rewild-mushrooms-logo-v3.webp" alt="REWILD Mushrooms" width="429" height="120"></a>
+    <a class="rw-explore" href="/shop/" data-track="shop" data-topic="header">Explore Mushrooms</a>
+  </div></header>`;
+}
+function minimalFooter() {
+  return `<footer class="rw-foot"><div class="wrap">
+    <nav aria-label="Footer"><a href="/shop/" data-track="shop" data-topic="footer">Shop</a><a href="/manifesto/" data-track="manifesto" data-topic="footer">Manifesto</a><a href="/our-story/">About</a><a href="/privacy/">Privacy</a><a href="/contact/">Contact</a></nav>
+    <p>REWILD mushroom powders are sold as foods. The information on this site is for general education and is not medical advice. Speak with a healthcare practitioner before use if you are pregnant, nursing or taking medication. Grown by our partner grower <a href="https://nucelium.com" rel="noopener" target="_blank">NuCelium</a> in British Columbia.</p>
+    <p>© ${new Date().getFullYear()} REWILD Mushrooms · Slocan Valley, British Columbia</p>
+  </div></footer>`;
+}
 
 export function layout(page) {
   page = { ...page, body: keepBrandCase(page.body) };
@@ -115,7 +132,7 @@ ${SITE.ga ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${SI
 </head>
 <body>
 <a href="#main" class="sr-only">Skip to content</a>
-<div class="announce"><span class="ann-full">Free shipping in Canada on orders over $${SHIPPING.CA.freeOver / 100} · Now shipping to the US</span><span class="ann-short">Free shipping in Canada over $${SHIPPING.CA.freeOver / 100}</span></div>
+${page.minimal ? minimalHeader() : `<div class="announce"><span class="ann-full">Free shipping in Canada on orders over $${SHIPPING.CA.freeOver / 100} · Now shipping to the US</span><span class="ann-short">Free shipping in Canada over $${SHIPPING.CA.freeOver / 100}</span></div>
 <header class="site-header">
   <div class="wrap">
     <a href="/" class="brand brand-logo" aria-label="REWILD Mushrooms home"><img src="/img/rewild-mushrooms-logo-v3.webp" alt="REWILD Mushrooms" width="429" height="120"></a>
@@ -125,11 +142,11 @@ ${SITE.ga ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${SI
       <button type="button" class="icon-btn menu-btn" id="menu-btn" aria-label="Menu" aria-expanded="false" aria-controls="site-nav">${icons.menu}</button>
     </div>
   </div>
-</header>
+</header>`}
 <main id="main">
 ${page.body}
 </main>
-<footer class="site-footer">
+${page.minimal ? minimalFooter() : `<footer class="site-footer">
   <div class="wrap">
     <div class="footer-top">
       <div class="stack-sm">
@@ -178,7 +195,7 @@ ${page.body}
     <p class="disclaimer">REWILD mushroom powders are sold as foods. The information on this site is for general education and is not medical advice. Speak with a healthcare practitioner before use if you are pregnant, nursing or taking medication. CordyFuel™ is a trademark of <a href="https://nucelium.com" rel="noopener" target="_blank">NuCelium</a>, our grower, used with permission.</p>
     <div class="footer-bottom"><span>© ${new Date().getFullYear()} REWILD Mushrooms · Slocan Valley, British Columbia</span><span><a class="rabbit-link" href="/resources/#rabbit-hole"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M3 12a9 7 0 0 1 18 0z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 12v6.5a2.5 2.5 0 0 0 5 0V12" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="8.6" r="1.1" fill="currentColor"/><circle cx="14.5" cy="7.4" r="1.1" fill="currentColor"/></svg>down the rabbit hole</a></span></div>
   </div>
-</footer>
+</footer>`}
 
 <div class="drawer-backdrop" aria-hidden="true"></div>
 <aside id="cart-drawer" class="drawer" aria-label="Cart" aria-hidden="true">
@@ -218,7 +235,7 @@ ${page.body}
   </form>
 </aside>
 <div id="toast" class="toast" role="status"></div>
-<div class="pop" id="join-pop" role="dialog" aria-modal="true" aria-labelledby="pop-h" hidden>
+${page.minimal ? '' : `<div class="pop" id="join-pop" role="dialog" aria-modal="true" aria-labelledby="pop-h" hidden>
   <div class="pop-back" data-pop-close></div>
   <div class="pop-card">
     <button type="button" class="pop-x" data-pop-close aria-label="Close">${icons.close}</button>
@@ -232,10 +249,10 @@ ${page.body}
       <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
       <button type="submit" class="btn btn-yellow btn-block">Count me in</button>
       <p class="pop-msg" role="status"></p>
-      <p class="pop-fine">Unsubscribe anytime. <button type="button" class="link-btn" data-pop-close>No thanks</button></p>
+      <p class="pop-fine">${CONSENT_LINE} <button type="button" class="link-btn" data-pop-close>No thanks</button></p>
     </form>
   </div>
-</div>
+</div>`}
 <script src="/js/catalog.js?v=${SITE.build}"></script>
 <script src="/js/pricing.js?v=${SITE.build}" defer></script>
 <script src="/js/sale.js?v=${SITE.build}" defer></script>

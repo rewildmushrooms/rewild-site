@@ -14,6 +14,7 @@ import { launchPage, launchHomeHero } from './launch.mjs';
 import { bfPage, bfHomeHero } from './blackfriday.mjs';
 import { spmcPage } from './spmc.mjs';
 import { crewPage } from './crew.mjs';
+import { rewildPage } from './rewild.mjs';
 
 const powders = PRODUCTS.filter((p) => !p.isTincture && !p.isBundle);
 const SELLABLE = PRODUCTS.filter((p) => !p.isBundle);
@@ -670,6 +671,16 @@ const manifesto = {
   <p><strong>One choice at a time.</strong></p>
   <p style="font-style:italic;color:var(--muted)">Jade Stevens, founder</p>
 </div></section>
+<section class="section tight dark" id="song"><div class="narrow stack" style="max-width:820px;gap:18px">
+  <p class="eyebrow">Listen</p>
+  <h2 class="h2" style="font-size:clamp(28px,3.6vw,44px);color:#fff">The manifesto, as a song.</h2>
+  <p>The words above, turned into an original REWILD song (made with AI music tool Suno). Five minutes. Best with headphones, or outside.</p>
+  <button type="button" class="yt" data-yt="Em6-99gYb6c" aria-label="Play the REWILD Yourself song" style="margin-top:6px">
+    <img src="https://i.ytimg.com/vi/Em6-99gYb6c/hqdefault.jpg" alt="" loading="lazy" width="480" height="360">
+    <span class="yt-play" aria-hidden="true"></span>
+  </button>
+  <p style="margin-top:6px">Ready to come back to the wild? <a href="/rewild/" style="color:var(--accent);font-weight:700">Get the 5 forgotten habits, free</a>.</p>
+</div></section>
 <section class="section tight stone"><div class="narrow stack center" style="text-align:center">
   <h2 class="h3">Start with one choice.</h2>
   <div class="row" style="justify-content:center"><a class="btn btn-dark" href="/build-your-stack/">Build your stack</a><a class="btn btn-outline" href="/shop/">Shop</a></div>
@@ -1023,6 +1034,7 @@ const notFound = {
 
 export const PAGES = [
   home,
+  rewildPage,
   cordyfuelPage,
   shop,
   ...SELLABLE.map(productPage),
