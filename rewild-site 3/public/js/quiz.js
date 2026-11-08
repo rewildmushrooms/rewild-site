@@ -253,7 +253,7 @@
       <p class="lead">${esc(DAY_LINE[A.day[0]] || '')} ${esc(WHY[A.why[0]] || '')}</p>
       <form class="quiz-email quiz-email-top stack-sm" novalidate>
         <h3 style="font-size:22px">Get your stack sent to you</h3>
-        <p style="font-size:16px">We'll email your stack, and when and how to use it, so it's there when you need it. Plus field notes a few times a month. Unsubscribe anytime.</p>
+        <p style="font-size:16px">We'll email your stack, and when and how to use it, so it's there when you need it. Plus field notes a few times a month.</p>
         <div class="signup">
           <label for="quiz-email" class="sr-only">Email address</label>
           <input id="quiz-email" name="email" type="email" placeholder="Your email" autocomplete="email" required>
@@ -261,6 +261,7 @@
           <button type="submit" class="btn btn-yellow">Email me my stack</button>
         </div>
         <p class="small" role="status" data-qmsg></p>
+        <p class="consent-line">By joining, you agree to get emails from REWILD Mushrooms, Box 18, Crescent Valley, BC V0G 1H0. Unsubscribe anytime. <a href="/privacy/">Privacy policy</a>.</p>
       </form>
       <div class="grid-3" style="margin-top:8px">${cartIds.map(card).join('')}</div>
       ${REASONS ? reasonsHtml(pickIds, duo) : ''}

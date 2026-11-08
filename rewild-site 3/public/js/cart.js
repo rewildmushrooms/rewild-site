@@ -3,6 +3,14 @@
 (function () {
   const C = window.REWILD_CATALOG;
   const KEY = 'rewild_cart_v1';
+  // Campaign tracking: first-touch UTMs (and the landing page) kept 30 days, sent with signups and orders.
+  function campaign() { try { const c = JSON.parse(localStorage.getItem('rewild_utm')); if (c && Date.now() - c.at < 30 * 86400000) return c; } catch (e) {} return null; }
+  (function () {
+    const q = new URLSearchParams(location.search); if (!q.get('utm_source') && !q.get('utm_campaign')) return;
+    if (campaign()) return; // first touch wins
+    const v = (k) => (q.get(k) || '').replace(/[^\w.\-]/g, '').slice(0, 60);
+    try { localStorage.setItem('rewild_utm', JSON.stringify({ source: v('utm_source'), medium: v('utm_medium'), campaign: v('utm_campaign'), content: v('utm_content'), landing: location.pathname.slice(0, 60), at: Date.now() })); } catch (e) {}
+  })();
   function partnerRef() { try { const r = JSON.parse(localStorage.getItem('rewild_ref')); if (r && r.ref && Date.now() - r.at < 30 * 86400000) return r.ref; } catch (e) {} return undefined; }
   const byId = Object.fromEntries(C.products.map((p) => [p.id, p]));
   const money = (c) => '$' + (c / 100).toFixed(c % 100 === 0 ? 0 : 2);
@@ -158,7 +166,7 @@
     try { localStorage.setItem('rewild_email', email); } catch (x) {}
     btn.disabled = true; const label = btn.textContent; btn.textContent = 'Opening secure checkout…';
     try {
-      const res = await fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, items: state.items, country: state.country, code: state.promo && !state.promo.pending ? state.promo.code : undefined, ref: partnerRef(), newsletter: !!state.newsletter, addon: !!state.addon && quote().addonEligible, early: earlyKey() || undefined }) });
+      const res = await fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, items: state.items, country: state.country, code: state.promo && !state.promo.pending ? state.promo.code : undefined, ref: partnerRef(), utm: campaign() || undefined, newsletter: !!state.newsletter, addon: !!state.addon && quote().addonEligible, early: earlyKey() || undefined }) });
       let data = {};
       try { data = await res.json(); } catch (x) {}
       if (!res.ok || !data.url) throw new Error(data.error || 'Checkout is unavailable right now. Please try again in a minute.');
@@ -268,11 +276,11 @@
     const msg = f.querySelector('[data-msg]'); const btn = f.querySelector('button');
     btn.disabled = true;
     try {
-      const res = await fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(new FormData(f))) });
+      const res = await fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign(Object.fromEntries(new FormData(f)), { utm: campaign() || undefined, page: location.pathname })) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       f.reset(); msg.textContent = 'Welcome, Rewilder. Check your inbox.';
-      if (window.gtag) window.gtag('event', 'sign_up', { method: 'footer' });
+      if (window.gtag) window.gtag('event', 'sign_up', { method: f.dataset.method || 'footer' });
     } catch (err) { msg.textContent = err.message || 'Something went wrong. Please try again.'; }
     btn.disabled = false;
   }));
@@ -326,7 +334,7 @@
     const KEYP = 'rewild_pop';
     let st = {}; try { st = JSON.parse(localStorage.getItem(KEYP)) || {}; } catch (e) {}
     const path = location.pathname;
-    const skip = st.joined || (st.closed && Date.now() - st.closed < 14 * 86400000) || /^\/(hq|order-confirmed|build-your-stack|contact|privacy|terms)\b/.test(path) || /[?&](cart|code|checkout)=/.test(location.search) || navigator.webdriver;
+    const skip = st.joined || (st.closed && Date.now() - st.closed < 14 * 86400000) || /^\/(hq|order-confirmed|build-your-stack|contact|privacy|terms|rewild)\b/.test(path) || /[?&](cart|code|checkout)=/.test(location.search) || navigator.webdriver;
     if (skip) return;
     let shown = false, last = null;
     const save = (k) => { st[k] = Date.now(); try { localStorage.setItem(KEYP, JSON.stringify(st)); } catch (e) {} };
@@ -349,7 +357,7 @@
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { msg.textContent = 'Please enter a valid email.'; return; }
       btn.disabled = true; msg.textContent = '';
       try {
-        const res = await fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, website: f.website.value, source: 'popup' }) });
+        const res = await fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, website: f.website.value, source: 'popup', utm: campaign() || undefined, page: location.pathname }) });
         const d = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(d.error || 'Something went wrong. Please try again.');
         save('joined'); try { localStorage.setItem('rewild_email', email); } catch (x) {}
