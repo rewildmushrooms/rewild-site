@@ -238,6 +238,7 @@ textarea{padding:12px 14px;min-height:120px}
 .dark .signup input{background:rgba(0,0,0,.35);border-color:rgba(255,255,255,.6);color:#fff}
 .dark .signup input::placeholder{color:rgba(255,255,255,.65)}
 .hp{position:absolute;left:-9999px}
+.consent-line{font-size:12.5px;line-height:1.5;opacity:.75;margin:0}.consent-line a{color:inherit}
 
 /* Quiz */
 .quiz-step{display:none}.quiz-step.active{display:flex}
