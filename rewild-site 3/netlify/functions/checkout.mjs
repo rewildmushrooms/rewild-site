@@ -14,6 +14,13 @@ import { newCart, saveCart, touchCustomer, setOpenCart } from './_shared/carts.m
 import { emailKey } from './_shared/record.mjs';
 
 const CUR = 'CAD';
+// UTMs from the browser (first touch, 30 days): source|medium|campaign|content|landing page. Empty if none.
+export function campaignTag(u) {
+  if (!u || typeof u !== 'object') return '';
+  const c = (v) => String(v || '').replace(/[^\w.\-\/]/g, '').slice(0, 60);
+  const parts = [u.source, u.medium, u.campaign, u.content, u.landing].map(c);
+  return parts[0] || parts[2] ? parts.join('|').slice(0, 255) : '';
+}
 
 export async function buildPaymentLink(body, siteUrl, opts) {
   const dest = body?.country === 'US' ? 'US' : 'CA'; // local pickup retired Oct 2026
@@ -32,6 +39,7 @@ export async function buildPaymentLink(body, siteUrl, opts) {
   const ship = SHIPPING[dest];
   const lineItem = (id, qty, amount, name, note) => ({ name, quantity: String(qty), base_price_money: { amount, currency: CUR }, metadata: { rewild_id: id, ...(note ? { offer: note } : {}) } });
   const ref = partnerByRef(body?.ref)?.ref; // partner share link (?ref=sean), for commission
+  const campaign = campaignTag(body?.utm); // first-touch UTMs, e.g. instagram|social|rewild-videos|light-1|/rewild/
   const summary = q.lines.map((l) => `${l.qty}x ${l.id}`).join(', ');
   const email = body?.email ? emailKey(body.email) : '';
   if (email && !isEmail(email)) throw Object.assign(new Error('Please check your email address.'), { status: 400 });
@@ -53,6 +61,7 @@ export async function buildPaymentLink(body, siteUrl, opts) {
       ...(partnerCode && !q.codeApplied ? { partner_code: partnerCode } : {}),
       ...(ref ? { ref } : {}),
       ...(sale ? { sale: sale.id } : {}),
+      ...(campaign ? { campaign } : {}),
     },
   };
   if (q.discount > 0) order.discounts = [{ uid: 'offers', name: q.discountName, scope: 'ORDER', type: 'FIXED_AMOUNT', amount_money: { amount: q.discount, currency: CUR } }];
