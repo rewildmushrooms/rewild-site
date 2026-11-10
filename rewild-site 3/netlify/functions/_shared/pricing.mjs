@@ -28,8 +28,8 @@ export const SALES = [
   { id: 'launch40', label: 'Launch party', page: '/launch-party/', dates: 'Oct 17 &amp; 18', name: 'Launch party 33% off', percent: 33, tier: { at: 33300, percent: 40 }, earlyStart: '2026-10-17T03:00:00Z', start: '2026-10-17T16:00:00Z', end: '2026-10-19T16:00:00Z', maxEach: 3, stockEach: 40,
     ids: ['energy', 'clarity', 'strength', 'peace', 'tincture'] },
   // Black Friday (Jade, Oct 19): 25% off everything, 40% off orders of $500+ at regular prices. No limits.
-  // Early access Thu Nov 26, 8pm PT; everyone Fri Nov 27, 12am PT; ends Mon Nov 30, 11:59pm PT (PST, UTC-8).
-  { id: 'bf25', label: 'Black Friday', page: '/black-friday/', dates: 'Nov 27 to 30', name: 'Black Friday 25% off', percent: 25, tier: { at: 50000, percent: 40 }, earlyStart: '2026-11-27T04:00:00Z', start: '2026-11-27T08:00:00Z', end: '2026-12-01T07:59:00Z', maxEach: 99, stockEach: 100000,
+  // Early access Thu Nov 26, 8pm PT; everyone Fri Nov 27, 12am PT; ends Mon Nov 30, 11:59pm PT (BC is UTC-7 year round now).
+  { id: 'bf25', label: 'Black Friday', page: '/black-friday/', dates: 'Nov 27 to 30', name: 'Black Friday 25% off', percent: 25, tier: { at: 50000, percent: 40 }, earlyStart: '2026-11-27T03:00:00Z', start: '2026-11-27T07:00:00Z', end: '2026-12-01T06:59:00Z', maxEach: 99, stockEach: 100000,
     ids: ['energy', 'clarity', 'strength', 'peace', 'tincture'] },
 ];
 // The sale that matters right now (live, or early access, or the next one coming up). phase: 'soon' | 'early' | 'live'

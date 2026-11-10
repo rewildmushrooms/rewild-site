@@ -26,12 +26,9 @@ export const DEFAULT_RULES = {
   PETEMOSS30WW: { on: true, exp: '2026-10-15' },
 };
 
-// End of the expiry day in Pacific time (handles PDT/PST).
+// End of the expiry day in BC time. BC is UTC-7 year round (no more PST), so a fixed offset.
 export function endOfDayPacific(ymd) {
-  const guess = Date.parse(`${ymd}T23:59:59-08:00`);
-  const pdt = Date.parse(`${ymd}T23:59:59-07:00`);
-  const offset = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', timeZoneName: 'short' }).format(new Date(pdt)).includes('PDT');
-  return Math.floor((offset ? pdt : guess) / 1000);
+  return Math.floor(Date.parse(`${ymd}T23:59:59-07:00`) / 1000);
 }
 
 export function toPromo(r) {
