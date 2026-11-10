@@ -21,12 +21,12 @@
     const s = Math.max(0, Math.floor(ms / 1000)), d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
     return (d ? d + 'd ' : '') + String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
   };
-  const when = (iso) => { const d = new Date(iso), o = { timeZone: 'America/Vancouver' };
+  const when = (iso) => { const d = new Date(iso), o = { timeZone: 'Etc/GMT+7' } /* BC is UTC-7 year round */;
     const h = Number(d.toLocaleString('en-US', { ...o, hour: 'numeric', hour12: false })) % 24, m = d.toLocaleString('en-US', { ...o, minute: '2-digit' });
     return d.toLocaleString('en-CA', { ...o, weekday: 'short', month: 'short', day: 'numeric' }) + ', ' + (h % 12 || 12) + (Number(m) ? ':' + String(m).padStart(2, '0') : '') + (h < 12 ? 'am' : 'pm') + ' PT'; };
 
   // "Monday 9am PT"
-  const endsAt = (iso) => { const d = new Date(iso), o = { timeZone: 'America/Vancouver' };
+  const endsAt = (iso) => { const d = new Date(iso), o = { timeZone: 'Etc/GMT+7' } /* BC is UTC-7 year round */;
     const h = Number(d.toLocaleString('en-US', { ...o, hour: 'numeric', hour12: false })) % 24, m = Number(d.toLocaleString('en-US', { ...o, minute: '2-digit' }));
     return d.toLocaleString('en-CA', { ...o, weekday: 'long' }) + ' ' + (h % 12 || 12) + (m ? ':' + String(m).padStart(2, '0') : '') + (h < 12 ? 'am' : 'pm') + ' PT'; };
   const tierTxt = (s) => (s.tier ? `${s.tier.percent}% off $${s.tier.at / 100}+ · ` : '');
