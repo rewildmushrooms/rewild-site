@@ -5,7 +5,9 @@ import { PRODUCTS, PRODUCT_BY_ID, money } from '../netlify/functions/_shared/cat
 import { SALES } from '../netlify/functions/_shared/pricing.mjs';
 
 const S = SALES.find((s) => s.id === 'bf25');
-const pt = (iso, opts) => new Date(iso).toLocaleString('en-CA', { timeZone: 'America/Vancouver', ...opts });
+// BC is UTC-7 year round. Fixed offset so an older time zone database can't show PST times.
+const PT_ZONE = 'Etc/GMT+7';
+const pt = (iso, opts) => new Date(iso).toLocaleString('en-CA', { timeZone: PT_ZONE, ...opts });
 const day = (iso) => pt(iso, { weekday: 'long', month: 'long', day: 'numeric' });
 const time = (iso) => pt(iso, { hour: 'numeric', minute: '2-digit' }).replace(':00', '').replace(' a.m.', 'am').replace(' p.m.', 'pm');
 const off = (c) => Math.round(c * (100 - S.percent) / 100);
