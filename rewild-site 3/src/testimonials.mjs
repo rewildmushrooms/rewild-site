@@ -1,6 +1,7 @@
 // Real customer testimonials. Add new ones here and they appear everywhere automatically.
 // Rules: only real people, their own words (trimmed with "..." is fine, never reworded),
-// and no excerpt that claims a health effect (Canada treats testimonials as advertising claims).
+// posted in full (Jade's decision, Oct 2026; she removes anything if and when she's told to).
+//   photo: optional /img/... path, shown as a small round photo by the name
 //   products: which product pages show it (most relevant first)
 //   youtube: video id for a video testimonial (shows a thumbnail; the player only loads on click)
 import { esc } from './layout.mjs';
@@ -30,6 +31,15 @@ export const TESTIMONIALS = [
     head: 'Such an easy, grounding part of my routine',
     quote: "...Starting my morning with coffee and functional mushrooms has become such an easy and grounding part of my routine. If you've been curious about exploring functional mushrooms, Rewild Mushrooms has definitely become a favourite in my wellness toolkit.",
     products: ['clarity', 'strength', 'peace', 'tincture'],
+  },
+  {
+    id: 'evan',
+    name: 'Evan Z.',
+    detail: "Nelson, BC · Rewild Clarity (Lion's Mane)",
+    head: 'Greater clarity of mind',
+    quote: 'After taking 3-4 gms of Clarity for a week I found my brain fog was gone and had greater clarity of mind. Thanks Jade for guiding me with your expertise and knowledge',
+    photo: '/img/testimonial-evan-z-nelson-bc.webp',
+    products: ['clarity'],
   },
   {
     id: 'anna',
@@ -94,7 +104,7 @@ const card = (t) => t.youtube ? video(t) : `<figure class="review">
   <div class="review-stars" aria-hidden="true">★★★★★</div>
   <p class="review-head">"${esc(t.head)}"</p>
   <blockquote>${esc(t.quote)}</blockquote>
-  <figcaption><b>${esc(t.name)}</b><span>${esc(t.detail)}</span></figcaption>
+  <figcaption>${t.photo ? `<img src="${esc(t.photo)}" alt="${esc(t.name)}" width="56" height="56" loading="lazy" style="width:56px;height:56px;border-radius:50%;object-fit:cover;display:block;margin-bottom:10px">` : ''}<b>${esc(t.name)}</b><span>${esc(t.detail)}</span></figcaption>
 </figure>`;
 
 // Full section (homepage, CordyFuel page).
@@ -111,14 +121,11 @@ export function reviewsSection({ eyebrow = 'What Rewilders are saying', title = 
 </div></section>`;
 }
 
-// Video band on a product page (videos marked productPage).
+// Product page slider: every testimonial, this product's first (same slider as the homepage / Why REWILD).
 export function productVideos(productId) {
-  const list = TESTIMONIALS.filter((t) => t.youtube && t.productPage && t.products.includes(productId));
-  if (!list.length) return '';
-  return `<section class="section tight" aria-label="Video review"><div class="wrap">
-  <div class="stack-sm" style="gap:10px;margin-bottom:24px"><p class="eyebrow">In their words</p><h2 class="h3" style="font-size:clamp(26px,3vw,34px)">Watch a customer review.</h2></div>
-  <div class="reviews">${list.map(video).join('')}</div>
-</div></section>`;
+  const mine = TESTIMONIALS.filter((t) => t.products.includes(productId));
+  const rest = TESTIMONIALS.filter((t) => !t.products.includes(productId));
+  return reviewsSection({ eyebrow: 'In their words', ids: [...mine, ...rest].map((t) => t.id), tone: 'tight' });
 }
 
 // One compact review right under the buy button on a product page.
