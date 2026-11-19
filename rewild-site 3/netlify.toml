@@ -26,6 +26,16 @@
   to = "/hq/"
   status = 301
 
+  # Short Instagram bio links (keep the tracking, hide the long URL).
+  [[redirects]]
+  from = "/ig"
+  to = "/?utm_source=instagram&utm_medium=social&utm_campaign=bio"
+  status = 302
+  [[redirects]]
+  from = "/ig-quiz"
+  to = "/build-your-stack/?utm_source=instagram&utm_medium=social&utm_campaign=quiz-bio"
+  status = 302
+
 # Old WordPress URLs
 [[redirects]]
   from = "/sample-page/*"
