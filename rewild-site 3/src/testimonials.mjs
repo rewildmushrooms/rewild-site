@@ -30,6 +30,7 @@ export const TESTIMONIALS = [
     detail: "Uses Lion's Mane, Reishi, Chaga + the Energy Tincture",
     head: 'Such an easy, grounding part of my routine',
     quote: "...Starting my morning with coffee and functional mushrooms has become such an easy and grounding part of my routine. If you've been curious about exploring functional mushrooms, Rewild Mushrooms has definitely become a favourite in my wellness toolkit.",
+    photo: '/img/testimonial-krystal-j.webp',
     products: ['clarity', 'strength', 'peace', 'tincture'],
   },
   {
@@ -47,6 +48,7 @@ export const TESTIMONIALS = [
     detail: 'Rewild Energy (CordyFuel™) in her morning coffee',
     head: 'In my coffee every morning',
     quote: 'I have been putting your CordyFuel™ in my coffee every morning and today I played squash after weeks of doing nothing and I felt really good. I like it!!',
+    photo: '/img/testimonial-anna-p.webp',
     products: ['energy', 'duo'],
   },
   {
@@ -104,7 +106,7 @@ const card = (t) => t.youtube ? video(t) : `<figure class="review">
   <div class="review-stars" aria-hidden="true">★★★★★</div>
   <p class="review-head">"${esc(t.head)}"</p>
   <blockquote>${esc(t.quote)}</blockquote>
-  <figcaption>${t.photo ? `<img src="${esc(t.photo)}" alt="${esc(t.name)}" width="56" height="56" loading="lazy" style="width:56px;height:56px;border-radius:50%;object-fit:cover;display:block;margin-bottom:10px">` : ''}<b>${esc(t.name)}</b><span>${esc(t.detail)}</span></figcaption>
+  <figcaption>${t.photo ? `<img src="${esc(t.photo)}" alt="${esc(t.name)}" width="96" height="96" loading="lazy" style="width:96px;height:96px;border-radius:50%;object-fit:cover;display:block;margin-bottom:14px">` : ''}<b>${esc(t.name)}</b><span>${esc(t.detail)}</span></figcaption>
 </figure>`;
 
 // Full section (homepage, CordyFuel page).
