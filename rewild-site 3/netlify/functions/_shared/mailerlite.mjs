@@ -38,6 +38,30 @@ export async function getSubscriber(email, { fetchImpl = fetch } = {}) {
   return data || null;
 }
 
+// Fields to save when a buyer ticks the email box at checkout (pure, tested).
+// existing = MailerLite subscriber or null; undefined means the lookup failed.
+// Where someone first came from and when/where they first consented are set ONCE and never overwritten
+// (same rule as /api/subscribe). If the lookup failed, record consent anyway (CASL), as before.
+export function checkoutFields(existing, { today, name, utm } = {}) {
+  const f = { last_source: 'checkout' };
+  if (name) f.name = name;
+  const have = existing?.fields || {};
+  const once = {
+    signup_source: 'checkout', first_source: 'checkout',
+    marketing_consent: 'yes', marketing_consent_source: 'checkout', marketing_consent_at: today,
+  };
+  if (existing === null || existing === undefined) {
+    if (utm && typeof utm === 'object') {
+      const clean = (v, n = 60) => String(v || '').replace(/[^\w.\-\/]/g, '').slice(0, n);
+      for (const k of ['source', 'medium', 'campaign', 'content']) if (utm[k]) once['utm_' + k] = clean(utm[k]);
+      if (utm.landing) once.landing_page = clean(utm.landing, 80);
+    }
+    return Object.assign(once, f);
+  }
+  for (const [k, v] of Object.entries(once)) if (!have[k] && v) f[k] = v;
+  return f;
+}
+
 export const isEmail = (s) => typeof s === 'string' && s.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s);
 
 export async function groupCount(id, { fetchImpl = fetch } = {}) {

@@ -8,7 +8,7 @@ import { square } from './square.mjs';
 import { isPaid, buyerEmail, buyerName } from './orders.mjs';
 import { syncWebOrders, unitsInOrder, stockLevels } from './inventory.mjs';
 import { checkLowStock } from './lowstock.mjs';
-import { addSubscriber, isEmail } from './mailerlite.mjs';
+import { addSubscriber, getSubscriber, checkoutFields, isEmail } from './mailerlite.mjs';
 import { getJSON, setJSON } from './store.mjs';
 import { orderCode, partnerForOrder } from './team.mjs';
 import { putIndex, appendLedger, customerSummary, orderSummary } from './data.mjs';
@@ -118,9 +118,11 @@ export async function recordPaidOrder(order, opts, deps = {}) {
   if (!steps.newsletter && rec.newsletter && isEmail(email || '')) {
     try {
       const groups = [process.env.MAILERLITE_GROUP_ID, process.env.MAILERLITE_CUSTOMERS_GROUP_ID || '200334588365505920'].filter(Boolean); // Customers group starts the after-purchase emails
-      const fields = { name: (name || '').split(' ')[0], signup_source: 'checkout', marketing_consent: 'yes', marketing_consent_source: 'checkout', marketing_consent_at: (order.created_at || '').slice(0, 10) };
+      let existing;
+      try { existing = await (deps.getSubscriber || getSubscriber)(email); } catch (e) { console.error('subscriber lookup failed', e.message); }
+      const fields = checkoutFields(existing, { today: (order.created_at || '').slice(0, 10), name: (name || '').split(' ')[0] });
       const add = deps.addSubscriber || addSubscriber;
-      try { await add(email, fields, { groups }); } catch { await add(email, { name: fields.name, signup_source: 'checkout' }, { groups }); }
+      try { await add(email, fields, { groups }); } catch { await add(email, existing ? { name: fields.name } : { name: fields.name, signup_source: 'checkout' }, { groups }); }
       steps.newsletter = true;
     } catch (e) { console.error('newsletter add failed', e.message); }
   }

@@ -9,7 +9,7 @@ import { square, idem, locationId, json } from './_shared/square.mjs';
 import { validatePromo, orderDiscount, discountFor } from './_shared/promos.mjs';
 import { SITE_EMAIL } from './_shared/config.mjs';
 import { partnerByRef, partnerByCode } from './_shared/team.mjs';
-import { isEmail, addSubscriber } from './_shared/mailerlite.mjs';
+import { isEmail, addSubscriber, getSubscriber, checkoutFields } from './_shared/mailerlite.mjs';
 import { newCart, saveCart, touchCustomer, setOpenCart } from './_shared/carts.mjs';
 import { emailKey } from './_shared/record.mjs';
 
@@ -115,8 +115,11 @@ export default async (req) => {
     if (consent) {
       const today = new Date().toISOString().slice(0, 10);
       const groups = [process.env.MAILERLITE_GROUP_ID].filter(Boolean);
-      try { await addSubscriber(email, { signup_source: 'checkout', marketing_consent: 'yes', marketing_consent_source: 'checkout', marketing_consent_at: today }, { groups }); }
-      catch { try { await addSubscriber(email, { signup_source: 'checkout' }, { groups }); } catch (e) { console.error('checkout subscribe failed', e.message); } }
+      let existing;
+      try { existing = await getSubscriber(email); } catch (e) { console.error('subscriber lookup failed', e.message); }
+      const fields = checkoutFields(existing, { today, utm: body?.utm });
+      try { await addSubscriber(email, fields, { groups }); }
+      catch { try { await addSubscriber(email, existing ? {} : { signup_source: 'checkout' }, { groups }); } catch (e) { console.error('checkout subscribe failed', e.message); } }
     }
     return json(200, { url: out.url, orderId: out.orderId });
   } catch (err) {

@@ -21,7 +21,7 @@
 //   POST /api/hq  { action:'adjust', id, change, note }                                   (everyone)
 // Reads website orders from Square (orders tagged source = rewildmushrooms.com).
 import { square, idem, locationId, pages, isLive, json } from './_shared/square.mjs';
-import { groupStats, groupCount } from './_shared/mailerlite.mjs';
+import { groupStats, groupCount, getSubscriber } from './_shared/mailerlite.mjs';
 import { readIndex, readLedger, HIGH_VALUE } from './_shared/data.mjs';
 import { recordOfflineSale, recordRestock, recordAdjustment, logCount, recordSample, listSamples } from './_shared/ledger.mjs';
 import { cartStats, STEPS, EXPIRE_AFTER, getCart, saveCart, setOpenCart } from './_shared/carts.mjs';
@@ -438,10 +438,16 @@ export async function customerDetail(email) {
   if (!c) throw Object.assign(new Error('Customer not found'), { status: 404 });
   const [orders, carts] = await Promise.all([readIndex('orders'), readIndex('carts')]);
   const summary = (await readIndex('customers'))[e] || null;
+  // Where they came from, as saved on their MailerLite record (only the fields that have a value).
+  const attribution = {};
+  try {
+    const sub = await getSubscriber(e);
+    for (const k of ['first_source', 'last_source', 'landing_page', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content']) if (sub?.fields?.[k]) attribution[k] = String(sub.fields[k]);
+  } catch (err) { console.error('attribution lookup failed', err.message); }
   return {
     customer: { email: c.email, name: c.name || null, since: c.firstOrderAt || c.createdAt, lastOrder: c.lastOrderAt || null, orders: c.orderCount || 0, ltv: c.lifetimeValue || 0, avg: c.averageOrder || 0,
       products: c.products || {}, quiz: c.quiz || null, consent: !!c.marketingConsent, consentAt: c.marketingConsentAt || null, consentSource: c.marketingConsentSource || null,
-      codes: c.codesUsed || [], noReminders: !!c.noReminders, source: c.firstSource || null, segments: summary?.segments || [] },
+      codes: c.codesUsed || [], noReminders: !!c.noReminders, source: c.firstSource || null, segments: summary?.segments || [], attribution },
     orders: Object.values(orders).filter((o) => o.email === e).sort((a, b) => String(b.at).localeCompare(String(a.at))),
     carts: Object.values(carts).filter((x) => x.email === e).sort((a, b) => String(b.at).localeCompare(String(a.at))),
   };

@@ -6,11 +6,30 @@
   // Campaign tracking: first-touch UTMs (and the landing page) kept 30 days, sent with signups and orders.
   function campaign() { try { const c = JSON.parse(localStorage.getItem('rewild_utm')); if (c && Date.now() - c.at < 30 * 86400000) return c; } catch (e) {} return null; }
   (function () {
-    const q = new URLSearchParams(location.search); if (!q.get('utm_source') && !q.get('utm_campaign')) return;
     if (campaign()) return; // first touch wins
-    const v = (k) => (q.get(k) || '').replace(/[^\w.\-]/g, '').slice(0, 60);
-    try { localStorage.setItem('rewild_utm', JSON.stringify({ source: v('utm_source'), medium: v('utm_medium'), campaign: v('utm_campaign'), content: v('utm_content'), landing: location.pathname.slice(0, 60), at: Date.now() })); } catch (e) {}
+    const save = (c) => { try { localStorage.setItem('rewild_utm', JSON.stringify(Object.assign(c, { landing: location.pathname.slice(0, 60), at: Date.now() }))); } catch (e) {} };
+    const q = new URLSearchParams(location.search);
+    if (q.get('utm_source') || q.get('utm_campaign')) {
+      const v = (k) => (q.get(k) || '').replace(/[^\w.\-]/g, '').slice(0, 60);
+      return save({ source: v('utm_source'), medium: v('utm_medium'), campaign: v('utm_campaign'), content: v('utm_content') });
+    }
+    // No UTMs: fall back to the site that sent them (google / organic, instagram / referral...).
+    const s = refSource(document.referrer, location.hostname);
+    if (s) save({ source: s.source, medium: s.medium, campaign: '', content: '' });
   })();
+  // Pure: referrer URL -> { source, medium } or null (own site, payment pages, no referrer).
+  function refSource(ref, ownHost) {
+    let h; try { h = new URL(ref).hostname.toLowerCase().replace(/^www\./, ''); } catch (e) { return null; }
+    const own = String(ownHost || '').toLowerCase().replace(/^www\./, '');
+    if (!h || h === own || /(^|\.)(rewildmushrooms\.com|netlify\.app|squareup\.com|square\.link|square\.site|squareupsandbox\.com)$/.test(h)) return null;
+    const SEARCH = { google: 1, bing: 1, duckduckgo: 1, yahoo: 1, ecosia: 1, baidu: 1, yandex: 1, startpage: 1, qwant: 1 };
+    const ALIAS = { 't.co': 'twitter', 'x.com': 'twitter', 'lnkd.in': 'linkedin', 'youtu.be': 'youtube', 'linktr.ee': 'linktree', 'search.brave.com': 'brave' };
+    const parts = h.split('.');
+    let name = ALIAS[h] || (parts.length > 1 ? parts[parts.length - 2] : h);
+    if (/^(co|com|org|net|gov|ac)$/.test(name) && parts.length > 2) name = parts[parts.length - 3]; // google.co.uk
+    name = name.replace(/[^\w.\-]/g, '').slice(0, 40);
+    return { source: name, medium: SEARCH[name] || name === 'brave' ? 'organic' : 'referral' };
+  }
   function partnerRef() { try { const r = JSON.parse(localStorage.getItem('rewild_ref')); if (r && r.ref && Date.now() - r.at < 30 * 86400000) return r.ref; } catch (e) {} return undefined; }
   const byId = Object.fromEntries(C.products.map((p) => [p.id, p]));
   const money = (c) => '$' + (c / 100).toFixed(c % 100 === 0 ? 0 : 2);
