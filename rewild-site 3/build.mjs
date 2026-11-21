@@ -7,6 +7,7 @@ import { layout } from './src/layout.mjs';
 import { SITE } from './src/site.mjs';
 import { PRODUCTS, SHIPPING } from './netlify/functions/_shared/catalog.mjs';
 import { SALES } from './netlify/functions/_shared/pricing.mjs';
+import { fillAlts } from './src/alts.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const dist = join(root, 'dist');
@@ -44,8 +45,12 @@ async function build() {
   });
 
   const problems = [];
+  const altMissing = new Set();
   for (const page of PAGES) {
-    const html = optimizeImgs(layout(page), page);
+    // Alt text is filled automatically (see src/alts.mjs) so every new image gets a description.
+    const filled = fillAlts(optimizeImgs(layout(page), page));
+    const html = filled.html;
+    filled.missing.forEach((f) => altMissing.add(f));
     if (EM_DASH.test(html)) problems.push(`${page.path}: contains an em dash`);
     if (/CordyFuel(?!™)/.test(html.replace(/<[^>]+>/g, ' ').replace(/cordyfuel-[a-z-]+/gi, ''))) problems.push(`${page.path}: CordyFuel without ™`);
     if (page.title.length > 70) problems.push(`${page.path}: title ${page.title.length} chars`);
@@ -66,6 +71,8 @@ async function build() {
   const FEED_TITLES = {
     energy: 'Organic Cordyceps Militaris Mushroom Powder, CordyFuel, 100g | REWILD Energy',
     clarity: "Organic Lion's Mane Mushroom Powder, 100g, Grown in BC | REWILD Clarity",
+    duo: 'Cordyceps Militaris Powder 100g + Alcohol-Free Tincture 100 ml, CordyFuel | REWILD Energy Duo',
+    all4: "Organic Mushroom Powder Set: Cordyceps, Lion's Mane, Chaga, Reishi, 4 x 100g | REWILD",
     strength: 'Organic Chaga Mushroom Powder, 100g, Grown in BC | REWILD Strength',
     peace: 'Organic Reishi Mushroom Powder, 100g, Grown in BC | REWILD Peace',
     tincture: 'Cordyceps Militaris Tincture, Alcohol-Free, 100 ml | REWILD Energy Tincture',
@@ -89,6 +96,7 @@ ${feedSale && feedSale.ids.includes(p.id) ? `    <g:sale_price>${(Math.round(p.p
   await writeFile(join(dist, 'feeds/google-products.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">\n<channel>\n  <title>REWILD Mushrooms</title>\n  <link>${SITE.url}</link>\n  <description>REWILD Mushrooms products</description>\n${feedItems}\n</channel>\n</rss>\n`);
   await writeFile(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /hq/\nDisallow: /order-confirmed/\nDisallow: /api/\n\nSitemap: ${SITE.url}/sitemap.xml\n`);
 
+  if (altMissing.size) problems.push(`Images using a file-name description (add a better one in src/alts.mjs): ${[...altMissing].join(', ')}`);
   if (problems.length) {
     console.warn('Content checks:\n  ' + problems.join('\n  '));
     if (process.env.STRICT) process.exit(1);
