@@ -36,6 +36,7 @@ const form = (n) => `<form class="signup lp-signup" data-spmc-form novalidate>
 
 export const spmcPage = {
   path: '/spmc/',
+  noindex: true, // past event: link still works, kept out of Google and the sitemap
   title: 'Spirit Plant Medicine: 10% Off REWILD Mushrooms | REWILD',
   description: `Met us at Spirit Plant Medicine? Get ${PCT}% off organic mushroom powders and CordyFuel™ tincture, bundles included, until ${ENDS}.`,
   body: `

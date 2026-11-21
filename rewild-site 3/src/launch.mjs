@@ -25,6 +25,7 @@ const card = (p) => `<article class="card lp-card">
 
 export const launchPage = {
   path: '/launch-party/',
+  noindex: true, // past event: link still works, kept out of Google and the sitemap
   title: `Launch Party: ${S.percent}% Off Everything, ${S.tier.percent}% Off $${S.tier.at / 100}+ | REWILD`,
   description: `REWILD launch party: ${S.percent}% off everything, ${S.tier.percent}% off orders of $${S.tier.at / 100}+. ${day(S.start)} to ${day(S.end)}. Only ${S.stockEach} of each.`,
   body: `

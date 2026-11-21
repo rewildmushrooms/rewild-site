@@ -115,7 +115,7 @@ const home = {
   preload: '/img/hero-trail-larches-lake.webp',
   jsonld: [
     { '@context': 'https://schema.org', ...org },
-    { '@context': 'https://schema.org', '@type': 'WebSite', name: 'REWILD Mushrooms', url: SITE.url + '/', publisher: { '@id': SITE.url + '/#org' } },
+    { '@context': 'https://schema.org', '@type': 'WebSite', '@id': SITE.url + '/#website', name: 'REWILD Mushrooms', url: SITE.url + '/', publisher: { '@id': SITE.url + '/#org' } },
   ],
   body: `
 ${launchHomeHero()}
@@ -904,7 +904,7 @@ const faq = {
 };
 faq.jsonld.push(faqLd(FAQS));
 
-const contact = simple('/contact/', 'Contact REWILD Mushrooms', 'Questions about our mushrooms, an order or wholesale? Contact REWILD Mushrooms in the Slocan Valley, BC. A real person answers.', 'Contact us', `
+const contact = simple('/contact/', 'Contact REWILD Mushrooms | Slocan Valley, BC', 'Questions about our mushrooms, an order or wholesale? Contact REWILD Mushrooms in the Slocan Valley, BC. A real person answers.', 'Contact us', `
 <p>Questions about an order, our mushrooms or wholesale? Send a note and a real person will get back to you, usually within a day or two.</p>
 <p>Email: <a href="mailto:${SITE.email}">${SITE.email}</a></p>
 <form name="contact" method="POST" action="/contact/thanks/" data-netlify="true" netlify-honeypot="company" class="stack" style="margin-top:28px;gap:16px">
@@ -1111,6 +1111,20 @@ const notFound = {
   body: `<section class="section"><div class="narrow stack center" style="text-align:center"><p class="eyebrow">404</p><h1 class="h1" style="font-size:clamp(36px,5vw,60px)">This page went back to nature.</h1><p class="lead">Let's get you somewhere useful.</p><div class="row" style="justify-content:center"><a class="btn btn-dark" href="/shop/">Shop</a><a class="btn btn-outline" href="/build-your-stack/">Build your stack</a><a class="btn btn-outline" href="/">Home</a></div></div></section>`,
 };
 
+// Every indexable page gets structured data. Pages that don't define their own get a
+// breadcrumb plus a WebPage entry (name, description, publisher), so new pages are covered too.
+const withLd = (page) => {
+  if (page.noindex || page.file || (page.jsonld && page.jsonld.length)) return page;
+  const name = page.title.split(' | ')[0];
+  return {
+    ...page,
+    jsonld: [
+      ...(page.path === '/' ? [] : [crumbs([['Home', '/'], [name, page.path]])]),
+      { '@context': 'https://schema.org', '@type': 'WebPage', name, description: page.description, url: abs(page.path), isPartOf: { '@id': SITE.url + '/#website' }, publisher: { '@id': SITE.url + '/#org' }, inLanguage: 'en-CA' },
+    ],
+  };
+};
+
 export const PAGES = [
   home,
   rewildPage,
@@ -1144,4 +1158,4 @@ export const PAGES = [
   spmcPage,
   crewPage,
   notFound,
-];
+].map(withLd);
