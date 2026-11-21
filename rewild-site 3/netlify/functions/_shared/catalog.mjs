@@ -175,7 +175,13 @@ export const PRODUCTS = [
     image: '/img/cordyfuel-duo-square.webp',
     gallery: ['/img/cordyfuel-duo-square.webp'],
     alt: 'Rewild Energy powder pouch and tincture bottle, powered by CordyFuel™',
-    isBundle: true, // sold from the home page, no product page of its own
+    seoTitle: 'Rewild Energy Duo: Cordyceps Powder + Tincture | CordyFuel™ | REWILD',
+    seoDescription:
+      'Rewild Energy powder (100g) and the alcohol-free Energy Tincture (100 ml), both CordyFuel™ Cordyceps militaris grown in BC. $90, a $110 value.',
+    tagline: 'Powder for your morning cup. Tincture for the trail.',
+    story: 'Both forms of Rewild Energy, powered by CordyFuel™ Cordyceps militaris grown in British Columbia and third-party tested.',
+    includes: ['energy', 'tincture'],
+    isBundle: true, // has its own page at /shop/cordyfuel-powder-and-tincture/ (bundlePage in src/pages.mjs)
   },
   {
     id: 'all4',
@@ -192,7 +198,13 @@ export const PRODUCTS = [
     image: '/img/all-four-set.webp',
     gallery: ['/img/all-four-set.webp'],
     alt: 'REWILD Energy, Clarity, Strength and Peace powder pouches together',
-    isBundle: true, // sold from the shop page and the cart, no product page of its own
+    seoTitle: "The All Four Set: Cordyceps, Lion's Mane, Chaga + Reishi | REWILD",
+    seoDescription:
+      "All four REWILD organic mushroom powders: Energy (Cordyceps), Clarity (Lion's Mane), Strength (Chaga) and Peace (Reishi). 4 × 100g, grown in BC. $195.",
+    tagline: 'One of each. Find the ones that fit your day.',
+    story: 'Energy, Clarity, Strength and Peace: one 100g pouch of each, grown in British Columbia and third-party tested.',
+    includes: ['energy', 'clarity', 'strength', 'peace'],
+    isBundle: true, // has its own page at /shop/all-four-set/ (bundlePage in src/pages.mjs)
   },
 ];
 
