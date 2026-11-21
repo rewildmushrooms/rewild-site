@@ -303,8 +303,8 @@
 
   function card(id) {
     const p = byId[id];
-    const url = id === 'duo' ? '/shop/cordyceps-militaris-powder/' : `/shop/${p.slug}/`;
-    return `<article class="card"><a class="img-link" href="${url}"><img src="${p.image}" alt="" width="600" height="600" loading="lazy"></a>
+    const url = `/shop/${p.slug}/`;
+    return `<article class="card"><a class="img-link" href="${url}"><img src="${p.image}" alt="${esc(p.name)}" width="600" height="600" loading="lazy"></a>
       <div class="meta"><div class="dot-label"><span class="dot" style="background:${p.color}"></span><span>${cf(esc(p.mushroom))}</span></div><h3 style="font-size:24px"><a href="${url}">${cf(esc(p.name))}</a></h3><div class="price-line">${esc(p.format)} · <span class="price">${money(p.price)}</span></div></div></article>`;
   }
 
