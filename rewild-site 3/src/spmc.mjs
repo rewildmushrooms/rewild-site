@@ -11,7 +11,7 @@ const LIST = ['all4', 'energy', 'tincture', 'duo', 'clarity', 'strength', 'peace
 const off = (c) => Math.round(c * (100 - PCT) / 100);
 
 const card = (p) => `<article class="card lp-card">
-  <a class="img-link" href="${p.isBundle ? '/shop/' : `/shop/${p.slug}/`}"><img src="${p.image}" alt="${esc(p.alt || p.name)}" width="600" height="600" loading="lazy"></a>
+  <a class="img-link" href="/shop/${p.slug}/"><img src="${p.image}" alt="${esc(p.alt || p.name)}" width="600" height="600" loading="lazy"></a>
   <div class="meta">
     <h3 style="font-size:22px">${esc(p.name)}</h3>
     <div class="price-line">${esc(p.format)}</div>

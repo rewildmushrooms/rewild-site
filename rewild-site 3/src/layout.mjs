@@ -150,7 +150,7 @@ ${page.minimal ? minimalFooter() : `<footer class="site-footer">
   <div class="wrap">
     <div class="footer-top">
       <div class="stack-sm">
-        <div class="brand" style="color:#fff"><img src="/img/emblem-light-sm.webp" alt="" width="38" height="38"><span style="color:#fff">REWILD</span></div>
+        <div class="brand" style="color:#fff"><img src="/img/emblem-light-sm.webp" alt="" aria-hidden="true" width="38" height="38"><span style="color:#fff">REWILD</span></div>
         <p>Organic, full-spectrum mushrooms grown in British Columbia.</p>
         <p style="font-style:italic">Return to your natural state.</p>
         <div style="margin-top:12px"><p style="color:#fff;font-weight:700;margin-bottom:4px">Join the Rewilders</p><p style="margin-bottom:10px">Get <strong style="color:var(--accent)">20% off</strong> your first order when you sign up.</p>${signupForm('footer')}</div>

@@ -1,4 +1,5 @@
 import { SITE } from './site.mjs';
+import { altFor } from './alts.mjs';
 import { esc, proofStrip, signupForm } from './layout.mjs';
 import { reviewsSection, productReview, productVideos } from './testimonials.mjs';
 import { PRODUCTS, PRODUCT_BY_ID, SHIPPING, money } from '../netlify/functions/_shared/catalog.mjs';
@@ -18,7 +19,18 @@ import { rewildPage } from './rewild.mjs';
 
 const powders = PRODUCTS.filter((p) => !p.isTincture && !p.isBundle);
 const SELLABLE = PRODUCTS.filter((p) => !p.isBundle);
+const BUNDLES = PRODUCTS.filter((p) => p.isBundle);
 const abs = (p) => SITE.url + p;
+// 100% Risk-Free Guarantee as Google reads it: 14 days, full refund, nothing to send back.
+const RETURN_POLICY = {
+  '@type': 'MerchantReturnPolicy',
+  applicableCountry: ['CA', 'US'],
+  returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+  merchantReturnDays: 14,
+  returnFees: 'https://schema.org/FreeReturn',
+  refundType: 'https://schema.org/FullRefund',
+  merchantReturnLink: SITE.url + '/shipping/#guarantee',
+};
 const org = {
   '@type': 'Organization',
   '@id': SITE.url + '/#org',
@@ -28,6 +40,7 @@ const org = {
   email: SITE.email,
   sameAs: [SITE.instagram],
   address: { '@type': 'PostalAddress', addressRegion: 'BC', addressCountry: 'CA' },
+  hasMerchantReturnPolicy: RETURN_POLICY,
 };
 const crumbs = (items) => ({
   '@context': 'https://schema.org',
@@ -203,7 +216,7 @@ const shop = {
     {
       '@context': 'https://schema.org',
       '@type': 'ItemList',
-      itemListElement: SELLABLE.map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: abs(`/shop/${p.slug}/`), name: p.name })),
+      itemListElement: [...SELLABLE, ...BUNDLES].map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: abs(`/shop/${p.slug}/`), name: p.name })),
     },
   ],
   body: `
@@ -332,6 +345,46 @@ function howToUse(p) {
 </div></section>`;
 }
 
+// Product structured data (Google rich results + Merchant Center). Used by product and bundle pages.
+function productLd(p) {
+  const imgs = p.gallery.filter((g) => !g.includes('label-back'));
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: p.isBundle ? `${p.name}: ${p.format}` : `${p.name}: ${p.mushroom} ${p.format}`,
+    description: p.seoDescription,
+    image: imgs.map((g) => abs(g.replace('.webp', '.jpg'))),
+    sku: `REWILD-${p.id.toUpperCase()}-${p.size.replace(/\s/g, '')}`,
+    brand: { '@type': 'Brand', name: 'REWILD' },
+    manufacturer: { '@id': SITE.url + '/#org' },
+    countryOfOrigin: 'CA',
+    ...(p.latin ? { material: p.latin } : {}),
+    offers: {
+      '@type': 'Offer',
+      url: abs(`/shop/${p.slug}/`),
+      priceCurrency: 'CAD',
+      price: (p.price / 100).toFixed(2),
+      availability: 'https://schema.org/InStock',
+      itemCondition: 'https://schema.org/NewCondition',
+      seller: { '@id': SITE.url + '/#org' },
+      hasMerchantReturnPolicy: RETURN_POLICY,
+      // Canada only: US shipping is quoted per order (Zonos), so there is no fixed US rate to publish.
+      shippingDetails: [
+        {
+          '@type': 'OfferShippingDetails',
+          shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'CA' },
+          shippingRate: { '@type': 'MonetaryAmount', value: p.price >= SHIPPING.CA.freeOver ? '0.00' : (SHIPPING.CA.flatRate / 100).toFixed(2), currency: 'CAD' },
+          deliveryTime: {
+            '@type': 'ShippingDeliveryTime',
+            handlingTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 3, unitCode: 'DAY' },
+            transitTime: { '@type': 'QuantitativeValue', minValue: SHIPPING.CA.minDays, maxValue: SHIPPING.CA.maxDays, unitCode: 'DAY' },
+          },
+        },
+      ],
+    },
+  };
+}
+
 function productPage(p) {
   const d = PRODUCT_DETAILS[p.id];
   const faqs = [...d.faqs, ...COMMON_FAQS.filter((f) => !(p.isTincture && f[0].startsWith('How long')))];
@@ -346,39 +399,7 @@ function productPage(p) {
     preload: p.image,
     jsonld: [
       crumbs([['Home', '/'], ['Shop', '/shop/'], [p.name, `/shop/${p.slug}/`]]),
-      {
-        '@context': 'https://schema.org',
-        '@type': 'Product',
-        name: `${p.name}: ${p.mushroom} ${p.format}`,
-        description: p.seoDescription,
-        image: p.gallery.filter((g) => !g.includes('label-back')).map((g) => abs(g.replace('.webp', '.jpg'))),
-        sku: `REWILD-${p.id.toUpperCase()}-${p.size.replace(/\s/g, '')}`,
-        brand: { '@type': 'Brand', name: 'REWILD' },
-        manufacturer: { '@id': SITE.url + '/#org' },
-        countryOfOrigin: 'CA',
-        material: p.latin,
-        offers: {
-          '@type': 'Offer',
-          url: abs(`/shop/${p.slug}/`),
-          priceCurrency: 'CAD',
-          price: (p.price / 100).toFixed(2),
-          availability: 'https://schema.org/InStock',
-          itemCondition: 'https://schema.org/NewCondition',
-          seller: { '@id': SITE.url + '/#org' },
-          shippingDetails: [
-            {
-              '@type': 'OfferShippingDetails',
-              shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'CA' },
-              shippingRate: { '@type': 'MonetaryAmount', value: (SHIPPING.CA.flatRate / 100).toFixed(2), currency: 'CAD' },
-              deliveryTime: {
-                '@type': 'ShippingDeliveryTime',
-                handlingTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 3, unitCode: 'DAY' },
-                transitTime: { '@type': 'QuantitativeValue', minValue: SHIPPING.CA.minDays, maxValue: SHIPPING.CA.maxDays, unitCode: 'DAY' },
-              },
-            }
-          ],
-        },
-      },
+      productLd(p),
       faqLd(faqs),
     ],
     body: `
@@ -387,7 +408,7 @@ function productPage(p) {
   <div class="pdp">
     <div>
       <img id="gallery-main" class="gallery-main" src="${p.image}" alt="${esc(p.alt)}" width="1100" height="1100">
-      <div class="thumbs">${p.gallery.map((g, i) => `<button type="button" data-thumb="${g}" data-alt="${esc(g.includes('label') ? `${p.name} label` : p.alt)}" aria-pressed="${i === 0}" aria-label="Show image ${i + 1}"><img src="${g}" alt="" loading="lazy" width="84" height="84"></button>`).join('')}</div>
+      <div class="thumbs">${p.gallery.map((g, i) => `<button type="button" data-thumb="${g}" data-alt="${esc(g === p.image ? p.alt : altFor(g))}" aria-pressed="${i === 0}" aria-label="Show image ${i + 1}"><img src="${g}" alt="${esc(g === p.image ? p.alt : altFor(g))}" loading="lazy" width="84" height="84"></button>`).join('')}</div>
     </div>
     <div class="buybox">
       <div class="dot-label"><span class="dot" style="background:${p.color}"></span><span>${esc(p.mushroom)}</span></div>
@@ -441,6 +462,63 @@ ${productVideos(p.id)}
 <section class="section tight"><div class="wrap">
   <h2 class="h3" style="margin-bottom:32px">Build your stack</h2>
   <div class="grid-3">${others.map((o) => productCard(o)).join('')}</div>
+</div></section>`,
+  };
+}
+
+/* ---------------- BUNDLE PAGES (Energy Duo, All Four Set) ---------------- */
+function bundlePage(p) {
+  const parts = p.includes.map((id) => PRODUCT_BY_ID[id]);
+  const value = parts.reduce((a, x) => a + x.price, 0);
+  const faqs = [
+    ['What comes in it?', `${parts.map((x) => `${x.name} (${x.size})`).join(', ')}. Bought separately, ${money(value)}.`],
+    ['Can I use a promo code on it?', 'Codes don’t combine with bundle pricing. Your cart checks both and always applies whichever saves you more.'],
+    ...COMMON_FAQS.filter((f) => !f[0].startsWith('How long')),
+  ];
+  const gallery = [p.image, ...parts.map((x) => x.image)];
+  const pg = { ...p, gallery };
+  return {
+    path: `/shop/${p.slug}/`,
+    title: p.seoTitle,
+    description: p.seoDescription,
+    image: p.image.replace('.webp', '.jpg'),
+    ogType: 'product',
+    preload: p.image,
+    jsonld: [crumbs([['Home', '/'], ['Shop', '/shop/'], [p.name, `/shop/${p.slug}/`]]), productLd(pg), faqLd(faqs)],
+    body: `
+<section class="section tight pdp-sec"><div class="wrap">
+  <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/shop/">Shop</a><span aria-hidden="true">/</span><span aria-current="page">${esc(p.name)}</span></nav>
+  <div class="pdp">
+    <div>
+      <img id="gallery-main" class="gallery-main" src="${p.image}" alt="${esc(p.alt)}" width="1100" height="1100">
+      <div class="thumbs">${gallery.map((g, i) => { const a = i === 0 ? p.alt : parts[i - 1].alt; return `<button type="button" data-thumb="${g}" data-alt="${esc(a)}" aria-pressed="${i === 0}" aria-label="Show image ${i + 1}"><img src="${g}" alt="${esc(a)}" loading="lazy" width="84" height="84"></button>`; }).join('')}</div>
+    </div>
+    <div class="buybox">
+      <div class="dot-label"><span class="dot" style="background:${p.color}"></span><span>${esc(p.mushroom)}</span></div>
+      <h1 class="h1" style="font-size:clamp(38px,4.4vw,58px)">${esc(p.name)}<span class="h1-sub">${esc(p.format)}</span></h1>
+      <p class="lead">${esc(p.tagline)}</p>
+      <div class="big-price"><span data-pid="${p.id}" data-list="${p.price}">${money(p.price)}</span> <span class="small muted" style="font-family:var(--body);font-weight:400;letter-spacing:0;text-transform:none">CAD</span> <s class="small muted">${money(value)}</s></div>
+      <div class="row">
+        <div class="qty" role="group" aria-label="Quantity"><button type="button" data-qty-step="-1" data-target="#qty" aria-label="Decrease">&minus;</button><input id="qty" type="number" min="1" max="20" value="1" aria-label="Quantity"><button type="button" data-qty-step="1" data-target="#qty" aria-label="Increase">+</button></div>
+        <button type="button" class="btn btn-yellow" style="flex:1" data-add="${p.id}" data-qty-from="#qty">Add to cart</button>
+      </div>
+      <p class="small muted">${p.price >= SHIPPING.CA.freeOver ? 'Ships free in Canada' : 'Free shipping in Canada over $175 · $20 flat rate under that'} · <a href="/shipping/">US shipping quoted per order</a></p>
+      ${guarantee(' compact')}
+      <p>${esc(p.story)}</p>
+      <ul class="ticks">${parts.map((x) => `<li><span><a href="/shop/${x.slug}/">${esc(x.name)}</a>: ${esc(x.isTincture ? 'alcohol-free Cordyceps militaris tincture' : `organic ${x.commonName} mushroom powder`)}, ${esc(x.size)}</span></li>`).join('')}</ul>
+      ${productReview(p.id)}
+    </div>
+  </div>
+</div></section>
+<div class="mbar" data-mbar hidden><div class="mbar-txt"><b>${esc(p.name)}</b><span data-pid="${p.id}" data-list="${p.price}">${money(p.price)}</span></div><button type="button" class="btn btn-yellow" data-add="${p.id}">Add to cart</button></div>
+<script>(function(){var bar=document.querySelector('[data-mbar]'),main=document.querySelector('[data-add][data-qty-from]');if(!bar||!main||!('IntersectionObserver' in window))return;var seen=true;function set(){bar.hidden=seen||innerWidth>900;}new IntersectionObserver(function(e){seen=e[0].isIntersecting||e[0].boundingClientRect.top>innerHeight*3;set();}).observe(main);addEventListener('resize',set,{passive:true});})();</script>
+<section class="section tight"><div class="wrap">
+  <h2 class="h3" style="margin-bottom:32px">What's inside</h2>
+  <div class="grid-${parts.length === 4 ? 4 : 3}">${parts.map((x) => productCard(x)).join('')}</div>
+</div></section>
+<section class="section tight stone"><div class="narrow">
+  <h2 class="h3" style="margin-bottom:20px">Questions</h2>
+  ${faqHtml(faqs)}
 </div></section>`,
   };
 }
@@ -509,7 +587,7 @@ const lab = {
   <div class="grid-4 lab-grid">${LAB.map((l) => {
     const p = PRODUCT_BY_ID[l.id];
     return `<article class="lab-card">
-      <img src="${p.image}" alt="" width="600" height="600" loading="lazy">
+      <img src="${p.image}" alt="${esc(p.alt)}" width="600" height="600" loading="lazy">
       <div class="stack-sm" style="gap:8px;padding:22px">
         <div class="dot-label"><span class="dot" style="background:${p.color}"></span><span>${esc(p.mushroom)}</span></div>
         <h3 style="font-size:22px"><a href="/shop/${p.slug}/" style="text-decoration:none">${esc(p.name)}</a></h3>
@@ -626,7 +704,7 @@ const story = {
 <section class="section fringe story-trip"><div class="wrap split">
   <div><img class="cover portrait" src="/img/rewild-bear-cordyfuel-tincture.webp" alt="A bear at a summer festival with a bottle of Rewild Energy tincture in its teeth" width="960" height="1280" loading="lazy"></div>
   <div class="stack">
-    <img src="/img/rewild-emblem-sunset-v2.webp" alt="" width="96" height="99" loading="lazy" style="width:96px;height:auto">
+    <img src="/img/rewild-emblem-sunset-v2.webp" alt="" aria-hidden="true" width="96" height="99" loading="lazy" style="width:96px;height:auto">
     <p class="eyebrow">Return to your natural state</p>
     <h2 class="h2" style="font-size:clamp(30px,3.6vw,44px)">Rewild is an invitation to come back.</h2>
     <div class="stack-sm" style="gap:18px;font-size:18px;color:var(--text)">
@@ -812,6 +890,7 @@ const FAQS = [
   ['Are your products tested?', 'Yes. Every lot is tested for species identity, potency (polysaccharides, beta-glucans, and cordycepin for CordyFuel™), a seven-test microbial panel, gluten and water activity. See the numbers on our <a href="/lab-results/">lab results</a> page.'],
   ['Can I see the lab report?', 'Yes. Full certificates of analysis are sent on request. <a href="/lab-results/#request">Request one here</a> and we\u2019ll email it, usually within one business day.'],
   ['How much is shipping?', `$20 flat rate in Canada, free on orders of $175 or more. US shipping and duties are quoted per order by email after you check out.`],
+  ['Can I pick up locally?', 'Yes. Local to Nelson or the Slocan Valley? <a href="/contact/">Message us</a> to arrange free pickup.'],
   ['Do you ship to the United States?', 'Yes. Choose United States in your cart. After you order, we email a quote for shipping and duties that you can pay online before it ships.'],
   ['What if I don\u2019t like it?', `Every order comes with our 100% Risk-Free Guarantee. ${GUARANTEE_TEXT} <a href="/shipping/#guarantee">How it works</a>.`],
   ['Do you have a referral program?', 'Yes. Give $20, get $20. Every customer gets a friend code: your friend gets $20 off their first order of $75 or more, and you get $20 off your next order once theirs is in. <a href="/refer/">Get your friend code</a>.'],
@@ -988,7 +1067,7 @@ const confirmed = {
   noindex: true,
   body: `
 <section class="section"><div class="narrow stack center" style="text-align:center">
-  <img src="/img/emblem-dark-sm.webp" alt="" width="84" height="84">
+  <img src="/img/emblem-dark-sm.webp" alt="" aria-hidden="true" width="84" height="84">
   <p class="eyebrow">Order confirmed</p>
   <h1 class="h1" style="font-size:clamp(36px,5vw,60px)" id="oc-title">Welcome, Rewilder.</h1>
   <div id="oc-details" class="lead">Your order is in. A receipt is on its way to your inbox.</div>
@@ -1038,6 +1117,7 @@ export const PAGES = [
   cordyfuelPage,
   shop,
   ...SELLABLE.map(productPage),
+  ...BUNDLES.map(bundlePage),
   quiz,
   finder,
   lab,
