@@ -5,6 +5,7 @@
 import { PRODUCTS, PRODUCT_BY_ID, SHIPPING } from './_shared/catalog.mjs';
 import { priceCart, OFFERS } from './_shared/pricing.mjs';
 import { saleFor, checkSaleCart } from './_shared/sale.mjs';
+import { checkStockCart } from './_shared/stock.mjs';
 import { square, idem, locationId, json } from './_shared/square.mjs';
 import { validatePromo, orderDiscount, discountFor } from './_shared/promos.mjs';
 import { SITE_EMAIL } from './_shared/config.mjs';
@@ -32,6 +33,7 @@ export async function buildPaymentLink(body, siteUrl, opts) {
   // Flash sale: everything at the sale price, no codes. Limits and stock left are checked here.
   const sale = saleFor(Date.now(), body?.early);
   if (sale) await checkSaleCart(sale, base.lines, catalog);
+  await checkStockCart(base.lines, { addon: !!body?.addon }, opts); // sold out or not enough on hand (live Square counts)
   let promo = null;
   if (body?.code && !sale) promo = (await validatePromo(body.code, base.listTotal, opts, Date.now(), body?.email || '')).promo;
   const q = priceCart(body?.items, dest, catalog, promo, !!body?.addon, sale); // best deal wins, add-on, free gift
