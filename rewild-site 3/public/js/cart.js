@@ -65,11 +65,14 @@
   }
   window.addEventListener('rewild:sale', () => render());
   window.addEventListener('rewild:sale-left', () => render());
+  window.addEventListener('rewild:stock', () => render());
 
   function save() { store.write(state); render(); }
   function count() { return state.items.reduce((a, i) => a + i.qty, 0); }
 
+  const soldOut = (id) => !!(window.RewildStock && window.RewildStock.status(id) === 'out');
   function add(id, qty) {
+    if (soldOut(id)) { toast(`${byId[id] ? byId[id].name : 'That product'} is sold out right now.`); return; }
     qty = Math.max(1, Math.min(cap(), parseInt(qty, 10) || 1));
     const ex = state.items.find((i) => i.id === id);
     if (ex) ex.qty = Math.min(cap(), ex.qty + qty); else state.items.push({ id, qty });
@@ -167,6 +170,8 @@
     let block = '';
     if (q.sale && q.overCap && q.overCap.length) block = `${q.sale.label} limit: ${q.sale.maxEach} of each product per order (bundles count what's inside). Please lower ${q.overCap.map((id) => byId[id] ? byId[id].word || byId[id].name : id).join(', ')}.`;
     else if (q.sale && left) { const short = Object.keys(q.units || {}).find((id) => id in left && q.units[id] > left[id]); if (short) block = left[short] === 0 ? `${byId[short].word || byId[short].name} is sold out at the ${q.sale.label.toLowerCase()} price. Please remove it.` : `Only ${left[short]} ${byId[short].word || byId[short].name} left at the ${q.sale.label.toLowerCase()} price.`; }
+    // Live stock: a sold-out product in the cart (added before it sold out) blocks checkout.
+    if (!block) { const gone = state.items.find((i) => soldOut(i.id)); if (gone) block = `${byId[gone.id] ? byId[gone.id].name : 'One item'} is sold out right now. Please remove it to check out.`; }
     if (err0 && (block || err0.dataset.sale)) { err0.textContent = block; if (block) err0.dataset.sale = '1'; else delete err0.dataset.sale; }
     $('#checkout-btn').disabled = state.items.length === 0 || !!block;
   }
