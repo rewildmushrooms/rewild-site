@@ -286,17 +286,17 @@ const PRODUCT_DETAILS = {
   },
   clarity: {
     intro: `<p>Lion's Mane (<em>Hericium erinaceus</em>) grows in long, cascading white spines on hardwood trees. It has been eaten and respected in traditional kitchens for generations.</p><p>Ours is grown in British Columbia as a full-spectrum powder: fruiting body and mycelium together. Mild, a little sweet and easy to add to coffee, tea or a smoothie.</p>`,
-    ticks: ['Whole mushroom food powder · Full spectrum', 'Just the mushroom and the grain it grew on', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added'],
+    ticks: ['Whole mushroom food powder · Full spectrum', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added'],
     faqs: [["What does Lion's Mane taste like?", 'Mild and slightly sweet. It disappears into coffee, cacao and smoothies.']],
   },
   strength: {
     intro: `<p>Chaga (<em>Inonotus obliquus</em>) has quietly grown in northern forests for thousands of years, taking its character from its host and the forest around it.</p><p>Ours is grown in British Columbia as a full-spectrum powder. Earthy, rich and a little vanilla-like. Perfect in coffee, tea or broth.</p>`,
-    ticks: ['Whole mushroom food powder · Full spectrum', 'Just the mushroom and the grain it grew on', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added'],
+    ticks: ['Whole mushroom food powder · Full spectrum', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added'],
     faqs: [['Is your Chaga wild harvested?', 'No. It is cultivated indoors by our partner grower in British Columbia, so no wild birch forests are stripped and every batch can be tested and traced.']],
   },
   peace: {
     intro: `<p>Reishi (<em>Ganoderma lucidum</em>) has been revered for centuries as the mushroom of stillness. Glossy, woody and deeply rooted in tradition.</p><p>Ours is grown in British Columbia as a full-spectrum powder. Bitter and grounding. Many people enjoy it in an evening tea or cacao.</p>`,
-    ticks: ['Whole mushroom food powder · Full spectrum', 'Just the mushroom and the grain it grew on', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added'],
+    ticks: ['Whole mushroom food powder · Full spectrum', 'Grown in BC on certified organic sorghum', 'Third-party tested · Nothing added'],
     faqs: [['Reishi tastes bitter. How do I use it?', 'Pair it with something rich: cacao, a little honey, or a nut milk latte. A small amount goes a long way.']],
   },
   tincture: {
