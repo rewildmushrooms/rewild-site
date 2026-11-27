@@ -94,11 +94,11 @@ export const bfPage = {
 
 // Home page hero while Black Friday is on. The normal hero stays in the page and comes back
 // on its own when the sale ends (no rebuild needed): a tiny script swaps them by the clock.
-export const BF_HERO_IMG = '/img/773276745_5476076612617462_7496075791395980541_n.jpg';
+export const BF_HERO_IMG = '/img/hero-trail-larches-lake.webp'; // same photo as the regular home hero
 export function bfHomeHero() {
   if (!S || Date.now() >= Date.parse(S.end)) return '';
   return `<style>
-.lp-home{display:none;position:relative;color:#fff;background:#121310 url(${BF_HERO_IMG}) 62% 40%/cover no-repeat;overflow:hidden}
+.lp-home{display:none;position:relative;color:#fff;background:#121310 url(${BF_HERO_IMG}) 70% center/cover no-repeat;overflow:hidden}
 html.lp-on .lp-home{display:block}html.lp-on .hero-home{display:none}
 .lp-home::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,14,10,.82) 0%,rgba(12,14,10,.55) 34%,rgba(12,14,10,.12) 62%,rgba(12,14,10,0) 80%),radial-gradient(60% 70% at 78% 18%,rgba(255,214,120,.22),rgba(255,214,120,0) 70%)}
 .lp-home .wrap{position:relative;padding-top:120px;padding-bottom:130px}
@@ -113,7 +113,7 @@ html.lp-on .lp-home{display:block}html.lp-on .hero-home{display:none}
 .lp-home .lp-cd{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.75)}
 .lp-home .lp-cd b{font-family:var(--display);font-size:22px;letter-spacing:.04em;color:#fff;font-variant-numeric:tabular-nums}
 .lp-home .note{font-size:15px;font-style:italic;color:rgba(255,255,255,.72);margin:0}
-@media (max-width:700px){.lp-home{background-position:30% 40%}.lp-home::before{background:linear-gradient(180deg,rgba(12,14,10,.25) 0%,rgba(12,14,10,.6) 40%,rgba(12,14,10,.9) 100%)}.lp-home .wrap{padding-top:72px;padding-bottom:84px}.lp-home .lp-sub{font-size:18px}}
+@media (max-width:700px){.lp-home{background-position:78% center}.lp-home::before{background:linear-gradient(180deg,rgba(12,14,10,.25) 0%,rgba(12,14,10,.6) 40%,rgba(12,14,10,.9) 100%)}.lp-home .wrap{padding-top:72px;padding-bottom:84px}.lp-home .lp-sub{font-size:18px}}
 </style>
 <section class="lp-home">
   <div class="wrap"><div class="lp-copy">
