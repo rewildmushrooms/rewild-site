@@ -43,6 +43,15 @@ main{padding:24px 0 60px}
 .seg button[aria-pressed=true]{background:var(--ink);color:#fff}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:12px}
 .tile{background:#fff;border-radius:4px;padding:18px 18px 16px}
+.period{border-radius:6px;padding:16px 16px 4px;margin-bottom:14px}
+.period-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:2px 2px 12px}
+.period-head h2{font-size:17px;letter-spacing:.16em}
+.period-head span{font-size:13px}
+.period-all{background:var(--ink)}
+.period-all .period-head h2{color:var(--accent)}.period-all .period-head span{color:#A9AAA1}
+.period-all .tile{background:#22241F}.period-all .tile .value{color:#fff}.period-all .tile .label{color:var(--accent)}.period-all .tile .sub{color:#A9AAA1}
+.period-now{background:#DCE6D6;border:1px solid #C3D2BB}
+.period-now .period-head h2{color:var(--good)}.period-now .period-head span{color:var(--text)}
 .tile .label{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .tile .value{font-family:Montserrat,sans-serif;font-weight:800;font-size:30px;line-height:1.1;margin-top:6px;font-variant-numeric:tabular-nums}
 .tile .sub{font-size:13px;color:var(--muted);margin-top:2px}
@@ -248,6 +257,13 @@ a{color:var(--ink)}
     <ul class="alerts" id="al-list"><li><span class="d">Checking stock, codes, orders and traffic…</span></li></ul>
   </section>
 
+  <div class="period period-all">
+    <div class="period-head"><h2>All time</h2><span id="all-since">everything since the shop opened</span></div>
+    <section class="tiles" aria-label="All time key numbers" id="all-a"><div class="tile"><div class="sub">Loading…</div></div></section>
+    <section class="tiles" aria-label="All time customers and carts" id="all-b"></section>
+  </div>
+  <div class="period period-now">
+  <div class="period-head"><h2 id="now-title">Last 30 days</h2><span id="now-note">changes with the date buttons above</span></div>
   <section class="tiles" aria-label="Key numbers">
     <div class="tile"><div class="label">Revenue</div><div class="value" id="t-revenue">–</div><div class="delta" id="d-revenue"></div><div class="sub" id="t-net"></div></div>
     <div class="tile"><div class="label">Orders</div><div class="value" id="t-orders">–</div><div class="delta" id="d-orders"></div><div class="sub" id="t-customers"></div></div>
@@ -263,6 +279,7 @@ a{color:var(--ink)}
     <div class="tile"><div class="label">Abandoned carts</div><div class="value" id="p-ab">–</div><div class="sub" id="p-ab-sub"></div></div>
     <div class="tile"><div class="label">Recovered carts</div><div class="value" id="p-rec">–</div><div class="sub" id="p-rec-sub"></div></div>
   </section>
+  </div>
   <div class="cols">
     <section class="panel"><div class="panel-head"><h2>Recent customers</h2><a class="muted small" href="#" data-goto="customers">All customers</a></div><div class="scroll"><table><tbody id="p-recent"></tbody></table></div></section>
     <section class="panel"><div class="panel-head"><h2>Email</h2><a class="muted small" href="https://dashboard.mailerlite.com" target="_blank" rel="noopener">MailerLite</a></div><div class="kv" id="p-email"></div></section>
@@ -399,7 +416,8 @@ a{color:var(--ink)}
   $('#login-form').onsubmit=async(e)=>{e.preventDefault();key=$('#pw').value;user=$('#user').value;$('#login-msg').textContent='';$('#login-msg').className='msg err';
     try{await start();sessionStorage.setItem(KEY,key);sessionStorage.setItem(UKEY,user);$('#pw').value='';}catch(err){$('#login-msg').textContent=err.message;}};
 
-  document.querySelectorAll('[data-days]').forEach(b=>b.onclick=()=>{days=b.dataset.days==='all'?'all':Number(b.dataset.days);document.querySelectorAll('[data-days]').forEach(x=>x.setAttribute('aria-pressed',x===b));loadSummary();loadPeople();});
+  document.querySelectorAll('[data-days]').forEach(b=>b.onclick=()=>{days=b.dataset.days==='all'?'all':Number(b.dataset.days);document.querySelectorAll('[data-days]').forEach(x=>x.setAttribute('aria-pressed',x===b));nowTitle();loadSummary();loadPeople();});
+  function nowTitle(){const t=periodLabel();$('#now-title').textContent=t.charAt(0).toUpperCase()+t.slice(1);}
   const prevLabel=()=>days===1?'yesterday':'previous '+days+' days';
   const periodLabel=()=>days==='all'?'all time':days===1?'today':'last '+days+' days';
   document.addEventListener('click',e=>{const a=e.target.closest('[data-goto]');if(a){e.preventDefault();show(a.dataset.goto);}});
@@ -590,7 +608,7 @@ a{color:var(--ink)}
     document.querySelectorAll('[role=tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab));
     document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==tab);
     if(loaded[tab])return; loaded[tab]=true;
-    if(tab==='overview'){loadLive();loadSummary();loadAlerts();loadPeople();loadLow();loadMetrics();}
+    if(tab==='overview'){loadLive();loadSummary();loadAlerts();loadPeople();loadAllTime();loadLow();loadMetrics();}
     if(tab==='customers')loadCustomers();
     if(tab==='emails')loadEmails();
     if(tab==='reviews'){loadReviews();loadReferrals();}
@@ -625,6 +643,25 @@ a{color:var(--ink)}
     }catch(err){$('#p-email').innerHTML='<div class="muted">'+esc(err.message)+'</div>';}
   }
   let lastTraffic=null,lastSummary=null;
+  // ---- All time band (fixed, does not follow the date buttons)
+  async function loadAllTime(){
+    const tile=(l,v,sub)=>`<div class="tile"><div class="label">${l}</div><div class="value">${v}</div><div class="sub">${sub||''}</div></div>`;
+    try{
+      const [s,p,t]=await Promise.all([api('?action=summary&days=all'),api('?action=people&days=all'),api('?action=traffic&days=all').catch(()=>null)]);
+      $('#all-a').innerHTML=tile('Revenue',money(s.revenue),s.refunded?('After '+money(s.refunded)+' in refunds'):'No refunds')
+        +tile('Orders',s.orders,s.customers+' customers')
+        +tile('Avg order',money(s.aov),'incl. shipping')
+        +tile('Discounts given',money(s.discounts),money(s.shipping)+' shipping collected')
+        +tile('Rewilders',s.subscribers?s.subscribers.active.toLocaleString('en-CA'):'–',s.subscribers?('in '+s.subscribers.name):'connect MailerLite');
+      const conv=t&&t.sessions?((s.orders/t.sessions*100).toFixed(1)+'%'):'–';
+      $('#all-b').innerHTML=tile('Customers',p.customers,'everyone who has bought')
+        +tile('Repeat customers',p.repeatCustomers,Math.round(p.repeatRate*100)+'% of customers')
+        +tile('Lifetime value',money(p.avgLifetimeValue),'average per customer')
+        +tile('Conversion',conv,t&&t.sessions?'orders per visit (last 12 months)':'orders per visit')
+        +tile('Abandoned carts',p.carts.abandoned,money(p.carts.abandonedValue)+' left in carts')
+        +tile('Recovered carts',p.carts.recovered,money(p.carts.recoveredValue)+' won back');
+    }catch(err){$('#all-a').innerHTML=`<div class="tile"><div class="sub">${esc(err.message)}</div></div>`;}
+  }
   function updateConv(){const t=lastTraffic,s=lastSummary;$('#p-conv').textContent=t&&t.sessions&&s?((s.orders/t.sessions*100).toFixed(1)+'%'):'–';}
   async function loadLow(){
     try{const inv=await api('?action=inventory');const low=inv.items.filter(i=>i.tracked&&i.onHand<=(inv.lowStockAt??10));
