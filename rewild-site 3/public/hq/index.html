@@ -643,7 +643,7 @@ a{color:var(--ink)}
     }catch(err){$('#p-email').innerHTML='<div class="muted">'+esc(err.message)+'</div>';}
   }
   let lastTraffic=null,lastSummary=null;
-  // ---- All time band (fixed, does not follow the date buttons above)
+  // ---- All time band (fixed; the date buttons only change the band below it)
   async function loadAllTime(){
     const tile=(l,v,sub)=>`<div class="tile"><div class="label">${l}</div><div class="value">${v}</div><div class="sub">${sub||''}</div></div>`;
     try{
